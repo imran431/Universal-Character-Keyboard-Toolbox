@@ -322,8 +322,6 @@ test('shortcut finder filters by query and environment', async ({ page }) => {
   await page.goto('/tools/shortcut-finder/');
 
   const search = page.getByRole('searchbox', { name: 'Character, name, alias or code point' });
-  const cards = page.locator('[data-shortcut-card]');
-
   await search.fill('degree');
   await expect(page.locator('[data-shortcut-card]:visible')).toHaveCount(3);
   await expect(page.getByText('Degree Symbol', { exact: true }).first()).toBeVisible();
