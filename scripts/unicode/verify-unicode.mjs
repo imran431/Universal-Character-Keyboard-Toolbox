@@ -18,15 +18,29 @@ function assert(condition, message) {
   if (!condition) failures.push(message);
 }
 
-assert(artifact.schemaVersion === 1, 'Unexpected Unicode artifact schema version.');
+assert(artifact.schemaVersion === 2, 'Unexpected Unicode artifact schema version.');
 assert(artifact.unicodeVersion === '18.0.0', 'Unicode version must be 18.0.0.');
 assert(Array.isArray(artifact.characters) && artifact.characters.length > 10000, 'Character collection is unexpectedly small.');
 assert(Array.isArray(artifact.ranges) && artifact.ranges.length > 0, 'Unicode range records are missing.');
 assert(Array.isArray(artifact.blocks) && artifact.blocks.length > 100, 'Unicode block data is unexpectedly small.');
+assert(Array.isArray(artifact.derivedNames) && artifact.derivedNames.length > 10000, 'Derived Name collection is unexpectedly small.');
+assert(Array.isArray(artifact.derivedNameRanges) && artifact.derivedNameRanges.length > 0, 'Algorithmic Unicode name ranges are missing.');
 
 const degree = artifact.characters.find((item) => item.codePoint === 0x00b0);
 assert(Boolean(degree), 'U+00B0 is missing.');
 assert(degree?.name === 'DEGREE SIGN', 'U+00B0 name does not match UnicodeData.txt.');
+
+const derivedDegree = artifact.derivedNames.find((item) => item.codePoint === 0x00b0);
+assert(derivedDegree?.name === 'DEGREE SIGN', 'DerivedName.txt does not report U+00B0 as DEGREE SIGN.');
+
+const cjkRange = artifact.derivedNameRanges.find(
+  (item) => item.start <= 0x4e00 && item.end >= 0x4e00
+);
+assert(Boolean(cjkRange), 'The CJK U+4E00 algorithmic name range is missing.');
+assert(
+  cjkRange?.template?.includes('*'),
+  'The CJK algorithmic name range must preserve its code-point placeholder.'
+);
 
 const allSourcesPinned = artifact.sources?.every((source) =>
   source.url.startsWith('https://www.unicode.org/Public/18.0.0/')
