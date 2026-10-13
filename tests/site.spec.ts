@@ -513,3 +513,22 @@ test('accent keyboard usage flows into recent characters and can be cleared', as
   await page.getByRole('button', { name: 'Clear recent' }).click();
   await expect(page.locator('[data-recents-empty]')).toBeVisible();
 });
+
+
+test('Unicode Explorer results can be saved without a detail page', async ({ page }) => {
+  await page.goto('/unicode/');
+
+  const search = page.getByRole('searchbox', { name: 'Character, name, alias or code point' });
+  await search.fill('snowman');
+
+  const grid = page.locator('[data-explorer-grid]');
+  const save = grid.getByRole('button', { name: 'Add SNOWMAN to favorites' });
+  await expect(save).toBeVisible();
+  await save.click();
+  await expect(save).toHaveAttribute('aria-pressed', 'true');
+
+  await page.goto('/library/');
+  const favorites = page.locator('[data-favorites-grid]');
+  await expect(favorites.getByText('SNOWMAN', { exact: true })).toBeVisible();
+  await expect(favorites.getByText('U+2603', { exact: true })).toBeVisible();
+});
