@@ -3,16 +3,36 @@ interface Props {
   value: string;
   label?: string;
   class?: string;
+  characterName?: string;
+  codePoint?: string;
+  href?: string;
 }
 
-const { value, label = `Copy ${value}`, class: className = '' } = Astro.props;
+const {
+  value,
+  label = `Copy ${value}`,
+  class: className = '',
+  characterName = '',
+  codePoint = '',
+  href = ''
+} = Astro.props;
 ---
-<button class={`copy-button ${className}`} type="button" data-copy-value={value} aria-label={label}>
+<button
+  class={`copy-button ${className}`}
+  type="button"
+  data-copy-value={value}
+  data-character-name={characterName}
+  data-code-point={codePoint}
+  data-character-href={href}
+  aria-label={label}
+>
   <span aria-hidden="true">Copy</span>
   <span class="sr-only" data-copy-status aria-live="polite" aria-atomic="true"></span>
 </button>
 
 <script>
+  import { rememberRecentCharacter } from '../lib/character-library';
+
   const copyButtons = document.querySelectorAll<HTMLButtonElement>('[data-copy-value]');
 
   for (const button of copyButtons) {
@@ -31,6 +51,15 @@ const { value, label = `Copy ${value}`, class: className = '' } = Astro.props;
         }
 
         await navigator.clipboard.writeText(value);
+
+        if (Array.from(value).length === 1) {
+          rememberRecentCharacter({
+            character: value,
+            name: button.dataset.characterName || button.getAttribute('aria-label')?.replace(/^Copy\s+/i, '') || 'Unicode character',
+            codePoint: button.dataset.codePoint || '',
+            href: button.dataset.characterHref || undefined
+          });
+        }
 
         if (visibleLabel) visibleLabel.textContent = 'Copied';
         if (status) status.textContent = 'Copied to clipboard';
