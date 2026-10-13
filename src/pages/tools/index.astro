@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Character & Unicode Tools | Character Toolbox';
+const description = 'Use free browser-based tools to find special-character shortcuts, verified Alt codes, Unicode characters and typing methods without an account.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: new URL('/tools/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Tools</div>
+      <h1>Character & Unicode Tools</h1>
+      <p class="lead">Fast browser tools for finding characters, verified typing methods, Unicode data and documented Alt codes.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" aria-labelledby="tool-list">
+    <div class="container">
+      <div class="category-grid" id="tool-list">
+        <a class="category-card" href="/tools/shortcut-finder/">
+          <strong>Shortcut Finder</strong>
+          <span>Search reviewed Windows, macOS and Microsoft Word methods for high-value special characters.</span>
+          <small>Verified methods only</small>
+        </a>
+        <a class="category-card" href="/tools/alt-code-finder/">
+          <strong>Alt Code Finder</strong>
+          <span>Find Windows Alt codes that are explicitly documented in our reviewed source set.</span>
+          <small>No generated or guessed Alt codes</small>
+        </a>
+        <a class="category-card" href="/unicode/">
+          <strong>Unicode Explorer</strong>
+          <span>Search Unicode 18.0 by official name, alias, exact character or code point.</span>
+          <small>46k+ explicit names + algorithmic ranges</small>
+        </a>
+        <a class="category-card" href="/typing/">
+          <strong>Typing Methods</strong>
+          <span>Understand the reliable ways to insert special characters on Windows, Mac and Microsoft Word.</span>
+          <small>Platform-aware guidance</small>
+        </a>
+      </div>
+
+      <div class="content-note">
+        <h2>Browser-first by design</h2>
+        <p>These tools run in the browser and do not require an account. Search and filtering are handled locally with static data prepared during the site build.</p>
+        <p>Tool pages are kept separate from mass-generated character reference pages so product coverage can grow without turning the site into a thin-content index.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
