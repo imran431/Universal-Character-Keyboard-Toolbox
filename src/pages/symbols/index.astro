@@ -1,21 +1,54 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CopyButton from '../../components/CopyButton.astro';
-import { featuredCharacters } from '../../data/characters';
+import { characterCategories, featuredCharacters, charactersForCategory } from '../../data/characters';
 
 const title = 'Symbols — Copy & Unicode Codes | Character Toolbox';
-const description = 'Browse common symbols and Unicode characters with one-click copy actions and code points. More curated character pages will be added as their data is verified.';
+const description = 'Browse curated math, currency, arrow, punctuation, check mark and legal symbols with one-click copy actions and Unicode code points.';
 ---
 <BaseLayout title={title} description={description}>
   <header class="content-header">
     <div class="container">
       <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Symbols</div>
       <h1>Symbols</h1>
-      <p class="lead">A curated starting set of useful characters. Copy a symbol immediately, then open a detail page when verified typing and code information is available.</p>
+      <p class="lead">Browse useful symbol families, copy characters immediately, and open reviewed detail pages when verified typing and code information is available.</p>
     </div>
   </header>
-  <section class="section" aria-label="Symbol collection">
+
+  <section class="section" style="padding-top: 0" aria-labelledby="symbol-categories">
     <div class="container">
+      <div class="section-heading">
+        <div>
+          <h2 id="symbol-categories">Browse by category</h2>
+          <p>Stable, meaningful collections instead of thousands of thin filter pages.</p>
+        </div>
+        <a class="cta-link" href="/unicode/">Search all Unicode</a>
+      </div>
+
+      <div class="category-grid">
+        {characterCategories.map((category) => {
+          const count = charactersForCategory(category.slug).length;
+          return (
+            <a class="category-card" href={`/symbols/${category.slug}/`}>
+              <strong>{category.name}</strong>
+              <span>{category.intro}</span>
+              <small>{count} curated symbols</small>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="popular-symbols">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <h2 id="popular-symbols">Popular symbols</h2>
+          <p>Frequently useful characters with one-click copy.</p>
+        </div>
+      </div>
+
       <div class="symbol-grid">
         {featuredCharacters.map((item) => (
           <article class="symbol-card">
