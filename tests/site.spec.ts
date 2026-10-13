@@ -391,7 +391,8 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     '/tools/shortcut-finder/',
     '/tools/alt-code-finder/',
     '/tools/accent-keyboard/',
-    '/tools/unicode-converter/'
+    '/tools/unicode-converter/',
+    '/library/'
   ]) {
     await page.goto(path);
 
@@ -458,8 +459,57 @@ test('Unicode converter decodes multiple supported notations and rejects surroga
   await expect(page.locator('[data-decode-status]')).toContainText('Ignored invalid token');
 });
 
-test('tools hub links to accent keyboard and Unicode converter', async ({ page }) => {
+test('tools hub links to accent keyboard, Unicode converter and saved characters', async ({ page }) => {
   await page.goto('/tools/');
   await expect(page.locator('a[href="/tools/accent-keyboard/"]')).toBeVisible();
   await expect(page.locator('a[href="/tools/unicode-converter/"]')).toBeVisible();
+  await expect(page.locator('a[href="/library/"]')).toBeVisible();
+});
+
+test('saved character library stays out of the search index and remains accessible', async ({ page }) => {
+  await page.goto('/library/');
+
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex,follow/);
+  await expect(page.locator('h1')).toHaveText('Saved Characters');
+
+  const dimensions = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+
+  const results = await new AxeBuilder({ page }).analyze();
+  const serious = results.violations.filter((violation) =>
+    ['serious', 'critical'].includes(violation.impact ?? '')
+  );
+  expect(serious).toEqual([]);
+});
+
+test('favorite characters persist locally and can be removed from the library', async ({ page }) => {
+  await page.goto('/symbols/degree-sign/');
+
+  const favorite = page.getByRole('button', { name: 'Add Degree Symbol to favorites' });
+  await favorite.click();
+  await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+
+  await page.goto('/library/');
+  const favorites = page.locator('[data-favorites-grid]');
+  await expect(favorites.getByText('Degree Symbol', { exact: true })).toBeVisible();
+  await expect(favorites.getByText('U+00B0', { exact: true })).toBeVisible();
+
+  await favorites.getByRole('button', { name: 'Remove Degree Symbol from favorites' }).click();
+  await expect(page.locator('[data-favorites-empty]')).toBeVisible();
+});
+
+test('accent keyboard usage flows into recent characters and can be cleared', async ({ page }) => {
+  await page.goto('/tools/accent-keyboard/');
+  await page.locator('[data-accent-key][data-character="á"]').click();
+
+  await page.goto('/library/');
+  const recents = page.locator('[data-recents-grid]');
+  await expect(recents.getByText('a with acute', { exact: true })).toBeVisible();
+  await expect(recents.getByText('U+00E1', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Clear recent' }).click();
+  await expect(page.locator('[data-recents-empty]')).toBeVisible();
 });
