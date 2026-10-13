@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CopyButton from '../../components/CopyButton.astro';
+import { shortcutRecords } from '../../lib/shortcut-records';
+
+const title = 'Special Character Shortcut Finder | Windows, Mac & Word';
+const description = 'Find reviewed special-character typing methods for Windows, macOS and Microsoft Word. Search by symbol, name, alias or Unicode code point.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: new URL('/tools/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: 'Shortcut Finder', item: new URL('/tools/shortcut-finder/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/tools/">Tools</a>
+        <span aria-hidden="true">/</span>
+        Shortcut Finder
+      </div>
+      <h1>Special Character Shortcut Finder</h1>
+      <p class="lead">Search reviewed character-input methods by symbol, common name, alias or Unicode code point. Choose Windows, Mac or Microsoft Word to narrow the results.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <div class="tool-panel">
+        <label class="explorer-label" for="shortcut-search">Character, name, alias or code point</label>
+        <div class="search-shell tool-search-shell">
+          <div class="search-row">
+            <input id="shortcut-search" class="search-input" type="search" autocomplete="off" spellcheck="false" placeholder="Try degree, €, em dash, tick, U+2192…" data-shortcut-search />
+            <span class="search-kbd" aria-hidden="true">Reviewed</span>
+          </div>
+        </div>
+
+        <div class="typing-selector tool-filter" role="group" aria-label="Filter shortcut environment">
+          <button type="button" data-shortcut-environment="all" aria-pressed="true">All methods</button>
+          <button type="button" data-shortcut-environment="windows" aria-pressed="false">Windows</button>
+          <button type="button" data-shortcut-environment="macos" aria-pressed="false">Mac</button>
+          <button type="button" data-shortcut-environment="word" aria-pressed="false">Microsoft Word</button>
+        </div>
+
+        <p class="search-hint" data-shortcut-status aria-live="polite">Showing all reviewed shortcut records.</p>
+      </div>
+
+      <div class="shortcut-grid" data-shortcut-grid>
+        {shortcutRecords.map((record) => (
+          <article
+            class="shortcut-card"
+            data-shortcut-card
+            data-environment={record.environment}
+            data-search={[
+              record.character,
+              record.commonName,
+              record.officialName,
+              record.codePoint,
+              ...record.aliases,
+              record.environmentLabel,
+              record.instruction
+            ].join(' ').toLocaleLowerCase()}
+          >
+            <div class="shortcut-character">
+              <span class="shortcut-glyph" aria-hidden="true">{record.character}</span>
+              <div>
+                <a class="symbol-link" href={record.href}><strong>{record.commonName}</strong></a>
+                <span>{record.codePoint}</span>
+              </div>
+            </div>
+
+            <div class="shortcut-method">
+              <span class="method-platform">{record.environmentLabel}</span>
+              <p>{record.instruction}</p>
+              {record.note && <small>{record.note}</small>}
+            </div>
+
+            <div class="shortcut-actions">
+              <CopyButton value={record.character} label={`Copy ${record.commonName}`} />
+              {record.sourceUrl && record.sourceLabel && (
+                <a class="source-mini-link" href={record.sourceUrl} rel="noopener noreferrer">Source</a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="search-empty shortcut-empty" data-shortcut-empty hidden>
+        <strong>No reviewed shortcut matched that search.</strong>
+        <p>Try the character itself, a code point such as U+00B0, or search all Unicode characters in the <a href="/unicode/">Unicode Explorer</a>.</p>
+      </div>
+
+      <div class="content-note">
+        <h2>Why the result list is deliberately limited</h2>
+        <p>This finder only exposes methods that belong to our reviewed character data. It does not turn Unicode numbers into assumed Alt codes or invent keyboard shortcuts.</p>
+        <p>As more platform methods are verified, this tool can expand without changing its URL structure or creating a separate SEO page for every operating-system variation.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const search = document.querySelector<HTMLInputElement>('[data-shortcut-search]');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-shortcut-card]'));
+  const filters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-shortcut-environment]'));
+  const status = document.querySelector<HTMLElement>('[data-shortcut-status]');
+  const empty = document.querySelector<HTMLElement>('[data-shortcut-empty]');
+
+  let environment = 'all';
+
+  function normalize(value: string) {
+    return value.trim().toLocaleLowerCase().replace(/[\s_-]+/g, ' ');
+  }
+
+  function applyFilters() {
+    const query = normalize(search?.value ?? '');
+    let visible = 0;
+
+    for (const card of cards) {
+      const matchesEnvironment = environment === 'all' || card.dataset.environment === environment;
+      const haystack = normalize(card.dataset.search ?? '');
+      const matchesQuery = query.length === 0 || haystack.includes(query);
+      card.hidden = !(matchesEnvironment && matchesQuery);
+      if (!card.hidden) visible += 1;
+    }
+
+    if (empty) empty.hidden = visible !== 0;
+
+    if (status) {
+      const environmentLabel =
+        environment === 'windows' ? 'Windows' :
+        environment === 'macos' ? 'Mac' :
+        environment === 'word' ? 'Microsoft Word' :
+        'all environments';
+
+      status.textContent = visible === 0
+        ? `No reviewed methods found for ${environmentLabel}.`
+        : `${visible} reviewed ${visible === 1 ? 'method' : 'methods'} shown for ${environmentLabel}.`;
+    }
+  }
+
+  search?.addEventListener('input', applyFilters, { passive: true });
+
+  for (const filter of filters) {
+    filter.addEventListener('click', () => {
+      environment = filter.dataset.shortcutEnvironment ?? 'all';
+
+      for (const button of filters) {
+        button.setAttribute('aria-pressed', String(button === filter));
+      }
+
+      applyFilters();
+    });
+  }
+</script>
