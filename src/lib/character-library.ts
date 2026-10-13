@@ -10,8 +10,21 @@ const FAVORITES_KEY = 'character-toolbox.favorites.v1';
 const RECENTS_KEY = 'character-toolbox.recents.v1';
 const MAX_RECENTS = 20;
 
-function storageAvailable() {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+function getStorage(): Storage | null {
+  if (typeof window === 'undefined') return null;
+
+  for (const storage of [window.localStorage, window.sessionStorage]) {
+    try {
+      const probe = 'character-toolbox.storage-probe';
+      storage.setItem(probe, '1');
+      storage.removeItem(probe);
+      return storage;
+    } catch {
+      // Try the next browser storage option.
+    }
+  }
+
+  return null;
 }
 
 function normalizeItem(item: Partial<CharacterLibraryItem>): CharacterLibraryItem | null {
@@ -36,10 +49,11 @@ function normalizeItem(item: Partial<CharacterLibraryItem>): CharacterLibraryIte
 }
 
 function readList(key: string): CharacterLibraryItem[] {
-  if (!storageAvailable()) return [];
+  const storage = getStorage();
+  if (!storage) return [];
 
   try {
-    const raw = localStorage.getItem(key);
+    const raw = storage.getItem(key);
     if (!raw) return [];
 
     const parsed = JSON.parse(raw);
@@ -54,12 +68,14 @@ function readList(key: string): CharacterLibraryItem[] {
 }
 
 function writeList(key: string, items: CharacterLibraryItem[]) {
-  if (!storageAvailable()) return;
+  const storage = getStorage();
+  if (!storage) return false;
 
   try {
-    localStorage.setItem(key, JSON.stringify(items));
+    storage.setItem(key, JSON.stringify(items));
+    return true;
   } catch {
-    // Local storage is optional. Core copy/search features still work without it.
+    return false;
   }
 }
 
@@ -93,26 +109,26 @@ export function toggleFavoriteCharacter(item: Partial<CharacterLibraryItem>) {
   const exists = favorites.some((current) => sameCharacter(current, normalized));
 
   if (exists) {
-    writeList(
-      FAVORITES_KEY,
-      favorites.filter((current) => !sameCharacter(current, normalized))
-    );
+    const next = favorites.filter((current) => !sameCharacter(current, normalized));
+    if (!writeList(FAVORITES_KEY, next)) return true;
     notify();
     return false;
   }
 
-  writeList(FAVORITES_KEY, [normalized, ...favorites].slice(0, 100));
+  const next = [normalized, ...favorites].slice(0, 100);
+  if (!writeList(FAVORITES_KEY, next)) return false;
   notify();
   return true;
 }
 
 export function removeFavoriteCharacter(character: string) {
   const favorites = getFavoriteCharacters();
-  writeList(
+  const changed = writeList(
     FAVORITES_KEY,
     favorites.filter((item) => item.character !== character)
   );
-  notify();
+
+  if (changed) notify();
 }
 
 export function rememberRecentCharacter(item: Partial<CharacterLibraryItem>) {
@@ -120,11 +136,11 @@ export function rememberRecentCharacter(item: Partial<CharacterLibraryItem>) {
   if (!normalized) return;
 
   const recents = getRecentCharacters().filter((current) => !sameCharacter(current, normalized));
-  writeList(RECENTS_KEY, [normalized, ...recents].slice(0, MAX_RECENTS));
-  notify();
+  if (writeList(RECENTS_KEY, [normalized, ...recents].slice(0, MAX_RECENTS))) {
+    notify();
+  }
 }
 
 export function clearRecentCharacters() {
-  writeList(RECENTS_KEY, []);
-  notify();
+  if (writeList(RECENTS_KEY, [])) notify();
 }
