@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CopyButton from '../components/CopyButton.astro';
-import { featuredCharacters } from '../data/characters';
+import { allCuratedCharacters, featuredCharacters } from '../data/characters';
 
 const title = 'Unicode Symbols & Keyboard Shortcuts | Character Toolbox';
 const description = 'Find and copy symbols, Unicode characters, accents and keyboard characters. Search by name, character or code point and get the result instantly.';
@@ -83,7 +83,7 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
 </BaseLayout>
 
 <script>
-  import { featuredCharacters } from '../data/characters';
+  import { allCuratedCharacters, featuredCharacters } from '../data/characters';
   import { searchCharacterRecords } from '../lib/character-search';
 
   interface WorkerResult {
@@ -132,7 +132,7 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
   }
 
   function featuredResults(query: string): WorkerResult[] {
-    return searchCharacterRecords(featuredCharacters, query).map(({ record, score }) => ({
+    return searchCharacterRecords(allCuratedCharacters, query).map(({ record, score }) => ({
       codePoint: Number.parseInt(record.codePoint.replace(/^U\+/i, ''), 16),
       character: record.character,
       name: record.name,
