@@ -53,20 +53,27 @@ test('404 page stays out of the index', async ({ page }) => {
 test('search understands curated aliases', async ({ page }) => {
   await page.goto('/');
   const search = page.getByRole('searchbox', { name: 'Search characters' });
+  const resultGrid = page.locator('[data-unicode-result-grid]');
 
   await search.fill('tick');
-  await expect(page.getByText('Check Mark', { exact: true })).toBeVisible();
+  await expect(resultGrid.getByText('Check Mark', { exact: true })).toBeVisible();
+  await expect(page.locator('[data-popular-section]')).toBeHidden();
 });
 
 test('search understands exact characters, code points, and HTML numeric entities', async ({ page }) => {
   await page.goto('/');
   const search = page.getByRole('searchbox', { name: 'Search characters' });
+  const resultGrid = page.locator('[data-unicode-result-grid]');
 
   for (const query of ['°', 'U+00B0', '&#176;']) {
     await search.fill(query);
-    await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
-    await expect(page.getByText('U+00B0', { exact: false })).toBeVisible();
+    await expect(resultGrid.getByText('Degree Sign', { exact: true })).toBeVisible();
+    await expect(resultGrid.getByText('U+00B0', { exact: false })).toBeVisible();
   }
+
+  await search.fill('');
+  await expect(page.locator('[data-popular-section]')).toBeVisible();
+  await expect(page.locator('[data-unicode-results]')).toBeHidden();
 });
 
 test('full Unicode index finds a non-featured named character', async ({ page }) => {
