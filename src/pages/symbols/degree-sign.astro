@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CopyButton from '../../components/CopyButton.astro';
+
+const title = 'Degree Symbol (°) — Copy, Alt Code & Shortcuts';
+const description = 'Copy the degree symbol ° and see the Windows Alt code, Mac shortcut, Word method, Unicode U+00B0 and HTML/CSS/JavaScript representations.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Symbols', item: new URL('/symbols/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: 'Degree Sign', item: new URL('/symbols/degree-sign/', Astro.site ?? Astro.url.origin).href },
+  ],
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/symbols/">Symbols</a> <span aria-hidden="true">/</span> Degree Sign</div>
+      <h1>Degree Symbol (°)</h1>
+      <p class="lead">Copy the degree sign instantly, or use the quickest method for your device or application.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" aria-labelledby="quick-answer">
+    <div class="container">
+      <div class="answer-card">
+        <div class="answer-glyph" aria-label="Degree symbol">°</div>
+        <div>
+          <h2 id="quick-answer">Quick answer</h2>
+          <p><strong>Windows:</strong> Alt + 0176 using the numeric keypad. <strong>Mac:</strong> Option + Shift + 8. <strong>Word:</strong> type 00B0, then press Alt + X.</p>
+          <div class="answer-actions">
+            <CopyButton value="°" label="Copy degree symbol" />
+            <CopyButton value="°C" label="Copy degrees Celsius combination" />
+            <CopyButton value="°F" label="Copy degrees Fahrenheit combination" />
+          </div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <section class="info-card" aria-labelledby="platform-methods">
+          <h2 id="platform-methods">Typing methods</h2>
+          <p><strong>Windows:</strong> Hold Alt and type 0176 on the numeric keypad, where supported.</p>
+          <p><strong>macOS:</strong> Press Option + Shift + 8.</p>
+          <p><strong>Microsoft Word:</strong> Type 00B0 and then press Alt + X.</p>
+          <p>Keyboard layout and application behavior can affect shortcuts. Direct copy is the safest fallback.</p>
+        </section>
+
+        <section class="info-card" aria-labelledby="character-codes">
+          <h2 id="character-codes">Character codes</h2>
+          <table class="code-table">
+            <tbody>
+              <tr><th scope="row">Unicode</th><td><code>U+00B0</code></td></tr>
+              <tr><th scope="row">Decimal</th><td><code>176</code></td></tr>
+              <tr><th scope="row">HTML named</th><td><code>&amp;deg;</code></td></tr>
+              <tr><th scope="row">HTML decimal</th><td><code>&amp;#176;</code></td></tr>
+              <tr><th scope="row">HTML hex</th><td><code>&amp;#xB0;</code></td></tr>
+              <tr><th scope="row">CSS</th><td><code>\00B0</code></td></tr>
+              <tr><th scope="row">JavaScript</th><td><code>\u00B0</code></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="info-card" aria-labelledby="test-character">
+          <h2 id="test-character">Test the degree symbol</h2>
+          <p>Paste or type around the symbol here to confirm how it renders in your current browser and font.</p>
+          <textarea class="test-field" aria-label="Degree symbol test area">23°C · 90° · 360°</textarea>
+        </section>
+
+        <section class="info-card" aria-labelledby="degree-usage">
+          <h2 id="degree-usage">Common uses</h2>
+          <p>The degree sign is commonly used for angles and temperatures, for example <strong>90°</strong>, <strong>23°C</strong>, and <strong>74°F</strong>.</p>
+          <p>Be careful with similar-looking characters such as the masculine ordinal indicator <strong>º</strong>; they are different Unicode characters.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
