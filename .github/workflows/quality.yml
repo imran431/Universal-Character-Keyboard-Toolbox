@@ -29,6 +29,9 @@ jobs:
         env:
           SITE_URL: http://localhost:4321
 
+      - name: Verify reviewed SEO indexation
+        run: npm run seo:verify
+
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
