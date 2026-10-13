@@ -713,3 +713,77 @@ h1 {
 @media (max-width: 42rem) {
   .related-grid { grid-template-columns: 1fr; }
 }
+
+
+.typing-selector-intro {
+  margin-top: 0 !important;
+  font-size: .86rem;
+}
+
+.typing-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin: .9rem 0 .55rem;
+}
+
+.typing-selector button {
+  min-height: 2.5rem;
+  padding: .5rem .72rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-weight: 750;
+  font-size: .8rem;
+}
+
+.typing-selector button[aria-pressed='true'] {
+  border-color: #aebfff;
+  background: #eef3ff;
+  color: var(--brand-strong);
+}
+
+.typing-selector-status {
+  margin: 0 0 .8rem !important;
+  font-size: .78rem;
+}
+
+.method-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.method-heading-row h3 {
+  margin: 0;
+}
+
+.method-badge {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #eaf8f0;
+  color: var(--success);
+  padding: .3rem .5rem;
+  font-size: .7rem;
+  font-weight: 800;
+}
+
+.method-row[data-recommended='true'] {
+  margin-inline: -.55rem;
+  padding-inline: .55rem;
+  border-radius: .75rem;
+  background: #f7f9ff;
+}
+
+@media (max-width: 42rem) {
+  .typing-selector {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .typing-selector button {
+    width: 100%;
+  }
+}
