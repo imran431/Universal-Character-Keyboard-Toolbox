@@ -89,9 +89,13 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
 </BaseLayout>
 
 <script>
-  import { allCuratedCharacters, featuredCharacters } from '../data/characters';
+  import { allCuratedCharacters } from '../data/characters';
   import { searchCharacterRecords } from '../lib/character-search';
-  import { rememberRecentCharacter } from '../lib/character-library';
+  import {
+    isFavoriteCharacter,
+    rememberRecentCharacter,
+    toggleFavoriteCharacter
+  } from '../lib/character-library';
 
   interface WorkerResult {
     codePoint: number;
@@ -118,7 +122,7 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
   const popularSection = document.querySelector<HTMLElement>('[data-popular-section]');
 
   const curatedHrefByCodePoint = new Map<number, string>();
-  for (const item of featuredCharacters) {
+  for (const item of allCuratedCharacters) {
     if (!item.href) continue;
     const codePoint = Number.parseInt(item.codePoint.replace(/^U\+/i, ''), 16);
     curatedHrefByCodePoint.set(codePoint, item.href);
@@ -208,6 +212,22 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
     const meta = document.createElement('span');
     meta.textContent = [codePointLabel(result.codePoint), result.block].filter(Boolean).join(' · ');
     info.append(meta);
+
+    const favorite = document.createElement('button');
+    favorite.className = 'inline-favorite-button';
+    favorite.type = 'button';
+    favorite.dataset.favoriteResult = result.character;
+    favorite.dataset.favoriteName = result.name;
+    favorite.dataset.favoriteCodePoint = codePointLabel(result.codePoint);
+    if (href) favorite.dataset.favoriteHref = href;
+    const isFavorite = isFavoriteCharacter(result.character);
+    favorite.setAttribute('aria-pressed', String(isFavorite));
+    favorite.setAttribute(
+      'aria-label',
+      isFavorite ? `Remove ${result.name} from favorites` : `Add ${result.name} to favorites`
+    );
+    favorite.textContent = isFavorite ? '★ Saved' : '☆ Save';
+    info.append(favorite);
 
     const copy = document.createElement('button');
     copy.className = 'copy-button';
@@ -318,7 +338,27 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
 
   resultGrid?.addEventListener('click', async (event) => {
     const target = event.target;
-    if (!(target instanceof HTMLButtonElement) || !target.dataset.resultCopy) return;
+    if (!(target instanceof HTMLButtonElement)) return;
+
+    if (target.dataset.favoriteResult) {
+      const isFavorite = toggleFavoriteCharacter({
+        character: target.dataset.favoriteResult,
+        name: target.dataset.favoriteName || 'Unicode character',
+        codePoint: target.dataset.favoriteCodePoint || '',
+        href: target.dataset.favoriteHref || undefined
+      });
+      target.setAttribute('aria-pressed', String(isFavorite));
+      target.setAttribute(
+        'aria-label',
+        isFavorite
+          ? `Remove ${target.dataset.favoriteName || 'character'} from favorites`
+          : `Add ${target.dataset.favoriteName || 'character'} to favorites`
+      );
+      target.textContent = isFavorite ? '★ Saved' : '☆ Save';
+      return;
+    }
+
+    if (!target.dataset.resultCopy) return;
 
     const original = target.textContent ?? 'Copy';
 
