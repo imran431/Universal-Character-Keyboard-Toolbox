@@ -36,7 +36,7 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
 
       <div class="symbol-grid" data-symbol-grid>
         {featuredCharacters.map((item) => (
-          <article class="symbol-card" data-symbol-card data-search={`${item.character} ${item.name} ${item.codePoint} ${item.aliases.join(' ')} ${item.category}`.toLowerCase()}>
+          <article class="symbol-card" data-symbol-card data-character-id={item.id}>
             <span class="symbol-glyph" aria-hidden="true">{item.character}</span>
             <div class="symbol-info">
               {item.href ? (
@@ -61,33 +61,47 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
 </BaseLayout>
 
 <script>
+  import { featuredCharacters } from '../data/characters';
+  import { searchCharacterRecords } from '../lib/character-search';
+
   const input = document.querySelector<HTMLInputElement>('[data-character-search]');
   const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-symbol-card]'));
   const status = document.querySelector<HTMLElement>('[data-search-status]');
 
-  function normalize(value: string) {
-    return value.trim().toLocaleLowerCase().replace(/\s+/g, ' ');
-  }
+  const cardById = new Map(
+    cards.map((card) => [card.dataset.characterId ?? '', card])
+  );
 
   function updateResults() {
     if (!input) return;
-    const query = normalize(input.value);
-    let visible = 0;
+
+    const query = input.value;
+    const results = searchCharacterRecords(featuredCharacters, query);
+    const visibleIds = new Set(results.map(({ record }) => record.id));
 
     for (const card of cards) {
-      const haystack = card.dataset.search ?? '';
-      const matches = query.length === 0 || haystack.includes(query);
-      card.hidden = !matches;
-      if (matches) visible += 1;
+      card.hidden = !visibleIds.has(card.dataset.characterId ?? '');
+      card.style.removeProperty('order');
     }
 
-    if (status) {
-      status.textContent = query.length === 0
-        ? 'Showing popular characters. Full Unicode search is coming in the next data phase.'
-        : visible === 0
-          ? 'No match in the starter set yet. The full Unicode index will expand this search.'
-          : `${visible} ${visible === 1 ? 'character' : 'characters'} found in the starter set.`;
+    results.forEach(({ record }, index) => {
+      const card = cardById.get(record.id);
+      if (card) card.style.order = String(index);
+    });
+
+    if (!status) return;
+
+    if (query.trim().length === 0) {
+      status.textContent = 'Showing popular characters. Full Unicode search is coming in the next data phase.';
+      return;
     }
+
+    if (results.length === 0) {
+      status.textContent = 'No match in the starter set yet. The full Unicode index will expand this search.';
+      return;
+    }
+
+    status.textContent = `${results.length} ${results.length === 1 ? 'character' : 'characters'} found. Exact character and code-point matches rank first.`;
   }
 
   input?.addEventListener('input', updateResults, { passive: true });
