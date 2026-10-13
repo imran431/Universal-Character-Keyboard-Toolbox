@@ -55,6 +55,7 @@ const {
 <script>
   import { allCuratedCharacters } from '../data/characters';
   import { searchCharacterRecords } from '../lib/character-search';
+  import { rememberRecentCharacter } from '../lib/character-library';
 
   interface WorkerResult {
     codePoint: number;
@@ -177,6 +178,9 @@ const {
     copy.className = 'copy-button';
     copy.type = 'button';
     copy.dataset.explorerCopy = result.character;
+    copy.dataset.explorerName = result.name;
+    copy.dataset.explorerCodePoint = codePointLabel(result.codePoint);
+    if (href) copy.dataset.explorerHref = href;
     copy.setAttribute('aria-label', `Copy ${result.name}`);
     copy.textContent = 'Copy';
 
@@ -290,6 +294,12 @@ const {
 
     try {
       await navigator.clipboard.writeText(target.dataset.explorerCopy);
+      rememberRecentCharacter({
+        character: target.dataset.explorerCopy,
+        name: target.dataset.explorerName || 'Unicode character',
+        codePoint: target.dataset.explorerCodePoint || '',
+        href: target.dataset.explorerHref || undefined
+      });
       target.textContent = 'Copied';
       target.dataset.copied = 'true';
     } catch {
