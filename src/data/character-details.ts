@@ -64,8 +64,8 @@ const microsoftWordShortcutsSource: CharacterSource = {
 };
 
 const appleCharacterViewerSource: CharacterSource = {
-  label: 'Apple Support — Mac keyboard shortcuts',
-  url: 'https://support.apple.com/en-us/102650'
+  label: 'Apple Support — Use emoji and symbols on Mac',
+  url: 'https://support.apple.com/guide/mac-help/use-emoji-and-symbols-mchlp1560/mac'
 };
 
 function standardCodes(
