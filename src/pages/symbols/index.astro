@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CopyButton from '../../components/CopyButton.astro';
+import { featuredCharacters } from '../../data/characters';
+
+const title = 'Symbols — Copy & Unicode Codes | Character Toolbox';
+const description = 'Browse common symbols and Unicode characters with one-click copy actions and code points. More curated character pages will be added as their data is verified.';
+---
+<BaseLayout title={title} description={description}>
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Symbols</div>
+      <h1>Symbols</h1>
+      <p class="lead">A curated starting set of useful characters. Copy a symbol immediately, then open a detail page when verified typing and code information is available.</p>
+    </div>
+  </header>
+  <section class="section" aria-label="Symbol collection">
+    <div class="container">
+      <div class="symbol-grid">
+        {featuredCharacters.map((item) => (
+          <article class="symbol-card">
+            <span class="symbol-glyph" aria-hidden="true">{item.character}</span>
+            <div class="symbol-info">
+              {item.href ? <a class="symbol-link" href={item.href}><strong>{item.name}</strong></a> : <strong>{item.name}</strong>}
+              <span>{item.codePoint} · {item.category}</span>
+            </div>
+            <CopyButton value={item.character} label={`Copy ${item.name}`} />
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
