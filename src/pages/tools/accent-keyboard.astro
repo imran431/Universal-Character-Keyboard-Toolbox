@@ -115,6 +115,8 @@ const breadcrumbSchema = {
 </BaseLayout>
 
 <script>
+  import { rememberRecentCharacter } from '../../lib/character-library';
+
   const search = document.querySelector<HTMLInputElement>('[data-accent-search]');
   const keys = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-accent-key]'));
   const filters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-accent-case]'));
@@ -175,7 +177,14 @@ const breadcrumbSchema = {
   }
 
   for (const key of keys) {
-    key.addEventListener('click', () => insertAtCursor(key.dataset.character ?? ''));
+    key.addEventListener('click', () => {
+      const character = key.dataset.character ?? '';
+      insertAtCursor(character);
+      rememberRecentCharacter({
+        character,
+        name: key.getAttribute('aria-label')?.replace(/^Insert\s+/i, '').replace(/:\s*.$/u, '') || 'Accented character'
+      });
+    });
   }
 
   pad?.addEventListener('input', () => {
