@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import UnicodeSearchPanel from '../../components/UnicodeSearchPanel.astro';
+
+const title = 'Unicode Character Search & Code Point Lookup';
+const description = 'Search Unicode 18.0 by character, official name, common alias or code point. Copy characters and inspect names and Unicode blocks in your browser.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Unicode', item: new URL('/unicode/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Unicode</div>
+      <h1>Unicode Character Search</h1>
+      <p class="lead">Find a Unicode character by its official name, a familiar alias, the character itself, or a code point such as U+2192.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <UnicodeSearchPanel />
+
+      <div class="info-grid explorer-info-grid">
+        <section class="info-card">
+          <h2>What you can search</h2>
+          <p>Use formal Unicode names such as <strong>RIGHTWARDS ARROW</strong>, common terms such as <strong>right arrow</strong>, exact characters such as <strong>→</strong>, or code points such as <strong>U+2192</strong>.</p>
+        </section>
+        <section class="info-card">
+          <h2>Why some names are generated</h2>
+          <p>Unicode defines algorithmic names for some large character ranges. The search tool keeps those ranges compact and resolves a name when you ask for a specific code point.</p>
+        </section>
+        <section class="info-card">
+          <h2>Search is not an SEO page factory</h2>
+          <p>The full Unicode database powers this browser tool, but only useful, reviewed character pages are eligible for normal search-engine indexation.</p>
+        </section>
+        <section class="info-card">
+          <h2>Unicode version</h2>
+          <p>This build targets Unicode 18.0.0 using version-pinned Unicode Character Database source files prepared during the data build.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
