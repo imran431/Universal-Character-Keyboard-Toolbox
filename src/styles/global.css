@@ -1268,3 +1268,35 @@ h1 {
     flex: 1 1 0;
   }
 }
+
+
+.inline-favorite-button {
+  margin-top: .45rem;
+  min-height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .28rem .55rem;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: .7rem;
+  font-weight: 800;
+}
+
+.inline-favorite-button:hover,
+.inline-favorite-button:focus-visible {
+  border-color: #aebfff;
+  background: #f7f9ff;
+  color: var(--brand-strong);
+}
+
+.inline-favorite-button[aria-pressed='true'] {
+  border-color: #d6b85a;
+  background: #fff9df;
+  color: #765d0a;
+}
+
+@media (max-width: 25rem) {
+  .library-card-actions .copy-button {
+    width: auto;
+  }
+}
