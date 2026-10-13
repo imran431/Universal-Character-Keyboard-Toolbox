@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "policy": "Only reviewed canonical routes listed here may enter the XML sitemap.",
+  "routes": [
+    "/",
+    "/symbols/",
+    "/unicode/",
+    "/symbols/math/",
+    "/symbols/currency/",
+    "/symbols/punctuation/",
+    "/symbols/arrows/",
+    "/symbols/status/",
+    "/symbols/legal/",
+    "/symbols/degree-sign/",
+    "/symbols/copyright-sign/",
+    "/symbols/registered-sign/",
+    "/symbols/trademark-sign/",
+    "/symbols/euro-sign/",
+    "/symbols/em-dash/",
+    "/symbols/check-mark/",
+    "/symbols/right-arrow/",
+    "/symbols/en-dash/",
+    "/symbols/ellipsis/",
+    "/symbols/plus-minus/",
+    "/symbols/infinity/",
+    "/symbols/bullet/",
+    "/symbols/pound-sign/",
+    "/symbols/yen-sign/",
+    "/symbols/indian-rupee-sign/"
+  ]
+}
