@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { allAccentCharacters } from '../../data/accent-characters';
+
+const title = 'Accent Keyboard — Copy Accented Letters & Special Latin Characters';
+const description = 'Use a free accent keyboard to find, type and copy accented Latin letters including acute, grave, circumflex, tilde, diaeresis, macron and more.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: new URL('/tools/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: 'Accent Keyboard', item: new URL('/tools/accent-keyboard/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/tools/">Tools</a>
+        <span aria-hidden="true">/</span>
+        Accent Keyboard
+      </div>
+      <h1>Accent Keyboard</h1>
+      <p class="lead">Click an accented letter to insert it into the writing pad, or search by base letter and accent name. Everything runs locally in your browser.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <div class="tool-panel">
+        <label class="explorer-label" for="accent-search">Search accented characters</label>
+        <div class="search-shell tool-search-shell">
+          <div class="search-row">
+            <input id="accent-search" class="search-input" type="search" autocomplete="off" spellcheck="false" placeholder="Try a, acute, tilde, diaeresis, cedilla…" data-accent-search />
+            <span class="search-kbd" aria-hidden="true">Latin</span>
+          </div>
+        </div>
+
+        <div class="typing-selector tool-filter" role="group" aria-label="Filter accent letter case">
+          <button type="button" data-accent-case="all" aria-pressed="true">All</button>
+          <button type="button" data-accent-case="lower" aria-pressed="false">Lowercase</button>
+          <button type="button" data-accent-case="upper" aria-pressed="false">Uppercase</button>
+        </div>
+
+        <p class="search-hint" data-accent-status aria-live="polite">{allAccentCharacters.length} accented and special Latin characters available.</p>
+      </div>
+
+      <div class="accent-workspace">
+        <section class="accent-pad-card" aria-labelledby="writing-pad">
+          <div class="accent-pad-heading">
+            <div>
+              <h2 id="writing-pad">Writing pad</h2>
+              <p>Click letters below to insert them at the cursor.</p>
+            </div>
+            <div class="accent-pad-actions">
+              <button type="button" class="copy-button" data-copy-pad>Copy text</button>
+              <button type="button" class="source-mini-link accent-clear-button" data-clear-pad>Clear</button>
+            </div>
+          </div>
+          <textarea class="test-field accent-pad" aria-label="Accent keyboard writing pad" placeholder="Build or paste text here…" data-accent-pad></textarea>
+          <p class="search-hint" data-pad-status aria-live="polite">Nothing typed yet.</p>
+        </section>
+
+        <section aria-labelledby="accent-characters">
+          <div class="section-heading compact-heading">
+            <div>
+              <h2 id="accent-characters">Accented characters</h2>
+              <p>Buttons remain normal text characters, so they work with keyboard navigation and screen readers.</p>
+            </div>
+          </div>
+
+          <div class="accent-grid" data-accent-grid>
+            {allAccentCharacters.map((item) => (
+              <button
+                type="button"
+                class="accent-key"
+                data-accent-key
+                data-character={item.character}
+                data-case={item.case}
+                data-search={`${item.character} ${item.label} ${item.base} ${item.accent}`.toLocaleLowerCase()}
+                aria-label={`Insert ${item.label}: ${item.character}`}
+              >
+                <span class="accent-key-glyph" aria-hidden="true">{item.character}</span>
+                <span class="accent-key-label">{item.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div class="search-empty shortcut-empty" data-accent-empty hidden>
+            <strong>No accent matched that search.</strong>
+            <p>Try a base letter such as <strong>a</strong>, or an accent name such as <strong>acute</strong>, <strong>tilde</strong> or <strong>cedilla</strong>.</p>
+          </div>
+        </section>
+      </div>
+
+      <div class="info-grid tool-info-grid">
+        <section class="info-card">
+          <h2>What this keyboard covers</h2>
+          <p>This first version focuses on common Latin letters with diacritics plus a small set of special Latin letters and ligatures. It is not intended to replace a full language-specific keyboard layout.</p>
+        </section>
+        <section class="info-card">
+          <h2>Need a different character?</h2>
+          <p>Use the <a href="/unicode/">Unicode Explorer</a> to search the larger Unicode 18.0 database by name, character or code point.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const search = document.querySelector<HTMLInputElement>('[data-accent-search]');
+  const keys = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-accent-key]'));
+  const filters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-accent-case]'));
+  const status = document.querySelector<HTMLElement>('[data-accent-status]');
+  const empty = document.querySelector<HTMLElement>('[data-accent-empty]');
+  const pad = document.querySelector<HTMLTextAreaElement>('[data-accent-pad]');
+  const copyPad = document.querySelector<HTMLButtonElement>('[data-copy-pad]');
+  const clearPad = document.querySelector<HTMLButtonElement>('[data-clear-pad]');
+  const padStatus = document.querySelector<HTMLElement>('[data-pad-status]');
+
+  let selectedCase = 'all';
+
+  function normalize(value: string) {
+    return value.trim().toLocaleLowerCase().replace(/[\s_-]+/g, ' ');
+  }
+
+  function updateFilter() {
+    const query = normalize(search?.value ?? '');
+    let visible = 0;
+
+    for (const key of keys) {
+      const matchesCase = selectedCase === 'all' || key.dataset.case === selectedCase;
+      const matchesQuery = query.length === 0 || normalize(key.dataset.search ?? '').includes(query);
+      key.hidden = !(matchesCase && matchesQuery);
+      if (!key.hidden) visible += 1;
+    }
+
+    if (empty) empty.hidden = visible !== 0;
+    if (status) status.textContent = visible === 0
+      ? 'No accented characters matched that search.'
+      : `${visible} ${visible === 1 ? 'character' : 'characters'} shown.`;
+  }
+
+  function insertAtCursor(value: string) {
+    if (!pad) return;
+
+    const start = pad.selectionStart ?? pad.value.length;
+    const end = pad.selectionEnd ?? start;
+    pad.setRangeText(value, start, end, 'end');
+    pad.focus();
+
+    if (padStatus) {
+      const count = Array.from(pad.value).length;
+      padStatus.textContent = `${count} ${count === 1 ? 'character' : 'characters'} in the writing pad.`;
+    }
+  }
+
+  search?.addEventListener('input', updateFilter, { passive: true });
+
+  for (const filter of filters) {
+    filter.addEventListener('click', () => {
+      selectedCase = filter.dataset.accentCase ?? 'all';
+      for (const button of filters) {
+        button.setAttribute('aria-pressed', String(button === filter));
+      }
+      updateFilter();
+    });
+  }
+
+  for (const key of keys) {
+    key.addEventListener('click', () => insertAtCursor(key.dataset.character ?? ''));
+  }
+
+  pad?.addEventListener('input', () => {
+    if (!padStatus || !pad) return;
+    const count = Array.from(pad.value).length;
+    padStatus.textContent = count === 0
+      ? 'Nothing typed yet.'
+      : `${count} ${count === 1 ? 'character' : 'characters'} in the writing pad.`;
+  });
+
+  copyPad?.addEventListener('click', async () => {
+    if (!pad || !copyPad) return;
+    const original = copyPad.textContent ?? 'Copy text';
+
+    try {
+      await navigator.clipboard.writeText(pad.value);
+      copyPad.textContent = 'Copied';
+      copyPad.dataset.copied = 'true';
+    } catch {
+      copyPad.textContent = 'Try again';
+      copyPad.dataset.copyFailed = 'true';
+    }
+
+    window.setTimeout(() => {
+      copyPad.textContent = original;
+      copyPad.dataset.copied = 'false';
+      copyPad.dataset.copyFailed = 'false';
+    }, 1400);
+  });
+
+  clearPad?.addEventListener('click', () => {
+    if (!pad) return;
+    pad.value = '';
+    pad.focus();
+    if (padStatus) padStatus.textContent = 'Nothing typed yet.';
+  });
+</script>
