@@ -412,16 +412,18 @@ test('accent keyboard inserts and filters characters', async ({ page }) => {
   const search = page.getByRole('searchbox', { name: 'Search accented characters' });
   const pad = page.getByRole('textbox', { name: 'Accent keyboard writing pad' });
 
-  await page.getByRole('button', { name: 'Insert a with acute: á' }).click();
-  await page.getByRole('button', { name: 'Insert n with tilde: ñ' }).click();
+  await page.locator('[data-accent-key][data-character="á"]').click();
+  await expect(pad).toHaveValue('á');
+
+  await page.locator('[data-accent-key][data-character="ñ"]').click();
   await expect(pad).toHaveValue('áñ');
 
   await search.fill('cedilla');
   await expect(page.locator('[data-accent-key]:visible').first()).toBeVisible();
 
   await page.getByRole('button', { name: 'Uppercase' }).click();
-  await expect(page.getByRole('button', { name: 'Insert C with cedilla: Ç' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Insert c with cedilla: ç' })).toBeHidden();
+  await expect(page.locator('[data-accent-key][data-character="Ç"]')).toBeVisible();
+  await expect(page.locator('[data-accent-key][data-character="ç"]')).toBeHidden();
 
   await page.getByRole('button', { name: 'Clear' }).click();
   await expect(pad).toHaveValue('');
