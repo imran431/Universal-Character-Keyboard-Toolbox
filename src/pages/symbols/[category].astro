@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CopyButton from '../../components/CopyButton.astro';
+import {
+  characterCategories,
+  charactersForCategory,
+  type CharacterCategory,
+  type CharacterSummary
+} from '../../data/characters';
+
+interface Props {
+  category: CharacterCategory;
+  characters: CharacterSummary[];
+}
+
+export function getStaticPaths() {
+  return characterCategories.map((category) => ({
+    params: { category: category.slug },
+    props: {
+      category,
+      characters: charactersForCategory(category.slug)
+    }
+  }));
+}
+
+const { category, characters } = Astro.props;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Symbols', item: new URL('/symbols/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: category.name, item: new URL(`/symbols/${category.slug}/`, Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={category.title} description={category.description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/symbols/">Symbols</a>
+        <span aria-hidden="true">/</span>
+        {category.name}
+      </div>
+      <h1>{category.name}</h1>
+      <p class="lead">{category.intro}</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" aria-labelledby="category-symbols">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <h2 id="category-symbols">Copy {category.shortName.toLowerCase()} symbols</h2>
+          <p>{characters.length} curated characters with official Unicode names and code points.</p>
+        </div>
+        <a class="cta-link" href="/unicode/">Search all Unicode</a>
+      </div>
+
+      <div class="symbol-grid">
+        {characters.map((item) => (
+          <article class="symbol-card">
+            <span class="symbol-glyph" aria-hidden="true">{item.character}</span>
+            <div class="symbol-info">
+              {item.href ? (
+                <a class="symbol-link" href={item.href}><strong>{item.name}</strong></a>
+              ) : (
+                <strong>{item.name}</strong>
+              )}
+              <span>{item.codePoint}</span>
+            </div>
+            <CopyButton value={item.character} label={`Copy ${item.name}`} />
+          </article>
+        ))}
+      </div>
+
+      <div class="content-note">
+        <h2>About this collection</h2>
+        <p>{category.description}</p>
+        <p>Character identity and Unicode code points are deterministic reference data. Platform-specific typing shortcuts are added only on reviewed character pages when we can verify the method and its limitations.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
