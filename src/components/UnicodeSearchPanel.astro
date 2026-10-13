@@ -55,7 +55,11 @@ const {
 <script>
   import { allCuratedCharacters } from '../data/characters';
   import { searchCharacterRecords } from '../lib/character-search';
-  import { rememberRecentCharacter } from '../lib/character-library';
+  import {
+    isFavoriteCharacter,
+    rememberRecentCharacter,
+    toggleFavoriteCharacter
+  } from '../lib/character-library';
 
   interface WorkerResult {
     codePoint: number;
@@ -174,6 +178,22 @@ const {
     meta.textContent = [codePointLabel(result.codePoint), result.block].filter(Boolean).join(' · ');
     info.append(meta);
 
+    const favorite = document.createElement('button');
+    favorite.className = 'inline-favorite-button';
+    favorite.type = 'button';
+    favorite.dataset.favoriteExplorer = result.character;
+    favorite.dataset.favoriteName = result.name;
+    favorite.dataset.favoriteCodePoint = codePointLabel(result.codePoint);
+    if (href) favorite.dataset.favoriteHref = href;
+    const isFavorite = isFavoriteCharacter(result.character);
+    favorite.setAttribute('aria-pressed', String(isFavorite));
+    favorite.setAttribute(
+      'aria-label',
+      isFavorite ? `Remove ${result.name} from favorites` : `Add ${result.name} to favorites`
+    );
+    favorite.textContent = isFavorite ? '★ Saved' : '☆ Save';
+    info.append(favorite);
+
     const copy = document.createElement('button');
     copy.className = 'copy-button';
     copy.type = 'button';
@@ -288,7 +308,27 @@ const {
 
   grid?.addEventListener('click', async (event) => {
     const target = event.target;
-    if (!(target instanceof HTMLButtonElement) || !target.dataset.explorerCopy) return;
+    if (!(target instanceof HTMLButtonElement)) return;
+
+    if (target.dataset.favoriteExplorer) {
+      const isFavorite = toggleFavoriteCharacter({
+        character: target.dataset.favoriteExplorer,
+        name: target.dataset.favoriteName || 'Unicode character',
+        codePoint: target.dataset.favoriteCodePoint || '',
+        href: target.dataset.favoriteHref || undefined
+      });
+      target.setAttribute('aria-pressed', String(isFavorite));
+      target.setAttribute(
+        'aria-label',
+        isFavorite
+          ? `Remove ${target.dataset.favoriteName || 'character'} from favorites`
+          : `Add ${target.dataset.favoriteName || 'character'} to favorites`
+      );
+      target.textContent = isFavorite ? '★ Saved' : '☆ Save';
+      return;
+    }
+
+    if (!target.dataset.explorerCopy) return;
 
     const original = target.textContent ?? 'Copy';
 
