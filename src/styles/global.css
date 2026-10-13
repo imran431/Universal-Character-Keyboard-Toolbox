@@ -601,3 +601,45 @@ h1 {
   .comparison-card { grid-template-columns: 3.25rem minmax(0, 1fr); }
   .comparison-glyph { min-height: 3.25rem; }
 }
+
+
+.method-source {
+  margin-top: .45rem !important;
+  font-size: .78rem;
+}
+
+.method-source a,
+.source-links a {
+  color: var(--brand-strong);
+  text-underline-offset: .18em;
+}
+
+.source-note {
+  margin-top: 1rem;
+}
+
+.source-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin-top: .8rem;
+}
+
+.source-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  padding: .5rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  background: var(--surface-soft);
+  font-size: .8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.source-links a:hover,
+.source-links a:focus-visible {
+  border-color: #aebfff;
+  background: #eef3ff;
+}
