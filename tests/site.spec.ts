@@ -56,3 +56,24 @@ test('starter search filters popular characters', async ({ page }) => {
   await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
   await expect(page.locator('[data-symbol-card]:visible')).toHaveCount(1);
 });
+
+
+test('starter search understands characters, code points, and aliases', async ({ page }) => {
+  await page.goto('/');
+  const search = page.getByRole('searchbox', { name: 'Search characters' });
+
+  await search.fill('°');
+  await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
+  await expect(page.locator('[data-symbol-card]:visible')).toHaveCount(1);
+
+  await search.fill('U+00B0');
+  await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
+  await expect(page.locator('[data-symbol-card]:visible')).toHaveCount(1);
+
+  await search.fill('&#176;');
+  await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
+  await expect(page.locator('[data-symbol-card]:visible')).toHaveCount(1);
+
+  await search.fill('tick');
+  await expect(page.getByText('Check Mark', { exact: true })).toBeVisible();
+});
