@@ -9,7 +9,7 @@ const { value, label = `Copy ${value}`, class: className = '' } = Astro.props;
 ---
 <button class={`copy-button ${className}`} type="button" data-copy-value={value} aria-label={label}>
   <span aria-hidden="true">Copy</span>
-  <span class="sr-only">{label}</span>
+  <span class="sr-only" data-copy-status aria-live="polite" aria-atomic="true"></span>
 </button>
 
 <script>
@@ -22,28 +22,36 @@ const { value, label = `Copy ${value}`, class: className = '' } = Astro.props;
     button.addEventListener('click', async () => {
       const value = button.dataset.copyValue ?? '';
       const visibleLabel = button.querySelector<HTMLElement>('[aria-hidden="true"]');
+      const status = button.querySelector<HTMLElement>('[data-copy-status]');
       const original = visibleLabel?.textContent ?? 'Copy';
 
       try {
-        await navigator.clipboard.writeText(value);
-      } catch {
-        const textarea = document.createElement('textarea');
-        textarea.value = value;
-        textarea.setAttribute('readonly', '');
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        textarea.remove();
-      }
+        if (!navigator.clipboard?.writeText) {
+          throw new Error('Clipboard API unavailable');
+        }
 
-      if (visibleLabel) visibleLabel.textContent = 'Copied';
-      button.dataset.copied = 'true';
-      window.setTimeout(() => {
-        if (visibleLabel) visibleLabel.textContent = original;
-        button.dataset.copied = 'false';
-      }, 1400);
+        await navigator.clipboard.writeText(value);
+
+        if (visibleLabel) visibleLabel.textContent = 'Copied';
+        if (status) status.textContent = 'Copied to clipboard';
+        button.dataset.copied = 'true';
+
+        window.setTimeout(() => {
+          if (visibleLabel) visibleLabel.textContent = original;
+          if (status) status.textContent = '';
+          button.dataset.copied = 'false';
+        }, 1400);
+      } catch {
+        if (visibleLabel) visibleLabel.textContent = 'Try again';
+        if (status) status.textContent = 'Copy failed. Please try again.';
+        button.dataset.copyFailed = 'true';
+
+        window.setTimeout(() => {
+          if (visibleLabel) visibleLabel.textContent = original;
+          if (status) status.textContent = '';
+          button.dataset.copyFailed = 'false';
+        }, 1800);
+      }
     });
   }
 </script>
