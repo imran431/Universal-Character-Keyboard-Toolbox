@@ -64,6 +64,11 @@ const breadcrumbSchema = {
               <h3>{method.label}</h3>
               <p>{method.instruction}</p>
               {method.note && <p class="method-note">{method.note}</p>}
+              {method.sourceUrl && method.sourceLabel && (
+                <p class="method-source">
+                  <a href={method.sourceUrl} rel="noopener noreferrer">Source: {method.sourceLabel}</a>
+                </p>
+              )}
             </div>
           ))}
         </section>
@@ -109,6 +114,16 @@ const breadcrumbSchema = {
                 <p>{item.explanation}</p>
               </div>
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="content-note source-note" aria-labelledby="reviewed-sources">
+        <h2 id="reviewed-sources">Reviewed sources</h2>
+        <p>These references support the character identity, code values, and documented typing methods shown above.</p>
+        <div class="source-links">
+          {detail.sources.map((source) => (
+            <a href={source.url} rel="noopener noreferrer">{source.label}</a>
           ))}
         </div>
       </section>
