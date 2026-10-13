@@ -26,7 +26,8 @@ const indexablePaths = [
   '/symbols/arrows/',
   '/symbols/status/',
   '/symbols/legal/',
-  '/unicode/'
+  '/unicode/',
+  '/typing/'
 ];
 
 for (const path of indexablePaths) {
@@ -272,4 +273,41 @@ test('second flagship batch exposes copy, code, related and source sections', as
     await expect(page.getByRole('heading', { name: 'Character codes' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Reviewed sources' })).toBeVisible();
   }
+});
+
+
+test('typing environment selector highlights without hiding methods', async ({ page }) => {
+  await page.goto('/symbols/degree-sign/');
+
+  const methods = page.locator('[data-typing-method]');
+  const total = await methods.count();
+  expect(total).toBeGreaterThanOrEqual(3);
+
+  await page.getByRole('button', { name: 'Microsoft Word' }).click();
+
+  await expect(page.locator('[data-typing-status]')).toContainText('Microsoft Word');
+  await expect(page.locator('[data-typing-method][data-recommended="true"]')).toHaveCount(1);
+  await expect(methods).toHaveCount(total);
+  await expect(page.locator('[data-typing-method]:visible')).toHaveCount(total);
+});
+
+test('typing environment preference survives reload', async ({ page }) => {
+  await page.goto('/symbols/right-arrow/');
+  const windows = page.getByRole('button', { name: 'Windows' });
+
+  await windows.click();
+  await expect(windows).toHaveAttribute('aria-pressed', 'true');
+
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Windows' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-typing-method][data-recommended="true"]')).toHaveCount(1);
+});
+
+test('typing hub links to reviewed character guides and first-party sources', async ({ page }) => {
+  await page.goto('/typing/');
+
+  await expect(page.getByRole('heading', { name: 'How to Type Special Characters' })).toBeVisible();
+  await expect(page.locator('a[href="/symbols/degree-sign/"]').first()).toBeVisible();
+  await expect(page.locator('a[href*="support.microsoft.com"]').first()).toBeVisible();
+  await expect(page.locator('a[href*="support.apple.com"]').first()).toBeVisible();
 });
