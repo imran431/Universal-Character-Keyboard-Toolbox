@@ -53,7 +53,27 @@ const breadcrumbSchema = {
           <h2 id="quick-answer">Quick answer</h2>
           <p>{detail.quickAnswer}</p>
           <div class="answer-actions">
-            <CopyButton value={detail.character} label={`Copy ${detail.commonName}`} />
+            <CopyButton
+              value={detail.character}
+              label={`Copy ${detail.commonName}`}
+              characterName={detail.commonName}
+              codePoint={detail.codePoint}
+              href={`/symbols/${detail.slug}/`}
+            />
+            <button
+              class="favorite-button"
+              type="button"
+              data-favorite-character={detail.character}
+              data-favorite-name={detail.commonName}
+              data-favorite-code-point={detail.codePoint}
+              data-favorite-href={`/symbols/${detail.slug}/`}
+              aria-pressed="false"
+              aria-label={`Add ${detail.commonName} to favorites`}
+            >
+              <span aria-hidden="true" data-favorite-icon>☆</span>
+              <span data-favorite-label>Favorite</span>
+            </button>
+            <a class="saved-link" href="/library/">Saved characters</a>
             {detail.examples.slice(0, 2).map((example) => (
               <CopyButton value={example} label={`Copy ${example}`} />
             ))}
@@ -169,6 +189,39 @@ const breadcrumbSchema = {
 </BaseLayout>
 
 <script>
+  import { isFavoriteCharacter, toggleFavoriteCharacter } from '../lib/character-library';
+
+  const favoriteButtons = document.querySelectorAll<HTMLButtonElement>('[data-favorite-character]');
+
+  function updateFavoriteButton(button: HTMLButtonElement, isFavorite: boolean) {
+    const icon = button.querySelector<HTMLElement>('[data-favorite-icon]');
+    const label = button.querySelector<HTMLElement>('[data-favorite-label]');
+    const name = button.dataset.favoriteName || 'character';
+
+    button.setAttribute('aria-pressed', String(isFavorite));
+    button.setAttribute(
+      'aria-label',
+      isFavorite ? `Remove ${name} from favorites` : `Add ${name} to favorites`
+    );
+    if (icon) icon.textContent = isFavorite ? '★' : '☆';
+    if (label) label.textContent = isFavorite ? 'Favorited' : 'Favorite';
+  }
+
+  for (const button of favoriteButtons) {
+    const character = button.dataset.favoriteCharacter ?? '';
+    updateFavoriteButton(button, isFavoriteCharacter(character));
+
+    button.addEventListener('click', () => {
+      const isFavorite = toggleFavoriteCharacter({
+        character,
+        name: button.dataset.favoriteName || 'Unicode character',
+        codePoint: button.dataset.favoriteCodePoint || '',
+        href: button.dataset.favoriteHref || undefined
+      });
+      updateFavoriteButton(button, isFavorite);
+    });
+  }
+
   const typingSections = document.querySelectorAll<HTMLElement>('[data-typing-section]');
 
   for (const section of typingSections) {
