@@ -787,3 +787,22 @@ h1 {
     width: 100%;
   }
 }
+
+
+.typing-guide-grid .category-card {
+  min-height: 12rem;
+}
+
+.typing-principle-note {
+  margin-top: 1rem;
+}
+
+.typing-page-links {
+  margin-top: 0;
+}
+
+@media (max-width: 42rem) {
+  nav a:last-child {
+    display: none;
+  }
+}
