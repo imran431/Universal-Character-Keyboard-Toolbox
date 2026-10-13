@@ -1,0 +1,25 @@
+{
+  "unicodeVersion": "18.0.0",
+  "releaseDate": "2026-09-16",
+  "license": {
+    "name": "Unicode License v3",
+    "url": "https://www.unicode.org/license.txt"
+  },
+  "sources": [
+    {
+      "id": "unicode-data",
+      "url": "https://www.unicode.org/Public/18.0.0/ucd/UnicodeData.txt",
+      "purpose": "Core character properties and names"
+    },
+    {
+      "id": "name-aliases",
+      "url": "https://www.unicode.org/Public/18.0.0/ucd/NameAliases.txt",
+      "purpose": "Official Unicode name aliases"
+    },
+    {
+      "id": "blocks",
+      "url": "https://www.unicode.org/Public/18.0.0/ucd/Blocks.txt",
+      "purpose": "Unicode block ranges"
+    }
+  ]
+}
