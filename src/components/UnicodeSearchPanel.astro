@@ -1,0 +1,291 @@
+---
+interface Props {
+  heading?: string;
+  intro?: string;
+}
+
+const {
+  heading = 'Search Unicode 18.0',
+  intro = 'Search by official Unicode name, common alias, exact character, code point, or numeric HTML entity.'
+} = Astro.props;
+---
+<section class="explorer-panel" data-unicode-explorer aria-labelledby="unicode-explorer-heading">
+  <div class="explorer-heading">
+    <h2 id="unicode-explorer-heading">{heading}</h2>
+    <p>{intro}</p>
+  </div>
+
+  <div class="search-shell explorer-search-shell">
+    <label class="explorer-label" for="unicode-explorer-search">Character, name, alias or code point</label>
+    <div class="search-row">
+      <input
+        id="unicode-explorer-search"
+        class="search-input"
+        type="search"
+        inputmode="search"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Try snowman, →, U+2192, check mark…"
+        data-explorer-input
+      />
+      <span class="search-kbd" aria-hidden="true">Unicode 18</span>
+    </div>
+  </div>
+
+  <div class="example-chips explorer-examples" aria-label="Example searches">
+    <button type="button" data-example-query="snowman">snowman</button>
+    <button type="button" data-example-query="U+2192">U+2192</button>
+    <button type="button" data-example-query="tick">tick</button>
+    <button type="button" data-example-query="CJK UNIFIED IDEOGRAPH-4E00">CJK U+4E00</button>
+  </div>
+
+  <p class="search-hint" data-explorer-status aria-live="polite">Type a query to search the Unicode 18.0 name index.</p>
+
+  <div class="explorer-results" data-explorer-results hidden>
+    <div class="section-heading compact-heading">
+      <div>
+        <h3>Results</h3>
+        <p data-explorer-summary>Unicode matches appear here.</p>
+      </div>
+    </div>
+    <div class="symbol-grid" data-explorer-grid></div>
+  </div>
+</section>
+
+<script>
+  import { allCuratedCharacters } from '../data/characters';
+  import { searchCharacterRecords } from '../lib/character-search';
+
+  interface WorkerResult {
+    codePoint: number;
+    character: string;
+    name: string;
+    aliases: string[];
+    block: string;
+    category: string;
+    score: number;
+  }
+
+  interface WorkerResponse {
+    id: number;
+    ok: boolean;
+    results?: WorkerResult[];
+    error?: string;
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-unicode-explorer]');
+  const input = root?.querySelector<HTMLInputElement>('[data-explorer-input]');
+  const status = root?.querySelector<HTMLElement>('[data-explorer-status]');
+  const resultsRegion = root?.querySelector<HTMLElement>('[data-explorer-results]');
+  const grid = root?.querySelector<HTMLElement>('[data-explorer-grid]');
+  const summary = root?.querySelector<HTMLElement>('[data-explorer-summary]');
+  const exampleButtons = root?.querySelectorAll<HTMLButtonElement>('[data-example-query]') ?? [];
+
+  const curatedHrefByCodePoint = new Map<number, string>();
+  for (const item of allCuratedCharacters) {
+    if (!item.href) continue;
+    const codePoint = Number.parseInt(item.codePoint.replace(/^U\+/i, ''), 16);
+    curatedHrefByCodePoint.set(codePoint, item.href);
+  }
+
+  let worker: Worker | null = null;
+  let requestId = 0;
+  let debounceTimer = 0;
+
+  function codePointLabel(codePoint: number) {
+    return `U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}`;
+  }
+
+  function displayGlyph(result: WorkerResult) {
+    if (result.category.startsWith('M')) return `◌${result.character}`;
+    if (result.category === 'Cf' || result.category === 'Cc' || result.character.trim() === '') return '□';
+    return result.character;
+  }
+
+  function curatedResults(query: string): WorkerResult[] {
+    return searchCharacterRecords(allCuratedCharacters, query).map(({ record, score }) => ({
+      codePoint: Number.parseInt(record.codePoint.replace(/^U\+/i, ''), 16),
+      character: record.character,
+      name: record.name,
+      aliases: record.aliases,
+      block: '',
+      category: '',
+      score: score + 100
+    }));
+  }
+
+  function mergeResults(primary: WorkerResult[], secondary: WorkerResult[]) {
+    const merged = new Map<number, WorkerResult>();
+
+    for (const result of [...primary, ...secondary]) {
+      const current = merged.get(result.codePoint);
+      if (!current || result.score > current.score) merged.set(result.codePoint, result);
+    }
+
+    return [...merged.values()]
+      .sort((a, b) => b.score - a.score || a.codePoint - b.codePoint)
+      .slice(0, 36);
+  }
+
+  function createResultCard(result: WorkerResult) {
+    const article = document.createElement('article');
+    article.className = 'symbol-card';
+
+    const glyph = document.createElement('span');
+    glyph.className = 'symbol-glyph';
+    glyph.setAttribute('aria-hidden', 'true');
+    glyph.textContent = displayGlyph(result);
+
+    const info = document.createElement('div');
+    info.className = 'symbol-info';
+
+    const href = curatedHrefByCodePoint.get(result.codePoint);
+    if (href) {
+      const link = document.createElement('a');
+      link.className = 'symbol-link';
+      link.href = href;
+      const strong = document.createElement('strong');
+      strong.textContent = result.name;
+      link.append(strong);
+      info.append(link);
+    } else {
+      const strong = document.createElement('strong');
+      strong.textContent = result.name;
+      info.append(strong);
+    }
+
+    const meta = document.createElement('span');
+    meta.textContent = [codePointLabel(result.codePoint), result.block].filter(Boolean).join(' · ');
+    info.append(meta);
+
+    const copy = document.createElement('button');
+    copy.className = 'copy-button';
+    copy.type = 'button';
+    copy.dataset.explorerCopy = result.character;
+    copy.setAttribute('aria-label', `Copy ${result.name}`);
+    copy.textContent = 'Copy';
+
+    article.append(glyph, info, copy);
+    return article;
+  }
+
+  function renderResults(results: WorkerResult[]) {
+    if (!grid || !resultsRegion) return;
+
+    grid.replaceChildren();
+    resultsRegion.hidden = false;
+
+    if (results.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'search-empty';
+      const heading = document.createElement('strong');
+      heading.textContent = 'No matching named character found.';
+      const copy = document.createElement('p');
+      copy.textContent = 'Try an exact character, a code point such as U+2192, or fewer words.';
+      empty.append(heading, copy);
+      grid.append(empty);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    for (const result of results) fragment.append(createResultCard(result));
+    grid.append(fragment);
+  }
+
+  function ensureWorker() {
+    if (!worker) {
+      worker = new Worker(new URL('../workers/unicode-search.worker.ts', import.meta.url), {
+        type: 'module'
+      });
+
+      worker.addEventListener('message', (event: MessageEvent<WorkerResponse>) => {
+        if (!input || event.data.id !== requestId) return;
+
+        const local = curatedResults(input.value);
+
+        if (!event.data.ok) {
+          const fallback = mergeResults(local, []);
+          renderResults(fallback);
+          if (status) status.textContent = fallback.length
+            ? 'Showing curated matches. The full Unicode index is temporarily unavailable.'
+            : 'The full Unicode index is temporarily unavailable.';
+          if (summary) summary.textContent = 'Curated character matches';
+          return;
+        }
+
+        const matches = mergeResults(local, event.data.results ?? []);
+        renderResults(matches);
+
+        if (summary) {
+          summary.textContent = matches.length === 36
+            ? 'Showing the strongest 36 matches.'
+            : `${matches.length} ${matches.length === 1 ? 'match' : 'matches'} from Unicode 18.0.`;
+        }
+
+        if (status) {
+          status.textContent = matches.length
+            ? 'Results ready. Exact characters and code points rank first.'
+            : 'No matching named character found.';
+        }
+      });
+    }
+
+    return worker;
+  }
+
+  function runSearch() {
+    if (!input || !resultsRegion) return;
+
+    const query = input.value.trim();
+    requestId += 1;
+
+    if (!query) {
+      resultsRegion.hidden = true;
+      if (status) status.textContent = 'Type a query to search the Unicode 18.0 name index.';
+      return;
+    }
+
+    const local = curatedResults(query);
+    renderResults(local);
+    if (summary) summary.textContent = local.length ? 'Checking the full Unicode index…' : 'Searching Unicode 18.0…';
+    if (status) status.textContent = 'Searching the Unicode 18.0 index…';
+
+    ensureWorker().postMessage({ id: requestId, query, limit: 36 });
+  }
+
+  input?.addEventListener('input', () => {
+    window.clearTimeout(debounceTimer);
+    debounceTimer = window.setTimeout(runSearch, 100);
+  });
+
+  for (const button of exampleButtons) {
+    button.addEventListener('click', () => {
+      if (!input) return;
+      input.value = button.dataset.exampleQuery ?? '';
+      input.focus();
+      runSearch();
+    });
+  }
+
+  grid?.addEventListener('click', async (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLButtonElement) || !target.dataset.explorerCopy) return;
+
+    const original = target.textContent ?? 'Copy';
+
+    try {
+      await navigator.clipboard.writeText(target.dataset.explorerCopy);
+      target.textContent = 'Copied';
+      target.dataset.copied = 'true';
+    } catch {
+      target.textContent = 'Try again';
+      target.dataset.copyFailed = 'true';
+    }
+
+    window.setTimeout(() => {
+      target.textContent = original;
+      target.dataset.copied = 'false';
+      target.dataset.copyFailed = 'false';
+    }, 1400);
+  });
+</script>
