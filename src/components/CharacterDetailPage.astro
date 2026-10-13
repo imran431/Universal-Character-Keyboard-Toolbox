@@ -62,11 +62,22 @@ const breadcrumbSchema = {
       </div>
 
       <div class="info-grid">
-        <section class="info-card" aria-labelledby="platform-methods">
+        <section class="info-card" aria-labelledby="platform-methods" data-typing-section>
           <h2 id="platform-methods">Typing methods</h2>
+          <p class="typing-selector-intro">Choose an environment to highlight the most relevant verified method. All instructions stay visible.</p>
+          <div class="typing-selector" role="group" aria-label="Highlight typing methods for" data-typing-selector>
+            <button type="button" data-environment="all" aria-pressed="true">All methods</button>
+            <button type="button" data-environment="windows" aria-pressed="false">Windows</button>
+            <button type="button" data-environment="macos" aria-pressed="false">Mac</button>
+            <button type="button" data-environment="word" aria-pressed="false">Microsoft Word</button>
+          </div>
+          <p class="typing-selector-status" data-typing-status aria-live="polite">Showing all verified methods.</p>
           {detail.methods.map((method) => (
-            <div class="method-row">
-              <h3>{method.label}</h3>
+            <div class="method-row" data-method-environment={method.environment} data-typing-method>
+              <div class="method-heading-row">
+                <h3>{method.label}</h3>
+                <span class="method-badge" data-method-badge hidden>Best match</span>
+              </div>
               <p>{method.instruction}</p>
               {method.note && <p class="method-note">{method.note}</p>}
               {method.sourceUrl && method.sourceLabel && (
@@ -156,3 +167,70 @@ const breadcrumbSchema = {
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  const typingSections = document.querySelectorAll<HTMLElement>('[data-typing-section]');
+
+  for (const section of typingSections) {
+    const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-environment]'));
+    const methods = Array.from(section.querySelectorAll<HTMLElement>('[data-typing-method]'));
+    const status = section.querySelector<HTMLElement>('[data-typing-status]');
+
+    const labelFor = (environment: string) => {
+      if (environment === 'windows') return 'Windows';
+      if (environment === 'macos') return 'Mac';
+      if (environment === 'word') return 'Microsoft Word';
+      return 'all environments';
+    };
+
+    const applyEnvironment = (environment: string, persist = false) => {
+      for (const button of buttons) {
+        button.setAttribute('aria-pressed', String(button.dataset.environment === environment));
+      }
+
+      for (const method of methods) {
+        const badge = method.querySelector<HTMLElement>('[data-method-badge]');
+        const isMatch = environment !== 'all' && method.dataset.methodEnvironment === environment;
+        method.dataset.recommended = String(isMatch);
+        if (badge) badge.hidden = !isMatch;
+      }
+
+      if (status) {
+        status.textContent = environment === 'all'
+          ? 'Showing all verified methods.'
+          : `Highlighting verified methods for ${labelFor(environment)}. Other methods remain visible.`;
+      }
+
+      if (persist) {
+        try {
+          localStorage.setItem('character-toolbox.typing-environment', environment);
+        } catch {
+          // Preferences are optional; the page works without localStorage.
+        }
+      }
+    };
+
+    let initialEnvironment = 'all';
+
+    try {
+      const stored = localStorage.getItem('character-toolbox.typing-environment');
+      if (stored && ['all', 'windows', 'macos', 'word'].includes(stored)) {
+        initialEnvironment = stored;
+      } else if (/Windows/i.test(navigator.userAgent)) {
+        initialEnvironment = 'windows';
+      } else if (/Macintosh|Mac OS X/i.test(navigator.userAgent)) {
+        initialEnvironment = 'macos';
+      }
+    } catch {
+      // Device highlighting is a progressive enhancement.
+    }
+
+    applyEnvironment(initialEnvironment);
+
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        applyEnvironment(button.dataset.environment ?? 'all', true);
+      });
+    }
+  }
+</script>
