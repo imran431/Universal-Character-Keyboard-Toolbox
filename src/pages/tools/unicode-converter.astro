@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Unicode Converter — Text, Code Points, HTML & JavaScript';
+const description = 'Convert text to Unicode code points, hexadecimal, decimal, JavaScript, HTML and CSS escapes, or decode Unicode code point notation back to text.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: new URL('/tools/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: 'Unicode Converter', item: new URL('/tools/unicode-converter/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/tools/">Tools</a>
+        <span aria-hidden="true">/</span>
+        Unicode Converter
+      </div>
+      <h1>Unicode Converter</h1>
+      <p class="lead">Convert text into Unicode code-point and developer-friendly representations, or decode code-point notation back into characters. All conversion happens in your browser.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <div class="converter-grid">
+        <section class="converter-card" aria-labelledby="text-to-unicode">
+          <h2 id="text-to-unicode">Text → Unicode</h2>
+          <p>Paste or type text to inspect its Unicode scalar values.</p>
+
+          <label class="converter-label" for="converter-text">Text to convert</label>
+          <textarea id="converter-text" class="test-field converter-input" data-converter-text placeholder="Try: A→😀"></textarea>
+
+          <div class="converter-output-list">
+            <label>
+              <span>Unicode code points</span>
+              <textarea readonly data-output="codePoints" aria-label="Unicode code points output"></textarea>
+            </label>
+            <label>
+              <span>Hexadecimal</span>
+              <textarea readonly data-output="hexadecimal" aria-label="Hexadecimal output"></textarea>
+            </label>
+            <label>
+              <span>Decimal</span>
+              <textarea readonly data-output="decimal" aria-label="Decimal output"></textarea>
+            </label>
+            <label>
+              <span>JavaScript escapes</span>
+              <textarea readonly data-output="javascript" aria-label="JavaScript escape output"></textarea>
+            </label>
+            <label>
+              <span>HTML decimal entities</span>
+              <textarea readonly data-output="htmlDecimal" aria-label="HTML decimal output"></textarea>
+            </label>
+            <label>
+              <span>HTML hexadecimal entities</span>
+              <textarea readonly data-output="htmlHex" aria-label="HTML hexadecimal output"></textarea>
+            </label>
+            <label>
+              <span>CSS escapes</span>
+              <textarea readonly data-output="css" aria-label="CSS escape output"></textarea>
+            </label>
+          </div>
+
+          <p class="search-hint" data-converter-count aria-live="polite">0 Unicode code points.</p>
+        </section>
+
+        <section class="converter-card" aria-labelledby="unicode-to-text">
+          <h2 id="unicode-to-text">Unicode → Text</h2>
+          <p>Decode space-separated Unicode notation into text.</p>
+
+          <label class="converter-label" for="converter-codepoints">Code points to decode</label>
+          <textarea
+            id="converter-codepoints"
+            class="test-field converter-input"
+            data-converter-codepoints
+            placeholder="Try: U+0041 U+2192 U+1F600"
+          ></textarea>
+
+          <label class="converter-label" for="converter-decoded">Decoded text</label>
+          <textarea id="converter-decoded" class="test-field converter-decoded" readonly data-converter-decoded></textarea>
+
+          <p class="search-hint" data-decode-status aria-live="polite">Accepted forms include U+2192, 0x2192, \u2192, \u{1F600}, &#8594; and &#x2192;.</p>
+
+          <div class="example-chips converter-examples" aria-label="Unicode converter examples">
+            <button type="button" data-converter-example="U+00B0">Degree U+00B0</button>
+            <button type="button" data-converter-example="U+2192">Right arrow U+2192</button>
+            <button type="button" data-converter-example="U+1F600">Emoji U+1F600</button>
+            <button type="button" data-converter-example="U+0041 U+0301">A + combining acute</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="info-grid tool-info-grid">
+        <section class="info-card">
+          <h2>Unicode code points vs UTF-16</h2>
+          <p>This converter iterates Unicode code points, so supplementary characters such as 😀 are treated as one code point rather than two JavaScript UTF-16 code units.</p>
+        </section>
+        <section class="info-card">
+          <h2>Need the official character name?</h2>
+          <p>Use the <a href="/unicode/">Unicode Explorer</a> to search the version-pinned Unicode 18.0 character-name database.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { decodeUnicodeTokens, textToUnicodeRepresentations } from '../../lib/unicode-converter';
+
+  type OutputName = keyof ReturnType<typeof textToUnicodeRepresentations>;
+
+  const textInput = document.querySelector<HTMLTextAreaElement>('[data-converter-text]');
+  const outputs = Array.from(document.querySelectorAll<HTMLTextAreaElement>('[data-output]'));
+  const count = document.querySelector<HTMLElement>('[data-converter-count]');
+  const codePointInput = document.querySelector<HTMLTextAreaElement>('[data-converter-codepoints]');
+  const decoded = document.querySelector<HTMLTextAreaElement>('[data-converter-decoded]');
+  const decodeStatus = document.querySelector<HTMLElement>('[data-decode-status]');
+  const examples = document.querySelectorAll<HTMLButtonElement>('[data-converter-example]');
+
+  function updateTextConversion() {
+    if (!textInput) return;
+
+    const result = textToUnicodeRepresentations(textInput.value);
+
+    for (const output of outputs) {
+      const key = output.dataset.output as OutputName | undefined;
+      if (!key) continue;
+      output.value = result[key];
+    }
+
+    if (count) {
+      const total = Array.from(textInput.value).length;
+      count.textContent = `${total} Unicode ${total === 1 ? 'code point' : 'code points'}.`;
+    }
+  }
+
+  function updateDecodedText() {
+    if (!codePointInput || !decoded) return;
+
+    const result = decodeUnicodeTokens(codePointInput.value);
+    decoded.value = result.text;
+
+    if (!decodeStatus) return;
+
+    if (codePointInput.value.trim().length === 0) {
+      decodeStatus.textContent = 'Accepted forms include U+2192, 0x2192, \\u2192, \\u{1F600}, &#8594; and &#x2192;.';
+      return;
+    }
+
+    if (result.invalidTokens.length > 0) {
+      decodeStatus.textContent = `Ignored invalid ${result.invalidTokens.length === 1 ? 'token' : 'tokens'}: ${result.invalidTokens.join(', ')}`;
+      return;
+    }
+
+    const total = Array.from(result.text).length;
+    decodeStatus.textContent = `Decoded ${total} Unicode ${total === 1 ? 'code point' : 'code points'}.`;
+  }
+
+  textInput?.addEventListener('input', updateTextConversion, { passive: true });
+  codePointInput?.addEventListener('input', updateDecodedText, { passive: true });
+
+  for (const example of examples) {
+    example.addEventListener('click', () => {
+      if (!codePointInput) return;
+      codePointInput.value = example.dataset.converterExample ?? '';
+      codePointInput.focus();
+      updateDecodedText();
+    });
+  }
+
+  updateTextConversion();
+  updateDecodedText();
+</script>
