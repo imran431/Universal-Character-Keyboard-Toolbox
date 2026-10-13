@@ -3,7 +3,12 @@ export interface CharacterCodeRow {
   value: string;
 }
 
+export type TypingEnvironment = 'windows' | 'macos' | 'word';
+
 export interface CharacterMethod {
+  environment: TypingEnvironment;
+  scope: 'os' | 'app';
+  verifiedAt: string;
   label: string;
   instruction: string;
   note?: string;
@@ -84,6 +89,9 @@ function standardCodes(
 function wordUnicodeMethod(hex: string): CharacterMethod {
   return {
     label: 'Microsoft Word',
+    environment: 'word',
+    scope: 'app',
+    verifiedAt: '2026-10-14',
     instruction: `Type ${hex}, then press Alt + X.`,
     note: 'Word converts a supported hexadecimal Unicode code to the character.',
     sourceLabel: microsoftUnicodeSource.label,
@@ -94,8 +102,11 @@ function wordUnicodeMethod(hex: string): CharacterMethod {
 function macCharacterViewerMethod(): CharacterMethod {
   return {
     label: 'macOS',
-    instruction: 'Press Control + Command + Space to open Character Viewer, then search for the character.',
-    note: 'Apple also documents Fn-E on supported Mac keyboards for Character Viewer.',
+    environment: 'macos',
+    scope: 'os',
+    verifiedAt: '2026-10-14',
+    instruction: 'Press Fn/Globe + E, or choose Edit > Emoji & Symbols, then search for the character in Character Viewer.',
+    note: 'Apple also documents Control + Command + Space on supported macOS versions and keyboard configurations.',
     sourceLabel: appleCharacterViewerSource.label,
     sourceUrl: appleCharacterViewerSource.url
   };
@@ -104,6 +115,9 @@ function macCharacterViewerMethod(): CharacterMethod {
 function windowsCharacterMapMethod(): CharacterMethod {
   return {
     label: 'Windows',
+    environment: 'windows',
+    scope: 'os',
+    verifiedAt: '2026-10-14',
     instruction: 'Open Character Map, find the character, then select and copy it.',
     note: 'This avoids relying on an Alt code when a character does not have a documented portable Alt-code method.',
     sourceLabel: microsoftUnicodeSource.label,
@@ -127,6 +141,9 @@ export const degreeSignDetail: CharacterDetail = {
   methods: [
     {
       label: 'Windows',
+    environment: 'windows',
+    scope: 'os',
+    verifiedAt: '2026-10-14',
       instruction: 'Hold Alt and type 0176 on the numeric keypad.',
       note: 'Microsoft documents Alt+0176 for the degree sign; Num Lock and a numeric keypad are required for this method.',
       sourceLabel: microsoftUnicodeSource.label,
@@ -175,6 +192,9 @@ export const copyrightSignDetail: CharacterDetail = {
   methods: [
     {
       label: 'Windows',
+    environment: 'windows',
+    scope: 'os',
+    verifiedAt: '2026-10-14',
       instruction: 'Hold Alt and type 0169 on the numeric keypad.',
       note: 'Microsoft lists Alt+0169 for the copyright symbol.',
       sourceLabel: microsoftUnicodeSource.label,
@@ -182,6 +202,9 @@ export const copyrightSignDetail: CharacterDetail = {
     },
     {
       label: 'Microsoft Word',
+    environment: 'word',
+    scope: 'app',
+    verifiedAt: '2026-10-14',
       instruction: 'Type (C) to insert the copyright symbol.',
       note: 'Microsoft lists this as a Word special-character shortcut.',
       sourceLabel: microsoftWordShortcutsSource.label,
@@ -223,6 +246,9 @@ export const registeredSignDetail: CharacterDetail = {
   methods: [
     {
       label: 'Windows',
+    environment: 'windows',
+    scope: 'os',
+    verifiedAt: '2026-10-14',
       instruction: 'Hold Alt and type 0174 on the numeric keypad.',
       note: 'Microsoft lists Alt+0174 for the registered sign.',
       sourceLabel: microsoftUnicodeSource.label,
@@ -230,6 +256,9 @@ export const registeredSignDetail: CharacterDetail = {
     },
     {
       label: 'Microsoft Word',
+    environment: 'word',
+    scope: 'app',
+    verifiedAt: '2026-10-14',
       instruction: 'Press Ctrl + Alt + R.',
       note: 'Microsoft documents this shortcut for the registered trademark symbol in Word.',
       sourceLabel: microsoftWordShortcutsSource.label,
@@ -277,6 +306,9 @@ export const trademarkSignDetail: CharacterDetail = {
   methods: [
     {
       label: 'Windows',
+    environment: 'windows',
+    scope: 'os',
+    verifiedAt: '2026-10-14',
       instruction: 'Hold Alt and type 0153 on the numeric keypad.',
       note: 'Microsoft lists Alt+0153 for the trademark sign.',
       sourceLabel: microsoftUnicodeSource.label,
@@ -284,6 +316,9 @@ export const trademarkSignDetail: CharacterDetail = {
     },
     {
       label: 'Microsoft Word',
+    environment: 'word',
+    scope: 'app',
+    verifiedAt: '2026-10-14',
       instruction: 'Press Ctrl + Alt + T.',
       note: 'Microsoft documents this shortcut for the trademark symbol in Word.',
       sourceLabel: microsoftWordShortcutsSource.label,
@@ -331,6 +366,9 @@ export const euroSignDetail: CharacterDetail = {
   methods: [
     {
       label: 'Windows',
+    environment: 'windows',
+    scope: 'os',
+    verifiedAt: '2026-10-14',
       instruction: 'Hold Alt and type 0128 on the numeric keypad.',
       note: 'Microsoft documents Alt+0128 for the euro sign.',
       sourceLabel: microsoftUnicodeSource.label,
@@ -373,6 +411,9 @@ export const emDashDetail: CharacterDetail = {
   methods: [
     {
       label: 'Microsoft Word shortcut',
+      environment: 'word',
+      scope: 'app',
+      verifiedAt: '2026-10-14',
       instruction: 'Press Ctrl + Alt + Minus on the numeric keypad.',
       note: 'Microsoft documents this as the Word shortcut for inserting an em dash.',
       sourceLabel: microsoftWordShortcutsSource.label,
