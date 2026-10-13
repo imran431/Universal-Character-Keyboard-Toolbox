@@ -87,14 +87,14 @@ export const allCuratedCharacters: CharacterSummary[] = [
   { id: 'cent-sign', character: '¢', name: 'Cent Sign', codePoint: 'U+00A2', aliases: ['cent'], category: 'Currency', categorySlug: 'currency' },
   { id: 'pound-sign', character: '£', name: 'Pound Sign', codePoint: 'U+00A3', aliases: ['pound', 'sterling', 'gbp'], category: 'Currency', categorySlug: 'currency' },
   { id: 'yen-sign', character: '¥', name: 'Yen Sign', codePoint: 'U+00A5', aliases: ['yen', 'yuan', 'jpy'], category: 'Currency', categorySlug: 'currency' },
-  { id: 'euro-sign', character: '€', name: 'Euro Sign', codePoint: 'U+20AC', aliases: ['euro', 'eur'], category: 'Currency', categorySlug: 'currency' },
+  { id: 'euro-sign', character: '€', name: 'Euro Sign', codePoint: 'U+20AC', aliases: ['euro', 'eur'], category: 'Currency', categorySlug: 'currency', href: '/symbols/euro-sign/' },
   { id: 'won-sign', character: '₩', name: 'Won Sign', codePoint: 'U+20A9', aliases: ['won', 'krw'], category: 'Currency', categorySlug: 'currency' },
   { id: 'indian-rupee-sign', character: '₹', name: 'Indian Rupee Sign', codePoint: 'U+20B9', aliases: ['rupee', 'indian rupee', 'inr'], category: 'Currency', categorySlug: 'currency' },
   { id: 'ruble-sign', character: '₽', name: 'Ruble Sign', codePoint: 'U+20BD', aliases: ['ruble', 'rouble', 'rub'], category: 'Currency', categorySlug: 'currency' },
 
   { id: 'bullet', character: '•', name: 'Bullet', codePoint: 'U+2022', aliases: ['bullet', 'dot'], category: 'Punctuation', categorySlug: 'punctuation' },
   { id: 'middle-dot', character: '·', name: 'Middle Dot', codePoint: 'U+00B7', aliases: ['middle dot', 'interpunct'], category: 'Punctuation', categorySlug: 'punctuation' },
-  { id: 'em-dash', character: '—', name: 'Em Dash', codePoint: 'U+2014', aliases: ['em dash', 'long dash'], category: 'Punctuation', categorySlug: 'punctuation' },
+  { id: 'em-dash', character: '—', name: 'Em Dash', codePoint: 'U+2014', aliases: ['em dash', 'long dash'], category: 'Punctuation', categorySlug: 'punctuation', href: '/symbols/em-dash/' },
   { id: 'en-dash', character: '–', name: 'En Dash', codePoint: 'U+2013', aliases: ['en dash', 'dash'], category: 'Punctuation', categorySlug: 'punctuation' },
   { id: 'horizontal-bar', character: '―', name: 'Horizontal Bar', codePoint: 'U+2015', aliases: ['horizontal bar', 'quotation dash'], category: 'Punctuation', categorySlug: 'punctuation' },
   { id: 'ellipsis', character: '…', name: 'Horizontal Ellipsis', codePoint: 'U+2026', aliases: ['ellipsis', 'three dots'], category: 'Punctuation', categorySlug: 'punctuation' },
@@ -105,7 +105,7 @@ export const allCuratedCharacters: CharacterSummary[] = [
 
   { id: 'left-arrow', character: '←', name: 'Leftwards Arrow', codePoint: 'U+2190', aliases: ['left arrow', 'arrow left'], category: 'Arrows', categorySlug: 'arrows' },
   { id: 'up-arrow', character: '↑', name: 'Upwards Arrow', codePoint: 'U+2191', aliases: ['up arrow', 'arrow up'], category: 'Arrows', categorySlug: 'arrows' },
-  { id: 'right-arrow', character: '→', name: 'Rightwards Arrow', codePoint: 'U+2192', aliases: ['right arrow', 'arrow right'], category: 'Arrows', categorySlug: 'arrows' },
+  { id: 'right-arrow', character: '→', name: 'Rightwards Arrow', codePoint: 'U+2192', aliases: ['right arrow', 'arrow right'], category: 'Arrows', categorySlug: 'arrows', href: '/symbols/right-arrow/' },
   { id: 'down-arrow', character: '↓', name: 'Downwards Arrow', codePoint: 'U+2193', aliases: ['down arrow', 'arrow down'], category: 'Arrows', categorySlug: 'arrows' },
   { id: 'left-right-arrow', character: '↔', name: 'Left Right Arrow', codePoint: 'U+2194', aliases: ['left right arrow', 'horizontal arrow'], category: 'Arrows', categorySlug: 'arrows' },
   { id: 'up-down-arrow', character: '↕', name: 'Up Down Arrow', codePoint: 'U+2195', aliases: ['up down arrow', 'vertical arrow'], category: 'Arrows', categorySlug: 'arrows' },
@@ -120,17 +120,17 @@ export const allCuratedCharacters: CharacterSummary[] = [
   { id: 'ballot-box', character: '☐', name: 'Ballot Box', codePoint: 'U+2610', aliases: ['checkbox', 'empty checkbox', 'unchecked box'], category: 'Status', categorySlug: 'status' },
   { id: 'ballot-box-check', character: '☑', name: 'Ballot Box With Check', codePoint: 'U+2611', aliases: ['checked box', 'checkbox checked'], category: 'Status', categorySlug: 'status' },
   { id: 'ballot-box-x', character: '☒', name: 'Ballot Box With X', codePoint: 'U+2612', aliases: ['box with x', 'crossed box'], category: 'Status', categorySlug: 'status' },
-  { id: 'check-mark', character: '✓', name: 'Check Mark', codePoint: 'U+2713', aliases: ['check', 'tick', 'check mark'], category: 'Status', categorySlug: 'status' },
+  { id: 'check-mark', character: '✓', name: 'Check Mark', codePoint: 'U+2713', aliases: ['check', 'tick', 'check mark'], category: 'Status', categorySlug: 'status', href: '/symbols/check-mark/' },
   { id: 'heavy-check-mark', character: '✔', name: 'Heavy Check Mark', codePoint: 'U+2714', aliases: ['heavy check', 'bold tick'], category: 'Status', categorySlug: 'status' },
   { id: 'cross-mark', character: '✗', name: 'Ballot X', codePoint: 'U+2717', aliases: ['cross', 'x mark', 'cross mark'], category: 'Status', categorySlug: 'status' },
   { id: 'heavy-ballot-x', character: '✘', name: 'Heavy Ballot X', codePoint: 'U+2718', aliases: ['heavy cross', 'bold x'], category: 'Status', categorySlug: 'status' },
 
-  { id: 'copyright-sign', character: '©', name: 'Copyright Sign', codePoint: 'U+00A9', aliases: ['copyright', 'copyright symbol'], category: 'Legal & business', categorySlug: 'legal' },
-  { id: 'registered-sign', character: '®', name: 'Registered Sign', codePoint: 'U+00AE', aliases: ['registered', 'registered trademark'], category: 'Legal & business', categorySlug: 'legal' },
+  { id: 'copyright-sign', character: '©', name: 'Copyright Sign', codePoint: 'U+00A9', aliases: ['copyright', 'copyright symbol'], category: 'Legal & business', categorySlug: 'legal', href: '/symbols/copyright-sign/' },
+  { id: 'registered-sign', character: '®', name: 'Registered Sign', codePoint: 'U+00AE', aliases: ['registered', 'registered trademark'], category: 'Legal & business', categorySlug: 'legal', href: '/symbols/registered-sign/' },
   { id: 'section-sign', character: '§', name: 'Section Sign', codePoint: 'U+00A7', aliases: ['section', 'section symbol'], category: 'Legal & business', categorySlug: 'legal' },
   { id: 'pilcrow-sign', character: '¶', name: 'Pilcrow Sign', codePoint: 'U+00B6', aliases: ['pilcrow', 'paragraph mark'], category: 'Legal & business', categorySlug: 'legal' },
   { id: 'service-mark', character: '℠', name: 'Service Mark', codePoint: 'U+2120', aliases: ['service mark', 'sm'], category: 'Legal & business', categorySlug: 'legal' },
-  { id: 'trademark-sign', character: '™', name: 'Trade Mark Sign', codePoint: 'U+2122', aliases: ['trademark', 'trade mark', 'tm'], category: 'Legal & business', categorySlug: 'legal' },
+  { id: 'trademark-sign', character: '™', name: 'Trade Mark Sign', codePoint: 'U+2122', aliases: ['trademark', 'trade mark', 'tm'], category: 'Legal & business', categorySlug: 'legal', href: '/symbols/trademark-sign/' },
   { id: 'numero-sign', character: '№', name: 'Numero Sign', codePoint: 'U+2116', aliases: ['numero', 'number sign'], category: 'Legal & business', categorySlug: 'legal' }
 ];
 
