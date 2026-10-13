@@ -117,9 +117,24 @@ const {
   function mergeResults(primary: WorkerResult[], secondary: WorkerResult[]) {
     const merged = new Map<number, WorkerResult>();
 
-    for (const result of [...primary, ...secondary]) {
+    for (const result of primary) {
+      merged.set(result.codePoint, result);
+    }
+
+    for (const result of secondary) {
       const current = merged.get(result.codePoint);
-      if (!current || result.score > current.score) merged.set(result.codePoint, result);
+
+      if (!current) {
+        merged.set(result.codePoint, result);
+        continue;
+      }
+
+      merged.set(result.codePoint, {
+        ...current,
+        block: result.block || current.block,
+        category: result.category || current.category,
+        score: Math.max(current.score, result.score)
+      });
     }
 
     return [...merged.values()]
