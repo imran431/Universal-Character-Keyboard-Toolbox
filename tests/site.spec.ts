@@ -5,6 +5,13 @@ const indexablePaths = [
   '/',
   '/symbols/',
   '/symbols/degree-sign/',
+  '/symbols/copyright-sign/',
+  '/symbols/registered-sign/',
+  '/symbols/trademark-sign/',
+  '/symbols/euro-sign/',
+  '/symbols/em-dash/',
+  '/symbols/check-mark/',
+  '/symbols/right-arrow/',
   '/symbols/math/',
   '/symbols/currency/',
   '/symbols/punctuation/',
@@ -172,4 +179,39 @@ test('degree page links back into its category hierarchy', async ({ page }) => {
   await page.goto('/symbols/degree-sign/');
   await expect(page.locator('a[href="/symbols/math/"]').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Similar-looking characters' })).toBeVisible();
+});
+
+
+test('flagship character pages expose reviewed sources', async ({ page }) => {
+  for (const path of [
+    '/symbols/degree-sign/',
+    '/symbols/copyright-sign/',
+    '/symbols/registered-sign/',
+    '/symbols/trademark-sign/',
+    '/symbols/euro-sign/',
+    '/symbols/em-dash/',
+    '/symbols/check-mark/',
+    '/symbols/right-arrow/'
+  ]) {
+    await page.goto(path);
+    await expect(page.getByRole('heading', { name: 'Reviewed sources' })).toBeVisible();
+    await expect(page.locator('.source-links a').first()).toHaveAttribute('href', /^https:\/\//);
+  }
+});
+
+test('flagship category cards link to reviewed detail pages', async ({ page }) => {
+  const cases = [
+    ['/symbols/legal/', '/symbols/copyright-sign/'],
+    ['/symbols/legal/', '/symbols/registered-sign/'],
+    ['/symbols/legal/', '/symbols/trademark-sign/'],
+    ['/symbols/currency/', '/symbols/euro-sign/'],
+    ['/symbols/punctuation/', '/symbols/em-dash/'],
+    ['/symbols/status/', '/symbols/check-mark/'],
+    ['/symbols/arrows/', '/symbols/right-arrow/']
+  ] as const;
+
+  for (const [categoryPath, detailHref] of cases) {
+    await page.goto(categoryPath);
+    await expect(page.locator(`a[href="${detailHref}"]`).first()).toBeVisible();
+  }
 });
