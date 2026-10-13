@@ -501,6 +501,256 @@ export const rightArrowDetail: CharacterDetail = {
   verifiedLabel: 'Unicode identity and code values verified against Unicode 18.0. Word, Windows, and Mac insertion methods were checked against Microsoft and Apple support documentation in October 2026.'
 };
 
+export const enDashDetail: CharacterDetail = {
+  slug: 'en-dash',
+  character: '–',
+  commonName: 'En Dash',
+  officialName: 'EN DASH',
+  title: 'En Dash (–) — Copy, Unicode & Keyboard Methods',
+  description: 'Copy an en dash – and see its Word Unicode method, Windows Character Map method, Mac Character Viewer method, Unicode U+2013 and web codes.',
+  summary: 'Copy an en dash instantly or use a verified Unicode-character insertion method.',
+  codePoint: 'U+2013',
+  decimal: 8211,
+  categoryName: 'Punctuation & Typography',
+  categoryHref: '/symbols/punctuation/',
+  quickAnswer: 'In Word: type 2013, then press Alt + X. On Windows, Character Map is a documented fallback. On Mac, search for en dash in Character Viewer.',
+  methods: [
+    wordUnicodeMethod('2013'),
+    windowsCharacterMapMethod(),
+    macCharacterViewerMethod()
+  ],
+  codes: standardCodes('U+2013', 8211, { htmlNamed: '&ndash;' }),
+  examples: ['2019–2026', 'pages 10–20', 'New York–London'],
+  notes: [
+    'An en dash is commonly used for ranges and some relationships between paired terms.',
+    'It is a different Unicode character from the hyphen-minus and em dash.'
+  ],
+  lookalikes: [
+    { character: '-', name: 'Hyphen-Minus', codePoint: 'U+002D', explanation: 'The ordinary keyboard hyphen is shorter and has a different code point.' },
+    { character: '—', name: 'Em Dash', codePoint: 'U+2014', explanation: 'Usually longer and often used for sentence-level punctuation.' }
+  ],
+  sources: [unicodeSource, microsoftUnicodeSource, appleCharacterViewerSource],
+  verifiedLabel: 'Unicode identity and code values verified against Unicode 18.0. Word, Windows, and Mac insertion methods were checked against Microsoft and Apple support documentation in October 2026.'
+};
+
+export const ellipsisDetail: CharacterDetail = {
+  slug: 'ellipsis',
+  character: '…',
+  commonName: 'Ellipsis Symbol',
+  officialName: 'HORIZONTAL ELLIPSIS',
+  title: 'Ellipsis (…) — Copy, Unicode & Keyboard Methods',
+  description: 'Copy the ellipsis character … and see its Word Unicode method, Windows Character Map method, Mac Character Viewer method, Unicode U+2026 and web codes.',
+  summary: 'Copy the single-character ellipsis instantly or insert it through a verified Unicode method.',
+  codePoint: 'U+2026',
+  decimal: 8230,
+  categoryName: 'Punctuation & Typography',
+  categoryHref: '/symbols/punctuation/',
+  quickAnswer: 'In Word: type 2026, then press Alt + X. On Windows use Character Map when needed. On Mac, search for horizontal ellipsis in Character Viewer.',
+  methods: [
+    wordUnicodeMethod('2026'),
+    windowsCharacterMapMethod(),
+    macCharacterViewerMethod()
+  ],
+  codes: standardCodes('U+2026', 8230, { htmlNamed: '&hellip;' }),
+  examples: ['Wait…', 'One, two, three…', 'Continue…'],
+  notes: [
+    'HORIZONTAL ELLIPSIS U+2026 is one Unicode character.',
+    'Three periods (...) are visually similar text but are three separate characters.'
+  ],
+  lookalikes: [
+    { character: '...', name: 'Three Full Stops', codePoint: 'U+002E × 3', explanation: 'Three separate period characters, not U+2026.' }
+  ],
+  sources: [unicodeSource, microsoftUnicodeSource, appleCharacterViewerSource],
+  verifiedLabel: 'Unicode identity and code values verified against Unicode 18.0. Word, Windows, and Mac insertion methods were checked against Microsoft and Apple support documentation in October 2026.'
+};
+
+export const plusMinusDetail: CharacterDetail = {
+  slug: 'plus-minus',
+  character: '±',
+  commonName: 'Plus-Minus Symbol',
+  officialName: 'PLUS-MINUS SIGN',
+  title: 'Plus-Minus Symbol (±) — Copy, Unicode & Codes',
+  description: 'Copy the plus-minus symbol ± and see its Word Unicode method, Windows Character Map method, Mac Character Viewer method, Unicode U+00B1 and web codes.',
+  summary: 'Copy the plus-minus sign instantly or insert it through a verified Unicode-character method.',
+  codePoint: 'U+00B1',
+  decimal: 177,
+  categoryName: 'Math & Scientific Symbols',
+  categoryHref: '/symbols/math/',
+  quickAnswer: 'In Word: type 00B1, then press Alt + X. On Windows use Character Map. On Mac, search for plus-minus in Character Viewer.',
+  methods: [
+    wordUnicodeMethod('00B1'),
+    windowsCharacterMapMethod(),
+    macCharacterViewerMethod()
+  ],
+  codes: standardCodes('U+00B1', 177, { htmlNamed: '&plusmn;' }),
+  examples: ['10 ± 2', '±5%', '20°C ± 1°C'],
+  notes: [
+    'The plus-minus sign is used where both positive and negative variation or alternatives are relevant.',
+    'It is a single Unicode character, not a plus and minus typed separately.'
+  ],
+  lookalikes: [
+    { character: '∓', name: 'Minus-Or-Plus Sign', codePoint: 'U+2213', explanation: 'A distinct mathematical symbol with reversed sign order.' }
+  ],
+  sources: [unicodeSource, microsoftUnicodeSource, appleCharacterViewerSource],
+  verifiedLabel: 'Unicode identity and code values verified against Unicode 18.0. Word, Windows, and Mac insertion methods were checked against Microsoft and Apple support documentation in October 2026.'
+};
+
+export const infinityDetail: CharacterDetail = {
+  slug: 'infinity',
+  character: '∞',
+  commonName: 'Infinity Symbol',
+  officialName: 'INFINITY',
+  title: 'Infinity Symbol (∞) — Copy, Unicode & Keyboard Methods',
+  description: 'Copy the infinity symbol ∞ and see its Word Unicode method, Windows Character Map method, Mac Character Viewer method, Unicode U+221E and web codes.',
+  summary: 'Copy the infinity symbol instantly or insert it through a verified Unicode-character method.',
+  codePoint: 'U+221E',
+  decimal: 8734,
+  categoryName: 'Math & Scientific Symbols',
+  categoryHref: '/symbols/math/',
+  quickAnswer: 'In Word: type 221E, then press Alt + X. On Windows use Character Map. On Mac, search for infinity in Character Viewer.',
+  methods: [
+    wordUnicodeMethod('221E'),
+    windowsCharacterMapMethod(),
+    macCharacterViewerMethod()
+  ],
+  codes: standardCodes('U+221E', 8734, { htmlNamed: '&infin;' }),
+  examples: ['∞', '0 → ∞', '−∞ to +∞'],
+  notes: [
+    'INFINITY U+221E is the standard Unicode infinity symbol.',
+    'Some fonts render it with noticeably different proportions.'
+  ],
+  lookalikes: [
+    { character: '♾', name: 'Permanent Paper Sign', codePoint: 'U+267E', explanation: 'A separate symbol that may look like an infinity mark and can have emoji presentation.' }
+  ],
+  sources: [unicodeSource, microsoftUnicodeSource, appleCharacterViewerSource],
+  verifiedLabel: 'Unicode identity and code values verified against Unicode 18.0. Word, Windows, and Mac insertion methods were checked against Microsoft and Apple support documentation in October 2026.'
+};
+
+export const bulletDetail: CharacterDetail = {
+  slug: 'bullet',
+  character: '•',
+  commonName: 'Bullet Symbol',
+  officialName: 'BULLET',
+  title: 'Bullet Symbol (•) — Copy, Unicode & Keyboard Methods',
+  description: 'Copy the bullet symbol • and see its Word Unicode method, Windows Character Map method, Mac Character Viewer method, Unicode U+2022 and web codes.',
+  summary: 'Copy a bullet instantly or insert it through a verified Unicode-character method.',
+  codePoint: 'U+2022',
+  decimal: 8226,
+  categoryName: 'Punctuation & Typography',
+  categoryHref: '/symbols/punctuation/',
+  quickAnswer: 'In Word: type 2022, then press Alt + X. On Windows use Character Map. On Mac, search for bullet in Character Viewer.',
+  methods: [
+    wordUnicodeMethod('2022'),
+    windowsCharacterMapMethod(),
+    macCharacterViewerMethod()
+  ],
+  codes: standardCodes('U+2022', 8226, { htmlNamed: '&bull;' }),
+  examples: ['• Item one', 'Item • Item', '•'],
+  notes: [
+    'BULLET U+2022 is a typographic bullet character.',
+    'List formatting in editors may generate bullets automatically without inserting this exact character into source text.'
+  ],
+  lookalikes: [
+    { character: '·', name: 'Middle Dot', codePoint: 'U+00B7', explanation: 'A smaller centered dot with different semantics.' },
+    { character: '●', name: 'Black Circle', codePoint: 'U+25CF', explanation: 'A geometric circle that is usually larger and heavier.' }
+  ],
+  sources: [unicodeSource, microsoftUnicodeSource, appleCharacterViewerSource],
+  verifiedLabel: 'Unicode identity and code values verified against Unicode 18.0. Word, Windows, and Mac insertion methods were checked against Microsoft and Apple support documentation in October 2026.'
+};
+
+export const poundSignDetail: CharacterDetail = {
+  slug: 'pound-sign',
+  character: '£',
+  commonName: 'Pound Symbol',
+  officialName: 'POUND SIGN',
+  title: 'Pound Symbol (£) — Copy, Unicode & Keyboard Methods',
+  description: 'Copy the pound symbol £ and see its Word Unicode method, Windows Character Map method, Mac Character Viewer method, Unicode U+00A3 and web codes.',
+  summary: 'Copy the pound sign instantly or insert it through a verified Unicode-character method.',
+  codePoint: 'U+00A3',
+  decimal: 163,
+  categoryName: 'Currency Symbols',
+  categoryHref: '/symbols/currency/',
+  quickAnswer: 'In Word: type 00A3, then press Alt + X. On Windows use Character Map. On Mac, search for pound sign in Character Viewer.',
+  methods: [
+    wordUnicodeMethod('00A3'),
+    windowsCharacterMapMethod(),
+    macCharacterViewerMethod()
+  ],
+  codes: standardCodes('U+00A3', 163, { htmlNamed: '&pound;' }),
+  examples: ['£10', '£99.95', 'GBP £'],
+  notes: [
+    'POUND SIGN U+00A3 is commonly used for pound sterling amounts.',
+    'Currency formatting and spacing conventions depend on locale and context.'
+  ],
+  lookalikes: [
+    { character: '₤', name: 'Lira Sign', codePoint: 'U+20A4', explanation: 'A separate historical currency-sign character.' }
+  ],
+  sources: [unicodeSource, microsoftUnicodeSource, appleCharacterViewerSource],
+  verifiedLabel: 'Unicode identity and code values verified against Unicode 18.0. Word, Windows, and Mac insertion methods were checked against Microsoft and Apple support documentation in October 2026.'
+};
+
+export const yenSignDetail: CharacterDetail = {
+  slug: 'yen-sign',
+  character: '¥',
+  commonName: 'Yen Symbol',
+  officialName: 'YEN SIGN',
+  title: 'Yen Symbol (¥) — Copy, Unicode & Keyboard Methods',
+  description: 'Copy the yen symbol ¥ and see its Word Unicode method, Windows Character Map method, Mac Character Viewer method, Unicode U+00A5 and web codes.',
+  summary: 'Copy the yen sign instantly or insert it through a verified Unicode-character method.',
+  codePoint: 'U+00A5',
+  decimal: 165,
+  categoryName: 'Currency Symbols',
+  categoryHref: '/symbols/currency/',
+  quickAnswer: 'In Word: type 00A5, then press Alt + X. On Windows use Character Map. On Mac, search for yen sign in Character Viewer.',
+  methods: [
+    wordUnicodeMethod('00A5'),
+    windowsCharacterMapMethod(),
+    macCharacterViewerMethod()
+  ],
+  codes: standardCodes('U+00A5', 165, { htmlNamed: '&yen;' }),
+  examples: ['¥1000', '¥9,800', 'JPY ¥'],
+  notes: [
+    'YEN SIGN U+00A5 is used for Japanese yen and can also appear in contexts involving Chinese yuan.',
+    'Fonts and locale conventions can affect glyph shape and spacing.'
+  ],
+  lookalikes: [
+    { character: '￥', name: 'Fullwidth Yen Sign', codePoint: 'U+FFE5', explanation: 'A fullwidth compatibility form used in East Asian typography.' }
+  ],
+  sources: [unicodeSource, microsoftUnicodeSource, appleCharacterViewerSource],
+  verifiedLabel: 'Unicode identity and code values verified against Unicode 18.0. Word, Windows, and Mac insertion methods were checked against Microsoft and Apple support documentation in October 2026.'
+};
+
+export const indianRupeeDetail: CharacterDetail = {
+  slug: 'indian-rupee-sign',
+  character: '₹',
+  commonName: 'Indian Rupee Symbol',
+  officialName: 'INDIAN RUPEE SIGN',
+  title: 'Indian Rupee Symbol (₹) — Copy, Unicode & Codes',
+  description: 'Copy the Indian rupee symbol ₹ and see its Word Unicode method, Windows Character Map method, Mac Character Viewer method, Unicode U+20B9 and web codes.',
+  summary: 'Copy the Indian rupee sign instantly or insert it through a verified Unicode-character method.',
+  codePoint: 'U+20B9',
+  decimal: 8377,
+  categoryName: 'Currency Symbols',
+  categoryHref: '/symbols/currency/',
+  quickAnswer: 'In Word: type 20B9, then press Alt + X. On Windows use Character Map. On Mac, search for Indian rupee in Character Viewer.',
+  methods: [
+    wordUnicodeMethod('20B9'),
+    windowsCharacterMapMethod(),
+    macCharacterViewerMethod()
+  ],
+  codes: standardCodes('U+20B9', 8377),
+  examples: ['₹100', '₹1,999', 'INR ₹'],
+  notes: [
+    'INDIAN RUPEE SIGN U+20B9 is the Unicode character used for the Indian rupee symbol.',
+    'The generic RUPEE SIGN ₨ is a different Unicode character.'
+  ],
+  lookalikes: [
+    { character: '₨', name: 'Rupee Sign', codePoint: 'U+20A8', explanation: 'A different rupee-sign character used in other contexts.' }
+  ],
+  sources: [unicodeSource, microsoftUnicodeSource, appleCharacterViewerSource],
+  verifiedLabel: 'Unicode identity and code values verified against Unicode 18.0. Word, Windows, and Mac insertion methods were checked against Microsoft and Apple support documentation in October 2026.'
+};
+
 export const flagshipCharacterDetails = [
   degreeSignDetail,
   copyrightSignDetail,
@@ -509,5 +759,13 @@ export const flagshipCharacterDetails = [
   euroSignDetail,
   emDashDetail,
   checkMarkDetail,
-  rightArrowDetail
+  rightArrowDetail,
+  enDashDetail,
+  ellipsisDetail,
+  plusMinusDetail,
+  infinityDetail,
+  bulletDetail,
+  poundSignDetail,
+  yenSignDetail,
+  indianRupeeDetail
 ];
