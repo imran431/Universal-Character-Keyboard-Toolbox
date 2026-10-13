@@ -378,3 +378,27 @@ test('tool pages remain responsive after filtering', async ({ page }) => {
     expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
   }
 });
+
+
+test('critical pages fit a 320px viewport with primary navigation intact', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+
+  for (const path of [
+    '/',
+    '/typing/',
+    '/unicode/',
+    '/tools/',
+    '/tools/shortcut-finder/',
+    '/tools/alt-code-finder/'
+  ]) {
+    await page.goto(path);
+
+    const dimensions = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+
+    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+    await expect(page.locator('nav a[href="/tools/"]')).toBeVisible();
+  }
+});
