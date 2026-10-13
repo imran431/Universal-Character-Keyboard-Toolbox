@@ -195,7 +195,7 @@ h1 {
 
 .symbol-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
   gap: .9rem;
 }
 
@@ -221,7 +221,11 @@ h1 {
   font-size: 1.75rem;
 }
 .symbol-info { min-width: 0; }
-.symbol-info strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.symbol-info strong {
+  display: block;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
 .symbol-info span { display: block; color: var(--muted); font-size: .77rem; margin-top: .2rem; }
 .symbol-link { text-decoration: none; }
 .symbol-link:hover strong, .symbol-link:focus-visible strong { color: var(--brand); text-decoration: underline; text-underline-offset: .18em; }
@@ -239,6 +243,7 @@ h1 {
 }
 .copy-button:hover, .copy-button:focus-visible { background: #e2eaff; border-color: #aebfff; }
 .copy-button[data-copied='true'] { color: var(--success); background: #eaf8f0; border-color: #b9e5ca; }
+.copy-button[data-copy-failed='true'] { color: #9f1239; background: #fff1f2; border-color: #fecdd3; }
 
 .cta-link {
   display: inline-flex;
