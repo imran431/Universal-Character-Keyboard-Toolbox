@@ -2,12 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CopyButton from './CopyButton.astro';
 import type { CharacterDetail } from '../data/character-details';
+import { allCuratedCharacters } from '../data/characters';
 
 interface Props {
   detail: CharacterDetail;
 }
 
 const { detail } = Astro.props;
+const categorySlug = detail.categoryHref.split('/').filter(Boolean).at(-1) ?? '';
+const relatedCharacters = allCuratedCharacters
+  .filter((item) => item.categorySlug === categorySlug && item.href && item.id !== detail.slug)
+  .slice(0, 4);
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -117,6 +122,25 @@ const breadcrumbSchema = {
           ))}
         </div>
       </section>
+
+      {relatedCharacters.length > 0 && (
+        <section class="content-note" aria-labelledby="related-characters">
+          <h2 id="related-characters">Related characters</h2>
+          <p>Explore more reviewed characters from the same symbol family.</p>
+          <div class="related-grid">
+            {relatedCharacters.map((item) => (
+              <a class="related-card" href={item.href}>
+                <span class="related-glyph" aria-hidden="true">{item.character}</span>
+                <span>
+                  <strong>{item.name}</strong>
+                  <small>{item.codePoint}</small>
+                </span>
+              </a>
+            ))}
+          </div>
+          <p class="related-category-link"><a href={detail.categoryHref}>Browse all {detail.categoryName.toLowerCase()}</a></p>
+        </section>
+      )}
 
       <section class="content-note source-note" aria-labelledby="reviewed-sources">
         <h2 id="reviewed-sources">Reviewed sources</h2>
