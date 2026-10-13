@@ -9,7 +9,8 @@
     "check": "astro check",
     "preview": "astro preview",
     "test:e2e": "playwright test",
-    "test": "npm run build && npm run test:e2e"
+    "test": "npm run build && npm run test:e2e",
+    "unicode:sync": "node scripts/unicode/sync-unicode.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
