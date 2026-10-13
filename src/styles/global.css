@@ -588,3 +588,16 @@ h1 {
 .explorer-info-grid {
   margin-top: 1rem;
 }
+
+
+@media (max-width: 62rem) {
+  .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 42rem) {
+  .category-grid,
+  .comparison-grid { grid-template-columns: 1fr; }
+
+  .comparison-card { grid-template-columns: 3.25rem minmax(0, 1fr); }
+  .comparison-glyph { min-height: 3.25rem; }
+}
