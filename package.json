@@ -11,7 +11,9 @@
     "test:e2e": "playwright test",
     "test": "npm run build && npm run test:e2e",
     "unicode:sync": "node scripts/unicode/sync-unicode.mjs",
-    "unicode:verify": "node scripts/unicode/verify-unicode.mjs"
+    "unicode:verify": "node scripts/unicode/verify-unicode.mjs",
+    "unicode:index": "node scripts/unicode/build-search-index.mjs",
+    "unicode:prepare": "npm run unicode:sync && npm run unicode:verify && npm run unicode:index"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
