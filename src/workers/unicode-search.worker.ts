@@ -48,6 +48,11 @@ interface IndexedRecord {
 
 const INDEX_URL = '/data/search/unicode-18.0-search.json';
 
+const workerScope = self as unknown as {
+  onmessage: ((event: MessageEvent<SearchRequest>) => void) | null;
+  postMessage: (message: unknown) => void;
+};
+
 let indexPromise: Promise<{
   records: IndexedRecord[];
   byCodePoint: Map<number, SearchRecord>;
@@ -226,14 +231,14 @@ async function search(query: string, limit: number): Promise<SearchResult[]> {
     .slice(0, limit);
 }
 
-self.onmessage = async (event: MessageEvent<SearchRequest>) => {
+workerScope.onmessage = async (event: MessageEvent<SearchRequest>) => {
   const { id, query, limit = 24 } = event.data;
 
   try {
     const results = await search(query, limit);
-    self.postMessage({ id, ok: true, results });
+    workerScope.postMessage({ id, ok: true, results });
   } catch (error) {
-    self.postMessage({
+    workerScope.postMessage({
       id,
       ok: false,
       error: error instanceof Error ? error.message : 'Unicode search failed.'
