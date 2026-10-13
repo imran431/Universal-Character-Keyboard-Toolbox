@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Saved Characters & Recent Symbols | Character Toolbox';
+const description = 'View favorite and recently used characters saved locally in this browser. Copy them again or jump back to reviewed character guides and Unicode tools.';
+---
+<BaseLayout
+  title={title}
+  description={description}
+  robots="noindex,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"
+>
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Saved characters</div>
+      <h1>Saved Characters</h1>
+      <p class="lead">Favorites and recent characters are stored only in this browser. No account or backend is required.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" data-character-library>
+    <div class="container">
+      <section class="library-section" aria-labelledby="favorites-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="favorites-heading">Favorites</h2>
+            <p>Characters you explicitly saved for quick reuse.</p>
+          </div>
+        </div>
+        <div class="symbol-grid" data-favorites-grid></div>
+        <div class="search-empty" data-favorites-empty>
+          <strong>No favorites yet.</strong>
+          <p>Open a reviewed <a href="/symbols/">character page</a> and choose <strong>Favorite</strong> to save it here.</p>
+        </div>
+      </section>
+
+      <section class="library-section" aria-labelledby="recents-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="recents-heading">Recently used</h2>
+            <p>Characters you copied or inserted recently on this device.</p>
+          </div>
+          <button class="source-mini-link library-clear-button" type="button" data-clear-recents hidden>Clear recent</button>
+        </div>
+        <div class="symbol-grid" data-recents-grid></div>
+        <div class="search-empty" data-recents-empty>
+          <strong>No recent characters yet.</strong>
+          <p>Copy a character from <a href="/">search</a>, use the <a href="/unicode/">Unicode Explorer</a>, or insert a letter with the <a href="/tools/accent-keyboard/">Accent Keyboard</a>.</p>
+        </div>
+      </section>
+
+      <div class="content-note">
+        <h2>Local by design</h2>
+        <p>Favorites and recents use your browser's local storage. They are not uploaded to a server and will not automatically sync between devices or browsers.</p>
+        <div class="source-links">
+          <a href="/unicode/">Find another Unicode character</a>
+          <a href="/tools/accent-keyboard/">Open Accent Keyboard</a>
+          <a href="/tools/shortcut-finder/">Find a typing shortcut</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import {
+    clearRecentCharacters,
+    getFavoriteCharacters,
+    getRecentCharacters,
+    rememberRecentCharacter,
+    removeFavoriteCharacter,
+    type CharacterLibraryItem
+  } from '../lib/character-library';
+
+  const favoritesGrid = document.querySelector<HTMLElement>('[data-favorites-grid]');
+  const recentsGrid = document.querySelector<HTMLElement>('[data-recents-grid]');
+  const favoritesEmpty = document.querySelector<HTMLElement>('[data-favorites-empty]');
+  const recentsEmpty = document.querySelector<HTMLElement>('[data-recents-empty]');
+  const clearRecents = document.querySelector<HTMLButtonElement>('[data-clear-recents]');
+
+  function createLibraryCard(item: CharacterLibraryItem, favorite: boolean) {
+    const article = document.createElement('article');
+    article.className = 'symbol-card library-character-card';
+
+    const glyph = document.createElement('span');
+    glyph.className = 'symbol-glyph';
+    glyph.setAttribute('aria-hidden', 'true');
+    glyph.textContent = item.character;
+
+    const info = document.createElement('div');
+    info.className = 'symbol-info';
+
+    if (item.href) {
+      const link = document.createElement('a');
+      link.className = 'symbol-link';
+      link.href = item.href;
+      const strong = document.createElement('strong');
+      strong.textContent = item.name;
+      link.append(strong);
+      info.append(link);
+    } else {
+      const strong = document.createElement('strong');
+      strong.textContent = item.name;
+      info.append(strong);
+    }
+
+    const meta = document.createElement('span');
+    meta.textContent = item.codePoint;
+    info.append(meta);
+
+    const actions = document.createElement('div');
+    actions.className = 'library-card-actions';
+
+    const copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'copy-button';
+    copy.textContent = 'Copy';
+    copy.dataset.libraryCopy = item.character;
+    copy.setAttribute('aria-label', `Copy ${item.name}`);
+
+    actions.append(copy);
+
+    if (favorite) {
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'favorite-button compact-favorite-button';
+      remove.textContent = '★';
+      remove.dataset.removeFavorite = item.character;
+      remove.setAttribute('aria-label', `Remove ${item.name} from favorites`);
+      actions.append(remove);
+    }
+
+    article.append(glyph, info, actions);
+    return article;
+  }
+
+  function render() {
+    const favorites = getFavoriteCharacters();
+    const recents = getRecentCharacters();
+
+    favoritesGrid?.replaceChildren(...favorites.map((item) => createLibraryCard(item, true)));
+    recentsGrid?.replaceChildren(...recents.map((item) => createLibraryCard(item, false)));
+
+    if (favoritesEmpty) favoritesEmpty.hidden = favorites.length > 0;
+    if (recentsEmpty) recentsEmpty.hidden = recents.length > 0;
+    if (clearRecents) clearRecents.hidden = recents.length === 0;
+  }
+
+  document.addEventListener('click', async (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLButtonElement)) return;
+
+    if (target.dataset.removeFavorite) {
+      removeFavoriteCharacter(target.dataset.removeFavorite);
+      render();
+      return;
+    }
+
+    if (target.dataset.libraryCopy) {
+      const character = target.dataset.libraryCopy;
+      const card = target.closest<HTMLElement>('.library-character-card');
+      const name = card?.querySelector('strong')?.textContent ?? 'Unicode character';
+      const codePoint = card?.querySelector('.symbol-info > span')?.textContent ?? '';
+
+      try {
+        await navigator.clipboard.writeText(character);
+        rememberRecentCharacter({ character, name, codePoint });
+        target.textContent = 'Copied';
+        target.dataset.copied = 'true';
+        window.setTimeout(() => {
+          target.textContent = 'Copy';
+          target.dataset.copied = 'false';
+          render();
+        }, 1200);
+      } catch {
+        target.textContent = 'Try again';
+        window.setTimeout(() => {
+          target.textContent = 'Copy';
+        }, 1400);
+      }
+    }
+  });
+
+  clearRecents?.addEventListener('click', () => {
+    clearRecentCharacters();
+    render();
+  });
+
+  window.addEventListener('character-library-change', render);
+  render();
+</script>
