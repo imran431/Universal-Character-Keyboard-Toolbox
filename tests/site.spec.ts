@@ -1,7 +1,18 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const indexablePaths = ['/', '/symbols/', '/symbols/degree-sign/'];
+const indexablePaths = [
+  '/',
+  '/symbols/',
+  '/symbols/degree-sign/',
+  '/symbols/math/',
+  '/symbols/currency/',
+  '/symbols/punctuation/',
+  '/symbols/arrows/',
+  '/symbols/status/',
+  '/symbols/legal/',
+  '/unicode/'
+];
 
 for (const path of indexablePaths) {
   test(`${path} has essential SEO metadata`, async ({ page }) => {
@@ -110,4 +121,55 @@ test('search results stay responsive after the full index loads', async ({ page 
   }));
 
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+});
+
+
+test('symbols hub links every curated category with crawlable anchors', async ({ page }) => {
+  await page.goto('/symbols/');
+
+  for (const href of [
+    '/symbols/math/',
+    '/symbols/currency/',
+    '/symbols/punctuation/',
+    '/symbols/arrows/',
+    '/symbols/status/',
+    '/symbols/legal/'
+  ]) {
+    await expect(page.locator(`a[href="${href}"]`).first()).toBeVisible();
+  }
+});
+
+test('Unicode explorer searches official names and code points', async ({ page }) => {
+  await page.goto('/unicode/');
+  const search = page.getByRole('searchbox', { name: 'Character, name, alias or code point' });
+  const grid = page.locator('[data-explorer-grid]');
+
+  await search.fill('snowman');
+  await expect(grid.getByText('SNOWMAN', { exact: true })).toBeVisible();
+  await expect(grid.getByText('U+2603', { exact: false })).toBeVisible();
+
+  await search.fill('U+2192');
+  await expect(grid.getByText('Rightwards Arrow', { exact: true })).toBeVisible();
+  await expect(grid.getByText('U+2192', { exact: false })).toBeVisible();
+});
+
+test('Unicode explorer resolves curated aliases and stays responsive', async ({ page }) => {
+  await page.goto('/unicode/');
+  const search = page.getByRole('searchbox', { name: 'Character, name, alias or code point' });
+  const grid = page.locator('[data-explorer-grid]');
+
+  await search.fill('tick');
+  await expect(grid.getByText('Check Mark', { exact: true })).toBeVisible();
+
+  const dimensions = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+});
+
+test('degree page links back into its category hierarchy', async ({ page }) => {
+  await page.goto('/symbols/degree-sign/');
+  await expect(page.locator('a[href="/symbols/math/"]').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Similar-looking characters' })).toBeVisible();
 });
