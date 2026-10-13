@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CopyButton from '../../components/CopyButton.astro';
+import { altCodeRecords } from '../../lib/shortcut-records';
+
+const title = 'Windows Alt Code Finder | Verified Special Character Codes';
+const description = 'Find reviewed Windows Alt codes for special characters. Search by symbol, name, alias, Unicode code point or Alt-code digits without guessed mappings.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: new URL('/tools/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: 'Alt Code Finder', item: new URL('/tools/alt-code-finder/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/tools/">Tools</a>
+        <span aria-hidden="true">/</span>
+        Alt Code Finder
+      </div>
+      <h1>Windows Alt Code Finder</h1>
+      <p class="lead">Find Windows Alt codes that have been explicitly reviewed in our source set. Search by symbol, name, Unicode code point or the Alt-code digits themselves.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <div class="tool-panel">
+        <label class="explorer-label" for="alt-code-search">Symbol, name, Unicode code point or Alt-code digits</label>
+        <div class="search-shell tool-search-shell">
+          <div class="search-row">
+            <input id="alt-code-search" class="search-input" type="search" autocomplete="off" spellcheck="false" placeholder="Try degree, ©, U+00AE, 0153…" data-alt-code-search />
+            <span class="search-kbd" aria-hidden="true">Windows</span>
+          </div>
+        </div>
+        <p class="search-hint" data-alt-code-status aria-live="polite">{altCodeRecords.length} reviewed Alt codes available.</p>
+      </div>
+
+      <div class="alt-code-grid" data-alt-code-grid>
+        {altCodeRecords.map((record) => (
+          <article
+            class="alt-code-card"
+            data-alt-code-card
+            data-search={[
+              record.character,
+              record.commonName,
+              record.codePoint,
+              ...record.aliases,
+              record.digits,
+              `Alt ${record.digits}`
+            ].join(' ').toLocaleLowerCase()}
+          >
+            <div class="alt-code-symbol">
+              <span class="shortcut-glyph" aria-hidden="true">{record.character}</span>
+              <div>
+                <a class="symbol-link" href={record.href}><strong>{record.commonName}</strong></a>
+                <span>{record.codePoint}</span>
+              </div>
+            </div>
+
+            <div class="alt-code-value">
+              <span class="alt-label">Alt code</span>
+              <code>Alt + {record.digits}</code>
+              <small>Use the numeric keypad.</small>
+            </div>
+
+            <div class="shortcut-actions">
+              <CopyButton value={record.character} label={`Copy ${record.commonName}`} />
+              {record.sourceUrl && (
+                <a class="source-mini-link" href={record.sourceUrl} rel="noopener noreferrer">Source</a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="search-empty shortcut-empty" data-alt-code-empty hidden>
+        <strong>No reviewed Alt code matched that search.</strong>
+        <p>That does not mean the character has no possible input method. Try the <a href="/tools/shortcut-finder/">Shortcut Finder</a> for Word, Windows Character Map, or Mac Character Viewer methods.</p>
+      </div>
+
+      <div class="info-grid tool-info-grid">
+        <section class="info-card">
+          <h2>How Windows Alt codes work</h2>
+          <p>For the entries shown here, hold <strong>Alt</strong> and type the listed digits on the numeric keypad. Num Lock and application support can matter.</p>
+        </section>
+        <section class="info-card">
+          <h2>Alt code is not the Unicode decimal number</h2>
+          <p>We do not derive Alt codes from Unicode decimal values. The two systems are different, so a numeric Unicode value is never treated as an Alt code unless a source documents it.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const search = document.querySelector<HTMLInputElement>('[data-alt-code-search]');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-alt-code-card]'));
+  const status = document.querySelector<HTMLElement>('[data-alt-code-status]');
+  const empty = document.querySelector<HTMLElement>('[data-alt-code-empty]');
+
+  function normalize(value: string) {
+    return value.trim().toLocaleLowerCase().replace(/[\s_-]+/g, ' ');
+  }
+
+  function update() {
+    const query = normalize(search?.value ?? '');
+    let visible = 0;
+
+    for (const card of cards) {
+      const haystack = normalize(card.dataset.search ?? '');
+      const matches = query.length === 0 || haystack.includes(query);
+      card.hidden = !matches;
+      if (matches) visible += 1;
+    }
+
+    if (empty) empty.hidden = visible !== 0;
+
+    if (status) {
+      status.textContent = visible === 0
+        ? 'No reviewed Alt code matched that search.'
+        : `${visible} reviewed Alt ${visible === 1 ? 'code' : 'codes'} shown.`;
+    }
+  }
+
+  search?.addEventListener('input', update, { passive: true });
+</script>
