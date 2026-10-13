@@ -333,6 +333,7 @@ h1 {
 
 @media (max-width: 62rem) {
   .symbol-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .feature-strip { grid-template-columns: 1fr; }
 }
 
@@ -343,7 +344,7 @@ h1 {
   nav a { padding: .6rem; font-size: .82rem; }
   .hero { padding-top: 2.7rem; }
   .search-kbd { display: none; }
-  .symbol-grid, .info-grid { grid-template-columns: 1fr; }
+  .symbol-grid, .info-grid, .category-grid, .comparison-grid { grid-template-columns: 1fr; }
   .answer-card { grid-template-columns: 1fr; }
   .answer-glyph { aspect-ratio: auto; min-height: 8rem; }
   .footer-inner { flex-direction: column; }
@@ -360,4 +361,230 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; }
+}
+
+
+.section-soft {
+  background: rgba(241, 245, 249, .72);
+  border-block: 1px solid var(--line);
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 11rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  text-decoration: none;
+}
+
+.category-card strong {
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+
+.category-card span {
+  margin-top: .55rem;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: .9rem;
+}
+
+.category-card small {
+  margin-top: auto;
+  padding-top: 1rem;
+  color: var(--brand-strong);
+  font-weight: 800;
+}
+
+.category-card:hover,
+.category-card:focus-visible {
+  border-color: #aebfff;
+  box-shadow: 0 12px 30px rgba(49, 87, 213, .08);
+}
+
+.content-note {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.content-note h2 {
+  margin: 0 0 .65rem;
+  font-size: 1.2rem;
+}
+
+.content-note p {
+  margin: .45rem 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.reference-kicker {
+  margin-bottom: .45rem;
+  color: var(--brand-strong);
+  font-size: .8rem;
+  font-weight: 800;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.method-row + .method-row {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.method-row h3 {
+  margin: 0 0 .3rem;
+  font-size: .95rem;
+}
+
+.method-note {
+  font-size: .82rem;
+}
+
+.example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.example-chips code,
+.example-chips button {
+  border: 1px solid var(--line);
+  border-radius: .65rem;
+  background: var(--surface-soft);
+  padding: .45rem .65rem;
+  color: var(--text);
+  font: inherit;
+  font-size: .85rem;
+}
+
+.example-chips button {
+  cursor: pointer;
+}
+
+.example-chips button:hover,
+.example-chips button:focus-visible {
+  border-color: #aebfff;
+  background: #eef3ff;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .8rem;
+  margin-top: .85rem;
+}
+
+.comparison-card {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: .85rem;
+  align-items: start;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: .85rem;
+  background: var(--surface-soft);
+}
+
+.comparison-glyph {
+  display: grid;
+  place-items: center;
+  min-height: 4rem;
+  border-radius: .75rem;
+  background: var(--surface);
+  font-size: 2rem;
+}
+
+.comparison-card strong,
+.comparison-card code {
+  display: block;
+}
+
+.comparison-card code {
+  margin-top: .2rem;
+  color: var(--muted);
+}
+
+.comparison-card p {
+  margin: .45rem 0 0;
+  font-size: .86rem;
+}
+
+.verification-note {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: .8rem;
+  line-height: 1.55;
+}
+
+.explorer-panel {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.explorer-heading h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.explorer-heading p {
+  max-width: 48rem;
+  margin: .45rem 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.explorer-search-shell {
+  max-width: none;
+  margin-top: 1.2rem;
+  box-shadow: none;
+}
+
+.explorer-label {
+  display: block;
+  padding: .35rem 1rem .1rem;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.explorer-examples {
+  margin-top: .8rem;
+}
+
+.explorer-results {
+  margin-top: 1.5rem;
+}
+
+.compact-heading {
+  margin-bottom: .9rem;
+}
+
+.compact-heading h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.compact-heading p {
+  margin-top: .25rem;
+}
+
+.explorer-info-grid {
+  margin-top: 1rem;
 }
