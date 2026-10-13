@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CopyButton from '../components/CopyButton.astro';
+import { featuredCharacters } from '../data/characters';
+
+const title = 'Unicode Symbols & Keyboard Shortcuts | Character Toolbox';
+const description = 'Find and copy symbols, Unicode characters, accents and keyboard characters. Search by name, character or code point and get the result instantly.';
+---
+<BaseLayout title={title} description={description}>
+  <section class="hero" aria-labelledby="page-title">
+    <div class="container">
+      <span class="eyebrow">Fast · browser-first · no account</span>
+      <h1 id="page-title">Find any character. Copy it instantly.</h1>
+      <p class="hero-copy">Search symbols, Unicode characters and code points. Get the exact character first, then see typing and developer details when you need them.</p>
+
+      <div class="search-shell" id="search">
+        <label class="sr-only" for="character-search">Search characters</label>
+        <div class="search-row">
+          <input id="character-search" class="search-input" type="search" inputmode="search" autocomplete="off" placeholder="Try degree, copyright, →, pi, U+00B0…" data-character-search />
+          <span class="search-kbd" aria-hidden="true">Instant</span>
+        </div>
+      </div>
+      <p class="search-hint" data-search-status aria-live="polite">Showing popular characters. Full Unicode search is coming in the next data phase.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="popular-heading">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <h2 id="popular-heading">Popular characters</h2>
+          <p>Copy common symbols without opening another page.</p>
+        </div>
+        <a class="cta-link" href="/symbols/">Browse symbols</a>
+      </div>
+
+      <div class="symbol-grid" data-symbol-grid>
+        {featuredCharacters.map((item) => (
+          <article class="symbol-card" data-symbol-card data-search={`${item.character} ${item.name} ${item.codePoint} ${item.aliases.join(' ')} ${item.category}`.toLowerCase()}>
+            <span class="symbol-glyph" aria-hidden="true">{item.character}</span>
+            <div class="symbol-info">
+              {item.href ? (
+                <a class="symbol-link" href={item.href}><strong>{item.name}</strong></a>
+              ) : (
+                <strong>{item.name}</strong>
+              )}
+              <span>{item.codePoint}</span>
+            </div>
+            <CopyButton value={item.character} label={`Copy ${item.name}`} />
+          </article>
+        ))}
+      </div>
+
+      <div class="feature-strip" aria-label="Product principles">
+        <div class="feature-item"><strong>Immediate utility</strong><p>The character and copy action come before long explanations.</p></div>
+        <div class="feature-item"><strong>Fast by default</strong><p>Core pages are static HTML with tiny browser scripts only where interaction needs them.</p></div>
+        <div class="feature-item"><strong>Built for accuracy</strong><p>Typing methods and technical facts will be tied to reviewed source data as the database grows.</p></div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('[data-character-search]');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-symbol-card]'));
+  const status = document.querySelector<HTMLElement>('[data-search-status]');
+
+  function normalize(value: string) {
+    return value.trim().toLocaleLowerCase().replace(/\s+/g, ' ');
+  }
+
+  function updateResults() {
+    if (!input) return;
+    const query = normalize(input.value);
+    let visible = 0;
+
+    for (const card of cards) {
+      const haystack = card.dataset.search ?? '';
+      const matches = query.length === 0 || haystack.includes(query);
+      card.hidden = !matches;
+      if (matches) visible += 1;
+    }
+
+    if (status) {
+      status.textContent = query.length === 0
+        ? 'Showing popular characters. Full Unicode search is coming in the next data phase.'
+        : visible === 0
+          ? 'No match in the starter set yet. The full Unicode index will expand this search.'
+          : `${visible} ${visible === 1 ? 'character' : 'characters'} found in the starter set.`;
+    }
+  }
+
+  input?.addEventListener('input', updateResults, { passive: true });
+</script>
