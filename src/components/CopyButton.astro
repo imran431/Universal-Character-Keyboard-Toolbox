@@ -1,0 +1,49 @@
+---
+interface Props {
+  value: string;
+  label?: string;
+  class?: string;
+}
+
+const { value, label = `Copy ${value}`, class: className = '' } = Astro.props;
+---
+<button class={`copy-button ${className}`} type="button" data-copy-value={value} aria-label={label}>
+  <span aria-hidden="true">Copy</span>
+  <span class="sr-only">{label}</span>
+</button>
+
+<script>
+  const copyButtons = document.querySelectorAll<HTMLButtonElement>('[data-copy-value]');
+
+  for (const button of copyButtons) {
+    if (button.dataset.copyReady === 'true') continue;
+    button.dataset.copyReady = 'true';
+
+    button.addEventListener('click', async () => {
+      const value = button.dataset.copyValue ?? '';
+      const visibleLabel = button.querySelector<HTMLElement>('[aria-hidden="true"]');
+      const original = visibleLabel?.textContent ?? 'Copy';
+
+      try {
+        await navigator.clipboard.writeText(value);
+      } catch {
+        const textarea = document.createElement('textarea');
+        textarea.value = value;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        textarea.remove();
+      }
+
+      if (visibleLabel) visibleLabel.textContent = 'Copied';
+      button.dataset.copied = 'true';
+      window.setTimeout(() => {
+        if (visibleLabel) visibleLabel.textContent = original;
+        button.dataset.copied = 'false';
+      }, 1400);
+    });
+  }
+</script>
