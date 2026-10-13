@@ -488,9 +488,11 @@ test('saved character library stays out of the search index and remains accessib
 test('favorite characters persist locally and can be removed from the library', async ({ page }) => {
   await page.goto('/symbols/degree-sign/');
 
-  const favorite = page.getByRole('button', { name: 'Add Degree Symbol to favorites' });
+  const favorite = page.locator('[data-favorite-character="°"]');
+  await expect(favorite).toHaveAccessibleName('Add Degree Symbol to favorites');
   await favorite.click();
   await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+  await expect(favorite).toHaveAccessibleName('Remove Degree Symbol from favorites');
 
   await page.goto('/library/');
   const favorites = page.locator('[data-favorites-grid]');
@@ -522,10 +524,12 @@ test('Unicode Explorer results can be saved without a detail page', async ({ pag
   await search.fill('snowman');
 
   const grid = page.locator('[data-explorer-grid]');
-  const save = grid.getByRole('button', { name: 'Add SNOWMAN to favorites' });
+  const save = grid.locator('[data-favorite-explorer="☃"]');
   await expect(save).toBeVisible();
+  await expect(save).toHaveAccessibleName('Add SNOWMAN to favorites');
   await save.click();
   await expect(save).toHaveAttribute('aria-pressed', 'true');
+  await expect(save).toHaveAccessibleName('Remove SNOWMAN from favorites');
 
   await page.goto('/library/');
   const favorites = page.locator('[data-favorites-grid]');
