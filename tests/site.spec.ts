@@ -1,14 +1,31 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-for (const path of ['/', '/symbols/', '/symbols/degree-sign/']) {
+const indexablePaths = ['/', '/symbols/', '/symbols/degree-sign/'];
+
+for (const path of indexablePaths) {
   test(`${path} has essential SEO metadata`, async ({ page }) => {
     await page.goto(path);
+
     await expect(page.locator('h1')).toHaveCount(1);
-    await expect(page.locator('title')).not.toHaveText('');
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /\S+/);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^http:\/\/localhost:4321\//);
+
+    const title = (await page.title()).trim();
+    expect(title.length).toBeGreaterThanOrEqual(15);
+    expect(title.length).toBeLessThanOrEqual(65);
+
+    const description = await page.locator('meta[name="description"]').getAttribute('content');
+    expect(description?.trim().length ?? 0).toBeGreaterThanOrEqual(50);
+    expect(description?.trim().length ?? 0).toBeLessThanOrEqual(180);
+
+    await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https?:\/\//);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index,follow/);
+
+    const schemaBlocks = await page.locator('script[type="application/ld+json"]').allTextContents();
+    expect(schemaBlocks.length).toBeGreaterThan(0);
+    for (const schema of schemaBlocks) {
+      expect(() => JSON.parse(schema)).not.toThrow();
+    }
   });
 
   test(`${path} has no horizontal overflow`, async ({ page }) => {
@@ -27,6 +44,11 @@ for (const path of ['/', '/symbols/', '/symbols/degree-sign/']) {
     expect(serious).toEqual([]);
   });
 }
+
+test('404 page stays out of the index', async ({ page }) => {
+  await page.goto('/404.html');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex,follow/);
+});
 
 test('starter search filters popular characters', async ({ page }) => {
   await page.goto('/');
