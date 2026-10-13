@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { flagshipCharacterDetails } from '../../data/character-details';
+
+const title = 'How to Type Special Characters on Windows, Mac & Word';
+const description = 'Learn reliable ways to type special characters on Windows, macOS and Microsoft Word, with verified shortcuts, Unicode methods and character-picker fallbacks.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Typing', item: new URL('/typing/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Typing</div>
+      <h1>How to Type Special Characters</h1>
+      <p class="lead">Use a documented platform or app method when one exists. If a shortcut is layout-dependent or unavailable, copy the character or use the system character picker instead.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" aria-labelledby="typing-environments">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <h2 id="typing-environments">Choose your environment</h2>
+          <p>These are broad entry points, not separate SEO pages for every symbol and operating system.</p>
+        </div>
+      </div>
+
+      <div class="category-grid typing-guide-grid">
+        <article class="category-card">
+          <strong>Windows</strong>
+          <span>Use documented Alt codes where Microsoft publishes one. For other characters, Character Map is the safer fallback.</span>
+          <small>Numeric keypad requirements can apply.</small>
+        </article>
+        <article class="category-card">
+          <strong>macOS</strong>
+          <span>Open Character Viewer with Fn/Globe + E or choose Edit &gt; Emoji &amp; Symbols, then search for the symbol.</span>
+          <small>Keyboard settings can change available shortcuts.</small>
+        </article>
+        <article class="category-card">
+          <strong>Microsoft Word</strong>
+          <span>For many Unicode characters, type the hexadecimal code without U+ and press Alt + X to convert it.</span>
+          <small>Word also has dedicated shortcuts for some symbols.</small>
+        </article>
+      </div>
+
+      <div class="content-note typing-principle-note">
+        <h2>Why we do not guess shortcuts</h2>
+        <p>Unicode code points identify characters, but they do not automatically define Windows Alt codes or keyboard shortcuts. A shortcut is only shown on this site when it has a reliable platform or application source.</p>
+        <p>Character pages keep all verified methods in the HTML. The environment selector only highlights the best match; it never hides the other methods from users or search engines.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="popular-typing-pages">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <h2 id="popular-typing-pages">Reviewed character guides</h2>
+          <p>Start with high-demand characters whose input methods and reference data have been reviewed.</p>
+        </div>
+      </div>
+
+      <div class="related-grid typing-page-links">
+        {flagshipCharacterDetails.slice(0, 12).map((detail) => (
+          <a class="related-card" href={`/symbols/${detail.slug}/`}>
+            <span class="related-glyph" aria-hidden="true">{detail.character}</span>
+            <span>
+              <strong>{detail.commonName}</strong>
+              <small>{detail.codePoint}</small>
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <div class="source-note content-note" aria-labelledby="typing-sources">
+        <h2 id="typing-sources">Primary documentation</h2>
+        <p>The current typing guidance is grounded in first-party Microsoft and Apple documentation.</p>
+        <div class="source-links">
+          <a href="https://support.microsoft.com/en-us/accessibility/word/keyboard-shortcuts-in-word" rel="noopener noreferrer">Microsoft Word keyboard shortcuts</a>
+          <a href="https://support.microsoft.com/en-us/word/insert-ascii-or-unicode-character-codes-in-word" rel="noopener noreferrer">Microsoft Unicode and character codes</a>
+          <a href="https://support.apple.com/guide/mac-help/use-emoji-and-symbols-mchlp1560/mac" rel="noopener noreferrer">Apple Character Viewer guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
