@@ -1197,3 +1197,74 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+
+.favorite-button,
+.saved-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  padding: .6rem .8rem;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 800;
+  font-size: .8rem;
+  text-decoration: none;
+}
+
+.favorite-button:hover,
+.favorite-button:focus-visible,
+.saved-link:hover,
+.saved-link:focus-visible {
+  border-color: #aebfff;
+  background: #f7f9ff;
+}
+
+.favorite-button[aria-pressed='true'] {
+  border-color: #d6b85a;
+  background: #fff9df;
+}
+
+.favorite-button [data-favorite-icon] {
+  margin-right: .35rem;
+  font-size: 1rem;
+}
+
+.library-section + .library-section {
+  margin-top: 2rem;
+}
+
+.library-card-actions {
+  display: flex;
+  align-items: stretch;
+  gap: .4rem;
+}
+
+.library-card-actions .copy-button {
+  min-width: 4rem;
+}
+
+.compact-favorite-button {
+  min-width: 2.8rem;
+  min-height: 2.7rem;
+  padding: .55rem;
+  font-size: 1rem;
+}
+
+.library-clear-button {
+  padding-inline: .8rem;
+  background: var(--surface);
+}
+
+@media (max-width: 25rem) {
+  .library-card-actions {
+    grid-column: 1 / -1;
+  }
+
+  .library-card-actions > * {
+    flex: 1 1 0;
+  }
+}
