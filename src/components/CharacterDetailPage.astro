@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CopyButton from './CopyButton.astro';
+import type { CharacterDetail } from '../data/character-details';
+
+interface Props {
+  detail: CharacterDetail;
+}
+
+const { detail } = Astro.props;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Symbols', item: new URL('/symbols/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: detail.categoryName, item: new URL(detail.categoryHref, Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 4, name: detail.commonName, item: new URL(`/symbols/${detail.slug}/`, Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={detail.title} description={detail.description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/symbols/">Symbols</a>
+        <span aria-hidden="true">/</span>
+        <a href={detail.categoryHref}>{detail.categoryName}</a>
+        <span aria-hidden="true">/</span>
+        {detail.commonName}
+      </div>
+      <h1>{detail.commonName} ({detail.character})</h1>
+      <p class="lead">{detail.summary}</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" aria-labelledby="quick-answer">
+    <div class="container">
+      <div class="answer-card">
+        <div class="answer-glyph" aria-label={detail.commonName}>{detail.character}</div>
+        <div>
+          <div class="reference-kicker">{detail.officialName} · {detail.codePoint}</div>
+          <h2 id="quick-answer">Quick answer</h2>
+          <p>{detail.quickAnswer}</p>
+          <div class="answer-actions">
+            <CopyButton value={detail.character} label={`Copy ${detail.commonName}`} />
+            {detail.examples.slice(0, 2).map((example) => (
+              <CopyButton value={example} label={`Copy ${example}`} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <section class="info-card" aria-labelledby="platform-methods">
+          <h2 id="platform-methods">Typing methods</h2>
+          {detail.methods.map((method) => (
+            <div class="method-row">
+              <h3>{method.label}</h3>
+              <p>{method.instruction}</p>
+              {method.note && <p class="method-note">{method.note}</p>}
+            </div>
+          ))}
+        </section>
+
+        <section class="info-card" aria-labelledby="character-codes">
+          <h2 id="character-codes">Character codes</h2>
+          <table class="code-table">
+            <tbody>
+              {detail.codes.map((row) => (
+                <tr>
+                  <th scope="row">{row.label}</th>
+                  <td><code>{row.value}</code></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        <section class="info-card" aria-labelledby="test-character">
+          <h2 id="test-character">Test {detail.commonName.toLowerCase()}</h2>
+          <p>Use this field to check rendering in your current browser and font.</p>
+          <textarea class="test-field" aria-label={`${detail.commonName} test area`}>{detail.examples.join(' · ')}</textarea>
+        </section>
+
+        <section class="info-card" aria-labelledby="common-uses">
+          <h2 id="common-uses">Uses and examples</h2>
+          <div class="example-chips" aria-label="Copy-ready examples">
+            {detail.examples.map((example) => <code>{example}</code>)}
+          </div>
+          {detail.notes.map((note) => <p>{note}</p>)}
+        </section>
+      </div>
+
+      <section class="content-note" aria-labelledby="lookalikes">
+        <h2 id="lookalikes">Similar-looking characters</h2>
+        <div class="comparison-grid">
+          {detail.lookalikes.map((item) => (
+            <article class="comparison-card">
+              <span class="comparison-glyph" aria-hidden="true">{item.character}</span>
+              <div>
+                <strong>{item.name}</strong>
+                <code>{item.codePoint}</code>
+                <p>{item.explanation}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <p class="verification-note">{detail.verifiedLabel}</p>
+    </div>
+  </section>
+</BaseLayout>
