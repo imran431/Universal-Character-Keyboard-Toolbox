@@ -68,7 +68,13 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
               )}
               <span>{item.codePoint}</span>
             </div>
-            <CopyButton value={item.character} label={`Copy ${item.name}`} />
+            <CopyButton
+              value={item.character}
+              label={`Copy ${item.name}`}
+              characterName={item.name}
+              codePoint={item.codePoint}
+              href={item.href ?? ''}
+            />
           </article>
         ))}
       </div>
@@ -85,6 +91,7 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
 <script>
   import { allCuratedCharacters, featuredCharacters } from '../data/characters';
   import { searchCharacterRecords } from '../lib/character-search';
+  import { rememberRecentCharacter } from '../lib/character-library';
 
   interface WorkerResult {
     codePoint: number;
@@ -206,6 +213,9 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
     copy.className = 'copy-button';
     copy.type = 'button';
     copy.dataset.resultCopy = result.character;
+    copy.dataset.resultName = result.name;
+    copy.dataset.resultCodePoint = codePointLabel(result.codePoint);
+    if (href) copy.dataset.resultHref = href;
     copy.setAttribute('aria-label', `Copy ${result.name}`);
     copy.textContent = 'Copy';
 
@@ -314,6 +324,12 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
 
     try {
       await navigator.clipboard.writeText(target.dataset.resultCopy);
+      rememberRecentCharacter({
+        character: target.dataset.resultCopy,
+        name: target.dataset.resultName || 'Unicode character',
+        codePoint: target.dataset.resultCodePoint || '',
+        href: target.dataset.resultHref || undefined
+      });
       target.textContent = 'Copied';
       target.dataset.copied = 'true';
     } catch {
