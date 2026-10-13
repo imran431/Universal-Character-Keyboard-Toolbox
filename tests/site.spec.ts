@@ -27,7 +27,10 @@ const indexablePaths = [
   '/symbols/status/',
   '/symbols/legal/',
   '/unicode/',
-  '/typing/'
+  '/typing/',
+  '/tools/',
+  '/tools/shortcut-finder/',
+  '/tools/alt-code-finder/'
 ];
 
 for (const path of indexablePaths) {
@@ -310,4 +313,68 @@ test('typing hub links to reviewed character guides and first-party sources', as
   await expect(page.locator('a[href="/symbols/degree-sign/"]').first()).toBeVisible();
   await expect(page.locator('a[href*="support.microsoft.com"]').first()).toBeVisible();
   await expect(page.locator('a[href*="support.apple.com"]').first()).toBeVisible();
+});
+
+
+test('shortcut finder filters by query and environment', async ({ page }) => {
+  await page.goto('/tools/shortcut-finder/');
+
+  const search = page.getByRole('searchbox', { name: 'Character, name, alias or code point' });
+  const cards = page.locator('[data-shortcut-card]');
+
+  await search.fill('degree');
+  await expect(page.locator('[data-shortcut-card]:visible')).toHaveCount(3);
+  await expect(page.getByText('Degree Symbol', { exact: true }).first()).toBeVisible();
+
+  await page.getByRole('button', { name: 'Windows' }).click();
+  await expect(page.locator('[data-shortcut-card]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-shortcut-card]:visible')).toContainText('Hold Alt and type 0176');
+
+  await page.getByRole('button', { name: 'Microsoft Word' }).click();
+  await expect(page.locator('[data-shortcut-card]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-shortcut-card]:visible')).toContainText('00B0');
+});
+
+test('shortcut finder keeps method sources crawlable and usable', async ({ page }) => {
+  await page.goto('/tools/shortcut-finder/');
+  await page.getByRole('searchbox', { name: 'Character, name, alias or code point' }).fill('copyright');
+
+  const visible = page.locator('[data-shortcut-card]:visible');
+  await expect(visible).toHaveCount(3);
+  await expect(visible.locator('a[href*="support.microsoft.com"]').first()).toBeVisible();
+  await expect(visible.getByRole('button', { name: /Copy Copyright Symbol/ }).first()).toBeVisible();
+});
+
+test('Alt Code Finder exposes only reviewed numeric keypad codes', async ({ page }) => {
+  await page.goto('/tools/alt-code-finder/');
+  const search = page.getByRole('searchbox', { name: 'Symbol, name, Unicode code point or Alt-code digits' });
+
+  await search.fill('degree');
+  await expect(page.locator('[data-alt-code-card]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-alt-code-card]:visible')).toContainText('Alt + 0176');
+
+  await search.fill('0153');
+  await expect(page.locator('[data-alt-code-card]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-alt-code-card]:visible')).toContainText('Trademark Symbol');
+
+  await search.fill('infinity');
+  await expect(page.locator('[data-alt-code-card]:visible')).toHaveCount(0);
+  await expect(page.locator('[data-alt-code-empty]')).toBeVisible();
+});
+
+test('tool pages remain responsive after filtering', async ({ page }) => {
+  for (const [path, searchName, query] of [
+    ['/tools/shortcut-finder/', 'Character, name, alias or code point', 'copyright'],
+    ['/tools/alt-code-finder/', 'Symbol, name, Unicode code point or Alt-code digits', 'euro']
+  ] as const) {
+    await page.goto(path);
+    await page.getByRole('searchbox', { name: searchName }).fill(query);
+
+    const dimensions = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+
+    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+  }
 });
