@@ -26,7 +26,6 @@ async function download(url) {
 function parseUnicodeData(text) {
   const characters = [];
   const ranges = [];
-
   let openRange = null;
 
   for (const rawLine of text.split(/\r?\n/)) {
@@ -117,6 +116,36 @@ function parseBlocks(text) {
   return blocks;
 }
 
+function parseDerivedNames(text) {
+  const explicit = [];
+  const ranges = [];
+
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.replace(/#.*/, '').trim();
+    if (!line) continue;
+
+    const [rangeText, nameText] = line.split(';').map((part) => part.trim());
+    if (!rangeText || !nameText) continue;
+
+    if (rangeText.includes('..')) {
+      const [startText, endText] = rangeText.split('..');
+      ranges.push({
+        start: Number.parseInt(startText, 16),
+        end: Number.parseInt(endText, 16),
+        template: nameText
+      });
+      continue;
+    }
+
+    explicit.push({
+      codePoint: Number.parseInt(rangeText, 16),
+      name: nameText
+    });
+  }
+
+  return { explicit, ranges };
+}
+
 function sourceById(id) {
   const source = manifest.sources.find((item) => item.id === id);
   if (!source) throw new Error(`Missing source ${id} in manifest`);
@@ -125,18 +154,20 @@ function sourceById(id) {
 
 console.log(`Syncing Unicode ${manifest.unicodeVersion} authoritative data...`);
 
-const [unicodeText, aliasesText, blocksText] = await Promise.all([
+const [unicodeText, aliasesText, blocksText, derivedNamesText] = await Promise.all([
   download(sourceById('unicode-data').url),
   download(sourceById('name-aliases').url),
-  download(sourceById('blocks').url)
+  download(sourceById('blocks').url),
+  download(sourceById('derived-name').url)
 ]);
 
 const unicodeData = parseUnicodeData(unicodeText);
 const aliases = parseNameAliases(aliasesText);
 const blocks = parseBlocks(blocksText);
+const derivedNames = parseDerivedNames(derivedNamesText);
 
 const artifact = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   unicodeVersion: manifest.unicodeVersion,
   releaseDate: manifest.releaseDate,
   generatedAt: new Date().toISOString(),
@@ -146,12 +177,16 @@ const artifact = {
     individuallyListedCharacters: unicodeData.characters.length,
     ranges: unicodeData.ranges.length,
     aliasCodePoints: Object.keys(aliases).length,
-    blocks: blocks.length
+    blocks: blocks.length,
+    derivedNameEntries: derivedNames.explicit.length,
+    derivedNameRanges: derivedNames.ranges.length
   },
   characters: unicodeData.characters,
   ranges: unicodeData.ranges,
   aliases,
-  blocks
+  blocks,
+  derivedNames: derivedNames.explicit,
+  derivedNameRanges: derivedNames.ranges
 };
 
 await mkdir(outputDir, { recursive: true });
@@ -159,4 +194,4 @@ await writeFile(outputPath, JSON.stringify(artifact));
 
 console.log(`Wrote ${path.relative(root, outputPath)}`);
 console.log(artifact.counts);
-console.log('Note: UnicodeData range entries remain explicit ranges at this stage.');
+console.log('DerivedName.txt is preserved as explicit names plus compact algorithmic ranges.');
