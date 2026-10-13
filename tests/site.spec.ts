@@ -30,7 +30,9 @@ const indexablePaths = [
   '/typing/',
   '/tools/',
   '/tools/shortcut-finder/',
-  '/tools/alt-code-finder/'
+  '/tools/alt-code-finder/',
+  '/tools/accent-keyboard/',
+  '/tools/unicode-converter/'
 ];
 
 for (const path of indexablePaths) {
@@ -389,7 +391,9 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     '/unicode/',
     '/tools/',
     '/tools/shortcut-finder/',
-    '/tools/alt-code-finder/'
+    '/tools/alt-code-finder/',
+    '/tools/accent-keyboard/',
+    '/tools/unicode-converter/'
   ]) {
     await page.goto(path);
 
@@ -401,4 +405,61 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
     await expect(page.locator('nav a[href="/tools/"]')).toBeVisible();
   }
+});
+
+
+test('accent keyboard inserts and filters characters', async ({ page }) => {
+  await page.goto('/tools/accent-keyboard/');
+
+  const search = page.getByRole('searchbox', { name: 'Search accented characters' });
+  const pad = page.getByRole('textbox', { name: 'Accent keyboard writing pad' });
+
+  await page.getByRole('button', { name: 'Insert a with acute: á' }).click();
+  await page.getByRole('button', { name: 'Insert n with tilde: ñ' }).click();
+  await expect(pad).toHaveValue('áñ');
+
+  await search.fill('cedilla');
+  await expect(page.locator('[data-accent-key]:visible').first()).toBeVisible();
+
+  await page.getByRole('button', { name: 'Uppercase' }).click();
+  await expect(page.getByRole('button', { name: 'Insert C with cedilla: Ç' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Insert c with cedilla: ç' })).toBeHidden();
+
+  await page.getByRole('button', { name: 'Clear' }).click();
+  await expect(pad).toHaveValue('');
+});
+
+test('Unicode converter handles BMP and supplementary code points', async ({ page }) => {
+  await page.goto('/tools/unicode-converter/');
+
+  await page.getByRole('textbox', { name: 'Text to convert' }).fill('A→😀');
+
+  await expect(page.getByRole('textbox', { name: 'Unicode code points output' }))
+    .toHaveValue('U+0041 U+2192 U+1F600');
+  await expect(page.getByRole('textbox', { name: 'JavaScript escape output' }))
+    .toHaveValue('\\u0041\\u2192\\u{1F600}');
+  await expect(page.getByRole('textbox', { name: 'HTML decimal output' }))
+    .toHaveValue('&#65;&#8594;&#128512;');
+  await expect(page.locator('[data-converter-count]')).toContainText('3 Unicode code points');
+});
+
+test('Unicode converter decodes multiple supported notations and rejects surrogates', async ({ page }) => {
+  await page.goto('/tools/unicode-converter/');
+
+  const input = page.getByRole('textbox', { name: 'Code points to decode' });
+  const output = page.getByRole('textbox', { name: 'Decoded text' });
+
+  await input.fill('U+00B0 0x2192 \\u{1F600}');
+  await expect(output).toHaveValue('°→😀');
+  await expect(page.locator('[data-decode-status]')).toContainText('Decoded 3 Unicode code points');
+
+  await input.fill('U+D800');
+  await expect(output).toHaveValue('');
+  await expect(page.locator('[data-decode-status]')).toContainText('Ignored invalid token');
+});
+
+test('tools hub links to accent keyboard and Unicode converter', async ({ page }) => {
+  await page.goto('/tools/');
+  await expect(page.locator('a[href="/tools/accent-keyboard/"]')).toBeVisible();
+  await expect(page.locator('a[href="/tools/unicode-converter/"]')).toBeVisible();
 });
