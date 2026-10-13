@@ -11,20 +11,42 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
     <div class="container">
       <span class="eyebrow">Fast · browser-first · no account</span>
       <h1 id="page-title">Find any character. Copy it instantly.</h1>
-      <p class="hero-copy">Search symbols, Unicode characters and code points. Get the exact character first, then see typing and developer details when you need them.</p>
+      <p class="hero-copy">Search Unicode names, common symbols, exact characters and code points. Get the character first, then open verified typing details when available.</p>
 
       <div class="search-shell" id="search">
         <label class="sr-only" for="character-search">Search characters</label>
         <div class="search-row">
-          <input id="character-search" class="search-input" type="search" inputmode="search" autocomplete="off" placeholder="Try degree, copyright, →, pi, U+00B0…" data-character-search />
-          <span class="search-kbd" aria-hidden="true">Instant</span>
+          <input
+            id="character-search"
+            class="search-input"
+            type="search"
+            inputmode="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Try degree, snowman, →, tick, U+00B0…"
+            data-character-search
+          />
+          <span class="search-kbd" aria-hidden="true">Unicode 18</span>
         </div>
       </div>
-      <p class="search-hint" data-search-status aria-live="polite">Showing popular characters. Full Unicode search is coming in the next data phase.</p>
+      <p class="search-hint" data-search-status aria-live="polite">Search by name, alias, character, code point, or HTML numeric entity.</p>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="popular-heading">
+  <section class="section unicode-results-section" data-unicode-results hidden aria-labelledby="unicode-results-heading">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <h2 id="unicode-results-heading">Search results</h2>
+          <p data-result-summary>Unicode matches appear here.</p>
+        </div>
+      </div>
+      <div class="symbol-grid" data-unicode-result-grid></div>
+      <p class="search-footnote">Character names come from the Unicode Character Database. Typing shortcuts are added separately only after verification.</p>
+    </div>
+  </section>
+
+  <section class="section" data-popular-section aria-labelledby="popular-heading">
     <div class="container">
       <div class="section-heading">
         <div>
@@ -34,9 +56,9 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
         <a class="cta-link" href="/symbols/">Browse symbols</a>
       </div>
 
-      <div class="symbol-grid" data-symbol-grid>
+      <div class="symbol-grid">
         {featuredCharacters.map((item) => (
-          <article class="symbol-card" data-symbol-card data-character-id={item.id}>
+          <article class="symbol-card">
             <span class="symbol-glyph" aria-hidden="true">{item.character}</span>
             <div class="symbol-info">
               {item.href ? (
@@ -53,8 +75,8 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
 
       <div class="feature-strip" aria-label="Product principles">
         <div class="feature-item"><strong>Immediate utility</strong><p>The character and copy action come before long explanations.</p></div>
-        <div class="feature-item"><strong>Fast by default</strong><p>Core pages are static HTML with tiny browser scripts only where interaction needs them.</p></div>
-        <div class="feature-item"><strong>Built for accuracy</strong><p>Typing methods and technical facts will be tied to reviewed source data as the database grows.</p></div>
+        <div class="feature-item"><strong>Fast by default</strong><p>Core pages are static HTML. The larger Unicode index loads only after you search.</p></div>
+        <div class="feature-item"><strong>Built for accuracy</strong><p>Unicode identity comes from official data; typing methods use a separate verified layer.</p></div>
       </div>
     </div>
   </section>
@@ -64,45 +86,230 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
   import { featuredCharacters } from '../data/characters';
   import { searchCharacterRecords } from '../lib/character-search';
 
-  const input = document.querySelector<HTMLInputElement>('[data-character-search]');
-  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-symbol-card]'));
-  const status = document.querySelector<HTMLElement>('[data-search-status]');
-
-  const cardById = new Map(
-    cards.map((card) => [card.dataset.characterId ?? '', card])
-  );
-
-  function updateResults() {
-    if (!input) return;
-
-    const query = input.value;
-    const results = searchCharacterRecords(featuredCharacters, query);
-    const visibleIds = new Set(results.map(({ record }) => record.id));
-
-    for (const card of cards) {
-      card.hidden = !visibleIds.has(card.dataset.characterId ?? '');
-      card.style.removeProperty('order');
-    }
-
-    results.forEach(({ record }, index) => {
-      const card = cardById.get(record.id);
-      if (card) card.style.order = String(index);
-    });
-
-    if (!status) return;
-
-    if (query.trim().length === 0) {
-      status.textContent = 'Showing popular characters. Full Unicode search is coming in the next data phase.';
-      return;
-    }
-
-    if (results.length === 0) {
-      status.textContent = 'No match in the starter set yet. The full Unicode index will expand this search.';
-      return;
-    }
-
-    status.textContent = `${results.length} ${results.length === 1 ? 'character' : 'characters'} found. Exact character and code-point matches rank first.`;
+  interface WorkerResult {
+    codePoint: number;
+    character: string;
+    name: string;
+    aliases: string[];
+    block: string;
+    category: string;
+    score: number;
   }
 
-  input?.addEventListener('input', updateResults, { passive: true });
+  interface WorkerResponse {
+    id: number;
+    ok: boolean;
+    results?: WorkerResult[];
+    error?: string;
+  }
+
+  const input = document.querySelector<HTMLInputElement>('[data-character-search]');
+  const status = document.querySelector<HTMLElement>('[data-search-status]');
+  const resultSection = document.querySelector<HTMLElement>('[data-unicode-results]');
+  const resultGrid = document.querySelector<HTMLElement>('[data-unicode-result-grid]');
+  const resultSummary = document.querySelector<HTMLElement>('[data-result-summary]');
+  const popularSection = document.querySelector<HTMLElement>('[data-popular-section]');
+
+  const curatedHrefByCodePoint = new Map<number, string>();
+  for (const item of featuredCharacters) {
+    if (!item.href) continue;
+    const codePoint = Number.parseInt(item.codePoint.replace(/^U\+/i, ''), 16);
+    curatedHrefByCodePoint.set(codePoint, item.href);
+  }
+
+  let worker: Worker | null = null;
+  let requestId = 0;
+  let debounceTimer = 0;
+
+  function codePointLabel(codePoint: number) {
+    return `U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}`;
+  }
+
+  function displayGlyph(result: WorkerResult) {
+    if (result.category.startsWith('M')) return `◌${result.character}`;
+    if (result.category === 'Cf' || result.category === 'Cc' || result.character.trim() === '') return '□';
+    return result.character;
+  }
+
+  function featuredResults(query: string): WorkerResult[] {
+    return searchCharacterRecords(featuredCharacters, query).map(({ record, score }) => ({
+      codePoint: Number.parseInt(record.codePoint.replace(/^U\+/i, ''), 16),
+      character: record.character,
+      name: record.name,
+      aliases: record.aliases,
+      block: '',
+      category: '',
+      score: score + 100
+    }));
+  }
+
+  function mergeResults(primary: WorkerResult[], secondary: WorkerResult[]) {
+    const merged = new Map<number, WorkerResult>();
+
+    for (const result of [...primary, ...secondary]) {
+      const current = merged.get(result.codePoint);
+      if (!current || result.score > current.score) merged.set(result.codePoint, result);
+    }
+
+    return [...merged.values()]
+      .sort((a, b) => b.score - a.score || a.codePoint - b.codePoint)
+      .slice(0, 24);
+  }
+
+  function createResultCard(result: WorkerResult) {
+    const article = document.createElement('article');
+    article.className = 'symbol-card';
+
+    const glyph = document.createElement('span');
+    glyph.className = 'symbol-glyph';
+    glyph.setAttribute('aria-hidden', 'true');
+    glyph.textContent = displayGlyph(result);
+
+    const info = document.createElement('div');
+    info.className = 'symbol-info';
+
+    const href = curatedHrefByCodePoint.get(result.codePoint);
+    if (href) {
+      const link = document.createElement('a');
+      link.className = 'symbol-link';
+      link.href = href;
+      const strong = document.createElement('strong');
+      strong.textContent = result.name;
+      link.append(strong);
+      info.append(link);
+    } else {
+      const strong = document.createElement('strong');
+      strong.textContent = result.name;
+      info.append(strong);
+    }
+
+    const meta = document.createElement('span');
+    meta.textContent = [codePointLabel(result.codePoint), result.block].filter(Boolean).join(' · ');
+    info.append(meta);
+
+    const copy = document.createElement('button');
+    copy.className = 'copy-button';
+    copy.type = 'button';
+    copy.dataset.resultCopy = result.character;
+    copy.setAttribute('aria-label', `Copy ${result.name}`);
+    copy.textContent = 'Copy';
+
+    article.append(glyph, info, copy);
+    return article;
+  }
+
+  function renderResults(results: WorkerResult[]) {
+    if (!resultGrid || !resultSection) return;
+
+    resultGrid.replaceChildren();
+
+    if (results.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'search-empty';
+      const heading = document.createElement('strong');
+      heading.textContent = 'No matching named character found.';
+      const copy = document.createElement('p');
+      copy.textContent = 'Try a Unicode code point such as U+2192, paste the character itself, or use fewer words.';
+      empty.append(heading, copy);
+      resultGrid.append(empty);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    for (const result of results) fragment.append(createResultCard(result));
+    resultGrid.append(fragment);
+  }
+
+  function ensureWorker() {
+    if (!worker) {
+      worker = new Worker(new URL('../workers/unicode-search.worker.ts', import.meta.url), {
+        type: 'module'
+      });
+
+      worker.addEventListener('message', (event: MessageEvent<WorkerResponse>) => {
+        if (!input || event.data.id !== requestId) return;
+
+        const local = featuredResults(input.value);
+
+        if (!event.data.ok) {
+          const fallback = mergeResults(local, []);
+          renderResults(fallback);
+          if (status) status.textContent = fallback.length
+            ? 'Showing curated matches. The full Unicode index is temporarily unavailable.'
+            : 'The full Unicode index is temporarily unavailable.';
+          if (resultSummary) resultSummary.textContent = 'Curated character matches';
+          return;
+        }
+
+        const results = mergeResults(local, event.data.results ?? []);
+        renderResults(results);
+
+        if (resultSummary) {
+          resultSummary.textContent = results.length === 24
+            ? 'Showing the strongest 24 matches from Unicode 18.0.'
+            : `${results.length} ${results.length === 1 ? 'match' : 'matches'} from Unicode 18.0.`;
+        }
+
+        if (status) {
+          status.textContent = results.length
+            ? 'Results ready. Exact characters and code points rank first.'
+            : 'No matching named character found.';
+        }
+      });
+    }
+
+    return worker;
+  }
+
+  function runSearch() {
+    if (!input || !resultSection || !popularSection) return;
+
+    const query = input.value.trim();
+    requestId += 1;
+
+    if (!query) {
+      resultSection.hidden = true;
+      popularSection.hidden = false;
+      if (status) status.textContent = 'Search by name, alias, character, code point, or HTML numeric entity.';
+      return;
+    }
+
+    popularSection.hidden = true;
+    resultSection.hidden = false;
+
+    const local = featuredResults(query);
+    renderResults(local);
+    if (resultSummary) resultSummary.textContent = local.length ? 'Checking the full Unicode index…' : 'Searching Unicode 18.0…';
+    if (status) status.textContent = 'Searching the Unicode 18.0 index…';
+
+    const currentId = requestId;
+    ensureWorker().postMessage({ id: currentId, query, limit: 24 });
+  }
+
+  input?.addEventListener('input', () => {
+    window.clearTimeout(debounceTimer);
+    debounceTimer = window.setTimeout(runSearch, 100);
+  });
+
+  resultGrid?.addEventListener('click', async (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLButtonElement) || !target.dataset.resultCopy) return;
+
+    const original = target.textContent ?? 'Copy';
+
+    try {
+      await navigator.clipboard.writeText(target.dataset.resultCopy);
+      target.textContent = 'Copied';
+      target.dataset.copied = 'true';
+    } catch {
+      target.textContent = 'Try again';
+      target.dataset.copyFailed = 'true';
+    }
+
+    window.setTimeout(() => {
+      target.textContent = original;
+      target.dataset.copied = 'false';
+      target.dataset.copyFailed = 'false';
+    }, 1400);
+  });
 </script>
