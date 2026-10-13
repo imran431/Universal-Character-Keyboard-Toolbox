@@ -20,6 +20,11 @@
       "id": "blocks",
       "url": "https://www.unicode.org/Public/18.0.0/ucd/Blocks.txt",
       "purpose": "Unicode block ranges"
+    },
+    {
+      "id": "derived-name",
+      "url": "https://www.unicode.org/Public/18.0.0/ucd/extracted/DerivedName.txt",
+      "purpose": "Complete explicit and algorithmic Unicode Name property data"
     }
   ]
 }
