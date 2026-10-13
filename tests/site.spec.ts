@@ -12,6 +12,14 @@ const indexablePaths = [
   '/symbols/em-dash/',
   '/symbols/check-mark/',
   '/symbols/right-arrow/',
+  '/symbols/en-dash/',
+  '/symbols/ellipsis/',
+  '/symbols/plus-minus/',
+  '/symbols/infinity/',
+  '/symbols/bullet/',
+  '/symbols/pound-sign/',
+  '/symbols/yen-sign/',
+  '/symbols/indian-rupee-sign/',
   '/symbols/math/',
   '/symbols/currency/',
   '/symbols/punctuation/',
@@ -191,7 +199,15 @@ test('flagship character pages expose reviewed sources', async ({ page }) => {
     '/symbols/euro-sign/',
     '/symbols/em-dash/',
     '/symbols/check-mark/',
-    '/symbols/right-arrow/'
+    '/symbols/right-arrow/',
+    '/symbols/en-dash/',
+    '/symbols/ellipsis/',
+    '/symbols/plus-minus/',
+    '/symbols/infinity/',
+    '/symbols/bullet/',
+    '/symbols/pound-sign/',
+    '/symbols/yen-sign/',
+    '/symbols/indian-rupee-sign/'
   ]) {
     await page.goto(path);
     await expect(page.getByRole('heading', { name: 'Reviewed sources' })).toBeVisible();
@@ -207,11 +223,53 @@ test('flagship category cards link to reviewed detail pages', async ({ page }) =
     ['/symbols/currency/', '/symbols/euro-sign/'],
     ['/symbols/punctuation/', '/symbols/em-dash/'],
     ['/symbols/status/', '/symbols/check-mark/'],
-    ['/symbols/arrows/', '/symbols/right-arrow/']
+    ['/symbols/arrows/', '/symbols/right-arrow/'],
+    ['/symbols/punctuation/', '/symbols/en-dash/'],
+    ['/symbols/punctuation/', '/symbols/ellipsis/'],
+    ['/symbols/punctuation/', '/symbols/bullet/'],
+    ['/symbols/math/', '/symbols/plus-minus/'],
+    ['/symbols/math/', '/symbols/infinity/'],
+    ['/symbols/currency/', '/symbols/pound-sign/'],
+    ['/symbols/currency/', '/symbols/yen-sign/'],
+    ['/symbols/currency/', '/symbols/indian-rupee-sign/']
   ] as const;
 
   for (const [categoryPath, detailHref] of cases) {
     await page.goto(categoryPath);
     await expect(page.locator(`a[href="${detailHref}"]`).first()).toBeVisible();
+  }
+});
+
+
+test('flagship detail pages build contextual related-character links', async ({ page }) => {
+  for (const path of [
+    '/symbols/em-dash/',
+    '/symbols/en-dash/',
+    '/symbols/euro-sign/',
+    '/symbols/pound-sign/',
+    '/symbols/plus-minus/',
+    '/symbols/infinity/'
+  ]) {
+    await page.goto(path);
+    await expect(page.getByRole('heading', { name: 'Related characters' })).toBeVisible();
+    await expect(page.locator('.related-card').first()).toBeVisible();
+  }
+});
+
+test('second flagship batch exposes copy, code, related and source sections', async ({ page }) => {
+  for (const path of [
+    '/symbols/en-dash/',
+    '/symbols/ellipsis/',
+    '/symbols/plus-minus/',
+    '/symbols/infinity/',
+    '/symbols/bullet/',
+    '/symbols/pound-sign/',
+    '/symbols/yen-sign/',
+    '/symbols/indian-rupee-sign/'
+  ]) {
+    await page.goto(path);
+    await expect(page.getByRole('button', { name: /^Copy / }).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Character codes' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Reviewed sources' })).toBeVisible();
   }
 });
