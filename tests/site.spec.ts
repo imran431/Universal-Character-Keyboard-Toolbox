@@ -50,30 +50,57 @@ test('404 page stays out of the index', async ({ page }) => {
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex,follow/);
 });
 
-test('starter search filters popular characters', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('searchbox', { name: 'Search characters' }).fill('degree');
-  await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
-  await expect(page.locator('[data-symbol-card]:visible')).toHaveCount(1);
-});
-
-
-test('starter search understands characters, code points, and aliases', async ({ page }) => {
+test('search understands curated aliases', async ({ page }) => {
   await page.goto('/');
   const search = page.getByRole('searchbox', { name: 'Search characters' });
 
-  await search.fill('°');
-  await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
-  await expect(page.locator('[data-symbol-card]:visible')).toHaveCount(1);
-
-  await search.fill('U+00B0');
-  await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
-  await expect(page.locator('[data-symbol-card]:visible')).toHaveCount(1);
-
-  await search.fill('&#176;');
-  await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
-  await expect(page.locator('[data-symbol-card]:visible')).toHaveCount(1);
-
   await search.fill('tick');
   await expect(page.getByText('Check Mark', { exact: true })).toBeVisible();
+});
+
+test('search understands exact characters, code points, and HTML numeric entities', async ({ page }) => {
+  await page.goto('/');
+  const search = page.getByRole('searchbox', { name: 'Search characters' });
+
+  for (const query of ['°', 'U+00B0', '&#176;']) {
+    await search.fill(query);
+    await expect(page.getByText('Degree Sign', { exact: true })).toBeVisible();
+    await expect(page.getByText('U+00B0', { exact: false })).toBeVisible();
+  }
+});
+
+test('full Unicode index finds a non-featured named character', async ({ page }) => {
+  await page.goto('/');
+  const search = page.getByRole('searchbox', { name: 'Search characters' });
+
+  await search.fill('snowman');
+
+  const resultGrid = page.locator('[data-unicode-result-grid]');
+  await expect(resultGrid.getByText('SNOWMAN', { exact: true })).toBeVisible();
+  await expect(resultGrid.getByText('U+2603', { exact: false })).toBeVisible();
+});
+
+test('algorithmic Unicode names resolve without expanding huge ranges', async ({ page }) => {
+  await page.goto('/');
+  const search = page.getByRole('searchbox', { name: 'Search characters' });
+
+  await search.fill('CJK UNIFIED IDEOGRAPH-4E00');
+
+  const resultGrid = page.locator('[data-unicode-result-grid]');
+  await expect(resultGrid.getByText('CJK UNIFIED IDEOGRAPH-4E00', { exact: true })).toBeVisible();
+  await expect(resultGrid.getByText('U+4E00', { exact: false })).toBeVisible();
+});
+
+test('search results stay responsive after the full index loads', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('searchbox', { name: 'Search characters' }).fill('arrow');
+
+  await expect(page.locator('[data-unicode-result-grid] .symbol-card').first()).toBeVisible();
+
+  const dimensions = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+
+  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
 });
