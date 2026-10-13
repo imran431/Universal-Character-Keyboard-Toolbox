@@ -11,3 +11,6 @@ test-results/
 
 # Large reproducible Unicode artifacts
 data/generated/*.json
+
+# Reproducible browser search artifact
+public/data/search/*.json
