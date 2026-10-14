@@ -10,47 +10,50 @@ First setup:
 
 ```bash
 npm install
-npm run unicode:prepare
+npm run unicode:restore
 npm run dev
 ```
 
 Open `http://localhost:4321`.
 
-`unicode:prepare` downloads version-pinned Unicode 18.0.0 source files, verifies the normalized data, and generates the deferred browser search asset. Normal Astro builds do not fetch Unicode.org.
+`unicode:restore` downloads the checksum-verified Unicode 18.0.0 browser search snapshot from the project's versioned GitHub release. Normal development, tests, CI, and Netlify deploys do not depend on Unicode.org being online.
+
+Maintainers use `npm run unicode:prepare` only when intentionally refreshing the pinned Unicode snapshot from the authoritative Unicode.org sources.
 
 ## Quality checks
 
-After the Unicode search asset exists:
+Install Playwright once, then run the complete gate:
 
 ```bash
-npm run build
 npx playwright install chromium
-npm run test:e2e
+npm test
 ```
 
-The Playwright suite checks desktop and mobile overflow, core SEO metadata, full Unicode search behavior, and serious/critical accessibility issues.
+`npm test` restores the pinned Unicode snapshot if needed, builds and type-checks the site, verifies SEO/indexation and production deployment configuration, then runs desktop/mobile Playwright and accessibility coverage.
 
-When Unicode data changes, run the complete pipeline again:
+When Unicode data or its generator changes, maintainers run:
 
 ```bash
 npm run unicode:prepare
-npm run build
-npm run test:e2e
+npm run unicode:verify
+npm test
 ```
+
+The dedicated GitHub Actions snapshot workflow publishes the deterministic search JSON and SHA-256 checksum under the versioned `unicode-18.0.0` release tag.
 
 ## Production URL
 
-Before any public deployment, configure the final canonical domain:
+For local production-style builds you can override the canonical site explicitly:
 
 ```bash
 SITE_URL=https://your-domain.com npm run build
 ```
 
-On Netlify, add `SITE_URL` as an environment variable. Do not deploy with the localhost fallback.
+On Netlify, Astro automatically falls back to Netlify's production `URL` environment variable. Set `SITE_URL` only when you want to override that value, such as after moving to a preferred custom canonical domain.
 
 ## Deployment target
 
-The project is static and Netlify-ready. `netlify.toml` prepares the version-pinned Unicode search data, builds the static site, publishes `dist`, and applies baseline security/cache headers.
+The project is static and Netlify-ready. `netlify.toml` restores the checksum-verified, version-pinned Unicode search snapshot from GitHub Releases, builds the static site, publishes `dist`, and applies baseline security/cache headers. Ordinary deploys do not download from Unicode.org.
 
 ## Architecture guardrails
 
