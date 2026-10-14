@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { allAccentCharacters } from '../../data/accent-characters';
+import { accentLanguages, allAccentCharacters } from '../../data/accent-characters';
 
-const title = 'Accent Keyboard — Copy Accented Letters & Latin Characters';
-const description = 'Use a free accent keyboard to find, type and copy accented Latin letters including acute, grave, circumflex, tilde, diaeresis, macron and more.';
+const title = 'Accent Keyboard — 500+ Accented Letters & Latin Characters';
+const description = 'Build, filter, type and copy 500+ accented Latin letters across A-Z, including acute, grave, circumflex, tilde, diaeresis, caron, macron and more.';
 
 const builderBases = [...new Set(
   allAccentCharacters
@@ -39,8 +39,8 @@ const breadcrumbSchema = {
         <span aria-hidden="true">/</span>
         Accent Keyboard
       </div>
-      <h1>Accent Keyboard</h1>
-      <p class="lead">Click an accented letter to insert it into the writing pad, or search by base letter and accent name. Everything runs locally in your browser.</p>
+      <h1>Accent Keyboard & Letter Builder</h1>
+      <p class="lead">Build and copy accented Latin letters across A-Z, filter by language or base letter, and collect multiple characters in the writing pad. Everything runs locally in your browser.</p>
     </div>
   </header>
 
@@ -55,10 +55,35 @@ const breadcrumbSchema = {
           </div>
         </div>
 
-        <div class="typing-selector tool-filter" role="group" aria-label="Filter accent letter case">
-          <button type="button" data-accent-case="all" aria-pressed="true">All</button>
-          <button type="button" data-accent-case="lower" aria-pressed="false">Lowercase</button>
-          <button type="button" data-accent-case="upper" aria-pressed="false">Uppercase</button>
+        <div class="accent-filter-groups">
+          <div>
+            <span class="accent-filter-label">Case</span>
+            <div class="typing-selector tool-filter" role="group" aria-label="Filter accent letter case">
+              <button type="button" data-accent-case="all" aria-pressed="true">All</button>
+              <button type="button" data-accent-case="lower" aria-pressed="false">Lowercase</button>
+              <button type="button" data-accent-case="upper" aria-pressed="false">Uppercase</button>
+            </div>
+          </div>
+
+          <div>
+            <span class="accent-filter-label">Language</span>
+            <div class="accent-filter-row" role="group" aria-label="Filter accented letters by language">
+              <button type="button" data-accent-language="all" aria-pressed="true">All</button>
+              {accentLanguages.map((language) => (
+                <button type="button" data-accent-language={language} aria-pressed="false">{language}</button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <span class="accent-filter-label">Base letter</span>
+            <div class="accent-filter-row accent-letter-filter" role="group" aria-label="Filter by base letter">
+              <button type="button" data-accent-letter="all" aria-pressed="true">All</button>
+              {builderBases.map((base) => (
+                <button type="button" data-accent-letter={base} aria-pressed="false">{base.toLocaleUpperCase()}</button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <p class="search-hint" data-accent-status aria-live="polite">{allAccentCharacters.length} accented and special Latin characters available.</p>
@@ -123,8 +148,12 @@ const breadcrumbSchema = {
         <section aria-labelledby="accent-characters">
           <div class="section-heading compact-heading">
             <div>
-              <h2 id="accent-characters">Accented characters</h2>
-              <p>Buttons remain normal text characters, so they work with keyboard navigation and screen readers.</p>
+              <h2 id="accent-characters">Quick copy keyboard</h2>
+              <p>Filter hundreds of precomposed Latin letters, then click a character to add it to the writing pad.</p>
+            </div>
+            <div class="section-actions">
+              <button type="button" class="source-mini-link" data-copy-visible>Copy shown</button>
+              <button type="button" class="source-mini-link accent-clear-button" data-reset-accent-filters>Reset filters</button>
             </div>
           </div>
 
@@ -136,7 +165,9 @@ const breadcrumbSchema = {
                 data-accent-key
                 data-character={item.character}
                 data-case={item.case}
-                data-search={`${item.character} ${item.label} ${item.base} ${item.accent}`.toLocaleLowerCase()}
+                data-base={item.base}
+                data-languages={item.languages.join('|')}
+                data-search={`${item.character} ${item.label} ${item.base} ${item.accent} ${item.languages.join(' ')}`.toLocaleLowerCase()}
                 aria-label={`Insert ${item.label}: ${item.character}`}
               >
                 <span class="accent-key-glyph" aria-hidden="true">{item.character}</span>
@@ -155,7 +186,7 @@ const breadcrumbSchema = {
       <div class="info-grid tool-info-grid">
         <section class="info-card">
           <h2>What this keyboard covers</h2>
-          <p>This first version focuses on common Latin letters with diacritics plus a small set of special Latin letters and ligatures. It is not intended to replace a full language-specific keyboard layout.</p>
+          <p>The keyboard includes precomposed Latin letters from the core Latin-1, Latin Extended and Latin Additional ranges when they decompose to A-Z plus documented combining marks, along with selected special Latin letters such as stroke, hook, eth, thorn and ligature forms.</p>
         </section>
         <section class="info-card">
           <h2>Need a different character?</h2>
@@ -173,6 +204,10 @@ const breadcrumbSchema = {
   const search = document.querySelector<HTMLInputElement>('[data-accent-search]');
   const keys = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-accent-key]'));
   const filters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-accent-case]'));
+  const languageFilters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-accent-language]'));
+  const letterFilters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-accent-letter]'));
+  const copyVisible = document.querySelector<HTMLButtonElement>('[data-copy-visible]');
+  const resetFilters = document.querySelector<HTMLButtonElement>('[data-reset-accent-filters]');
   const status = document.querySelector<HTMLElement>('[data-accent-status]');
   const empty = document.querySelector<HTMLElement>('[data-accent-empty]');
   const pad = document.querySelector<HTMLTextAreaElement>('[data-accent-pad]');
@@ -186,6 +221,8 @@ const breadcrumbSchema = {
   const builderStatus = document.querySelector<HTMLElement>('[data-builder-status]');
 
   let selectedCase = 'all';
+  let selectedLanguage = 'all';
+  let selectedLetter = 'all';
   let selectedBase = '';
   let selectedAccent = '';
 
@@ -199,8 +236,11 @@ const breadcrumbSchema = {
 
     for (const key of keys) {
       const matchesCase = selectedCase === 'all' || key.dataset.case === selectedCase;
+      const matchesLanguage = selectedLanguage === 'all' ||
+        (key.dataset.languages ?? '').split('|').includes(selectedLanguage);
+      const matchesLetter = selectedLetter === 'all' || key.dataset.base === selectedLetter;
       const matchesQuery = query.length === 0 || normalize(key.dataset.search ?? '').includes(query);
-      key.hidden = !(matchesCase && matchesQuery);
+      key.hidden = !(matchesCase && matchesLanguage && matchesLetter && matchesQuery);
       if (!key.hidden) visible += 1;
     }
 
@@ -330,6 +370,66 @@ const breadcrumbSchema = {
       updateFilter();
     });
   }
+
+  for (const filter of languageFilters) {
+    filter.addEventListener('click', () => {
+      selectedLanguage = filter.dataset.accentLanguage ?? 'all';
+      for (const button of languageFilters) {
+        button.setAttribute('aria-pressed', String(button === filter));
+      }
+      updateFilter();
+    });
+  }
+
+  for (const filter of letterFilters) {
+    filter.addEventListener('click', () => {
+      selectedLetter = filter.dataset.accentLetter ?? 'all';
+      for (const button of letterFilters) {
+        button.setAttribute('aria-pressed', String(button === filter));
+      }
+      updateFilter();
+    });
+  }
+
+  copyVisible?.addEventListener('click', async () => {
+    const value = keys.filter((key) => !key.hidden).map((key) => key.dataset.character ?? '').join('');
+    if (!value) return;
+
+    const original = copyVisible.textContent ?? 'Copy shown';
+    try {
+      await navigator.clipboard.writeText(value);
+      copyVisible.textContent = 'Copied';
+      copyVisible.dataset.copied = 'true';
+    } catch {
+      copyVisible.textContent = 'Try again';
+      copyVisible.dataset.copyFailed = 'true';
+    }
+
+    window.setTimeout(() => {
+      copyVisible.textContent = original;
+      copyVisible.dataset.copied = 'false';
+      copyVisible.dataset.copyFailed = 'false';
+    }, 1400);
+  });
+
+  resetFilters?.addEventListener('click', () => {
+    selectedCase = 'all';
+    selectedLanguage = 'all';
+    selectedLetter = 'all';
+    if (search) search.value = '';
+
+    for (const button of filters) {
+      button.setAttribute('aria-pressed', String(button.dataset.accentCase === 'all'));
+    }
+    for (const button of languageFilters) {
+      button.setAttribute('aria-pressed', String(button.dataset.accentLanguage === 'all'));
+    }
+    for (const button of letterFilters) {
+      button.setAttribute('aria-pressed', String(button.dataset.accentLetter === 'all'));
+    }
+
+    updateFilter();
+  });
 
   for (const key of keys) {
     key.addEventListener('click', () => {
