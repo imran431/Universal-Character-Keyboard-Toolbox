@@ -487,6 +487,7 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     '/typing/',
     '/unicode/',
     '/tools/',
+    '/tools/copy-paste-symbols/',
     '/tools/shortcut-finder/',
     '/tools/alt-code-finder/',
     '/tools/accent-keyboard/',
@@ -563,6 +564,7 @@ test('Unicode converter decodes multiple supported notations and rejects surroga
 
 test('tools hub links to high-value character utilities', async ({ page }) => {
   await page.goto('/tools/');
+  await expect(page.locator('a[href="/tools/copy-paste-symbols/"]')).toBeVisible();
   await expect(page.locator('a[href="/tools/accent-keyboard/"]')).toBeVisible();
   await expect(page.locator('a[href="/tools/unicode-converter/"]')).toBeVisible();
   await expect(page.locator('a[href="/tools/invisible-characters/"]')).toBeVisible();
@@ -713,4 +715,64 @@ test('Alt Code Finder includes Microsoft documented punctuation codes', async ({
   await search.fill('section');
   await expect(page.locator('[data-alt-code-card]:visible')).toHaveCount(1);
   await expect(page.locator('[data-alt-code-card]:visible')).toContainText('Alt + 0167');
+});
+
+
+test('copy-paste catalog exposes broad visual symbol coverage', async ({ page }) => {
+  await page.goto('/tools/copy-paste-symbols/');
+
+  const cards = page.locator('[data-catalog-symbol]');
+  expect(await cards.count()).toBeGreaterThanOrEqual(750);
+  await expect(page.locator('[data-catalog-category]')).toHaveCount(17);
+
+  await expect(page.locator('[data-category-slug="arrows"]')).toBeVisible();
+  await expect(page.locator('[data-category-slug="box-drawing"]')).toBeVisible();
+  await expect(page.locator('[data-category-slug="greek"]')).toBeVisible();
+  await expect(page.locator('[data-category-slug="superscripts"]')).toBeVisible();
+});
+
+test('copy-paste catalog searches names categories glyphs and code points', async ({ page }) => {
+  await page.goto('/tools/copy-paste-symbols/');
+
+  const search = page.getByRole('searchbox', { name: 'Search symbols' });
+
+  await search.fill('fraction');
+  expect(await page.locator('[data-catalog-symbol]:visible').count()).toBeGreaterThanOrEqual(15);
+  await expect(page.locator('[data-category-slug="fractions"]')).toBeVisible();
+
+  await search.fill('U+2192');
+  const rightArrow = page.locator('[data-catalog-symbol][data-character="→"]:visible').first();
+  await expect(rightArrow).toBeVisible();
+
+  await search.fill('©');
+  await expect(page.locator('[data-catalog-symbol][data-character="©"]:visible').first()).toBeVisible();
+});
+
+test('copy-paste catalog copy and favorite workflows use local character library', async ({ page }) => {
+  await page.goto('/tools/copy-paste-symbols/');
+
+  const card = page.locator('[data-catalog-symbol][data-character="∑"]').first();
+  await card.locator('[data-catalog-save]').click();
+  await expect(card.locator('[data-catalog-save]')).toHaveAttribute('aria-pressed', 'true');
+
+  await card.locator('[data-catalog-copy]').click();
+  await expect(card.locator('[data-catalog-copy-label]')).toHaveText('Copied');
+
+  await page.goto('/library/');
+  await expect(page.locator('[data-favorites-grid]').getByText('N-Ary Summation', { exact: true })).toBeVisible();
+  await expect(page.locator('[data-recents-grid]').getByText('N-Ary Summation', { exact: true })).toBeVisible();
+});
+
+test('copy-paste catalog stays usable at narrow mobile widths', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto('/tools/copy-paste-symbols/');
+
+  const dimensions = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+
+  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+  await expect(page.locator('[data-category-link="arrows"]')).toBeVisible();
+  await expect(page.locator('[data-catalog-symbol]').first()).toBeVisible();
 });
