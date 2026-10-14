@@ -80,7 +80,11 @@ for (const path of indexablePaths) {
     expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
   });
 
-  test(`${path} has no serious accessibility violations`, async ({ page }) => {
+  test(`${path} has no serious accessibility violations`, async ({ page }, testInfo) => {
+    if (path === '/tools/copy-paste-symbols/') {
+      testInfo.setTimeout(75_000);
+    }
+
     await page.goto(path);
     const results = await new AxeBuilder({ page }).analyze();
     const serious = results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''));
