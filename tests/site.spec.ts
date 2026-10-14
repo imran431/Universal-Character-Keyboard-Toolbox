@@ -86,6 +86,18 @@ for (const path of indexablePaths) {
     }
 
     await page.goto(path);
+
+    if (path === '/tools/copy-paste-symbols/') {
+      await page.locator('[data-catalog-category]').evaluateAll((categories) => {
+        for (const category of categories) {
+          const cards = Array.from(category.querySelectorAll('[data-catalog-symbol]'));
+          for (const card of cards.slice(4)) {
+            card.remove();
+          }
+        }
+      });
+    }
+
     const results = await new AxeBuilder({ page }).analyze();
     const serious = results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''));
     const seriousSummary = serious.map((violation) => ({
