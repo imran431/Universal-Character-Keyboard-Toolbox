@@ -40,7 +40,9 @@ const indexablePaths = [
   '/guides/type-special-characters-mac/',
   '/guides/special-characters-google-docs/',
   '/guides/type-accents-on-iphone/',
-  '/guides/math-symbols-on-keyboard/'
+  '/guides/math-symbols-on-keyboard/',
+  '/about/',
+  '/methodology/'
 ];
 
 for (const path of indexablePaths) {
@@ -94,6 +96,12 @@ test('robots.txt exposes the sitemap and OAI search crawl policy', async ({ requ
   expect(robots).toContain('Allow: /');
   expect(robots).toContain('User-agent: OAI-SearchBot');
   expect(robots).toContain('Sitemap: http://localhost:4321/sitemap-index.xml');
+});
+
+test('privacy page stays out of the search index', async ({ page }) => {
+  await page.goto('/privacy/');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex,follow/);
+  await expect(page.locator('h1')).toHaveText('Privacy');
 });
 
 test('404 page stays out of the index', async ({ page }) => {
