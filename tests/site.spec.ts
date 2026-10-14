@@ -384,6 +384,35 @@ test('shortcut finder filters by query and environment', async ({ page }) => {
   await expect(page.locator('[data-shortcut-card]:visible')).toContainText('00B0');
 });
 
+test('symbol glyphs keep readable sizing across shared surfaces', async ({ page }) => {
+  const cases = [
+    ['/tools/shortcut-finder/', '.shortcut-glyph', 30],
+    ['/tools/alt-code-finder/', '.shortcut-glyph', 30],
+    ['/', '.symbol-glyph', 28],
+    ['/symbols/math/', '.symbol-glyph', 28],
+    ['/symbols/degree-sign/', '.answer-glyph', 48]
+  ] as const;
+
+  for (const [path, selector, minimumFontSize] of cases) {
+    await page.goto(path);
+    const glyph = page.locator(selector).first();
+    await expect(glyph).toBeVisible();
+
+    const styles = await glyph.evaluate((element) => {
+      const computed = getComputedStyle(element);
+      return {
+        display: computed.display,
+        fontSize: Number.parseFloat(computed.fontSize),
+        textAlign: computed.textAlign
+      };
+    });
+
+    expect(styles.display).toBe('grid');
+    expect(styles.fontSize).toBeGreaterThanOrEqual(minimumFontSize);
+    expect(styles.textAlign).toBe('center');
+  }
+});
+
 test('shortcut finder keeps method sources crawlable and usable', async ({ page }) => {
   await page.goto('/tools/shortcut-finder/');
   await page.getByRole('searchbox', { name: 'Character, name, alias or code point' }).fill('copyright');
