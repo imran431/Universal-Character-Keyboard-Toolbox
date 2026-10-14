@@ -9,7 +9,7 @@
     "check": "astro check",
     "preview": "astro preview",
     "test:e2e": "playwright test",
-    "test": "npm run build && npm run seo:verify && npm run deploy:verify && npm run test:e2e",
+    "test": "npm run unicode:restore && npm run build && npm run seo:verify && npm run deploy:verify && npm run test:e2e",
     "unicode:sync": "node scripts/unicode/sync-unicode.mjs",
     "unicode:verify": "node scripts/unicode/verify-unicode.mjs",
     "unicode:index": "node scripts/unicode/build-search-index.mjs",
