@@ -1911,3 +1911,49 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+.prose-page {
+  display: grid;
+  gap: 1rem;
+  max-width: 52rem;
+}
+
+.prose-page > section {
+  padding: 1.15rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.prose-page h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.prose-page p {
+  margin: .55rem 0 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  justify-content: center;
+}
+
+.footer-links a {
+  padding: .35rem .45rem;
+  font-size: .78rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  color: var(--brand-strong);
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
