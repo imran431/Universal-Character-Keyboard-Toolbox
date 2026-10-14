@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Prepare authoritative Unicode search data
-        run: npm run unicode:prepare
+      - name: Restore pinned Unicode search snapshot
+        run: npm run unicode:restore
 
       - name: Build and type-check
         run: npm run build
