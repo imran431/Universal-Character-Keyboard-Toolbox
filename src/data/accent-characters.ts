@@ -17,33 +17,37 @@ export const accentLanguages = [
   'Czech'
 ] as const;
 
-const combiningAccentNames = new Map<number, string>([
-  [0x0300, 'grave'],
-  [0x0301, 'acute'],
-  [0x0302, 'circumflex'],
-  [0x0303, 'tilde'],
-  [0x0304, 'macron'],
-  [0x0306, 'breve'],
-  [0x0307, 'dot above'],
-  [0x0308, 'diaeresis'],
-  [0x0309, 'hook above'],
-  [0x030a, 'ring above'],
-  [0x030b, 'double acute'],
-  [0x030c, 'caron'],
-  [0x030f, 'double grave'],
-  [0x0311, 'inverted breve'],
-  [0x031b, 'horn'],
-  [0x0323, 'dot below'],
-  [0x0324, 'diaeresis below'],
-  [0x0325, 'ring below'],
-  [0x0326, 'comma below'],
-  [0x0327, 'cedilla'],
-  [0x0328, 'ogonek'],
-  [0x032d, 'circumflex below'],
-  [0x032e, 'breve below'],
-  [0x0330, 'tilde below'],
-  [0x0331, 'macron below']
-]);
+export const combiningDiacritics = [
+  { codePoint: 0x0300, character: '\u0300', name: 'grave', position: 'above' },
+  { codePoint: 0x0301, character: '\u0301', name: 'acute', position: 'above' },
+  { codePoint: 0x0302, character: '\u0302', name: 'circumflex', position: 'above' },
+  { codePoint: 0x0303, character: '\u0303', name: 'tilde', position: 'above' },
+  { codePoint: 0x0304, character: '\u0304', name: 'macron', position: 'above' },
+  { codePoint: 0x0306, character: '\u0306', name: 'breve', position: 'above' },
+  { codePoint: 0x0307, character: '\u0307', name: 'dot above', position: 'above' },
+  { codePoint: 0x0308, character: '\u0308', name: 'diaeresis', position: 'above' },
+  { codePoint: 0x0309, character: '\u0309', name: 'hook above', position: 'above' },
+  { codePoint: 0x030a, character: '\u030A', name: 'ring above', position: 'above' },
+  { codePoint: 0x030b, character: '\u030B', name: 'double acute', position: 'above' },
+  { codePoint: 0x030c, character: '\u030C', name: 'caron', position: 'above' },
+  { codePoint: 0x030f, character: '\u030F', name: 'double grave', position: 'above' },
+  { codePoint: 0x0311, character: '\u0311', name: 'inverted breve', position: 'above' },
+  { codePoint: 0x031b, character: '\u031B', name: 'horn', position: 'above/right' },
+  { codePoint: 0x0323, character: '\u0323', name: 'dot below', position: 'below' },
+  { codePoint: 0x0324, character: '\u0324', name: 'diaeresis below', position: 'below' },
+  { codePoint: 0x0325, character: '\u0325', name: 'ring below', position: 'below' },
+  { codePoint: 0x0326, character: '\u0326', name: 'comma below', position: 'below' },
+  { codePoint: 0x0327, character: '\u0327', name: 'cedilla', position: 'below' },
+  { codePoint: 0x0328, character: '\u0328', name: 'ogonek', position: 'below' },
+  { codePoint: 0x032d, character: '\u032D', name: 'circumflex below', position: 'below' },
+  { codePoint: 0x032e, character: '\u032E', name: 'breve below', position: 'below' },
+  { codePoint: 0x0330, character: '\u0330', name: 'tilde below', position: 'below' },
+  { codePoint: 0x0331, character: '\u0331', name: 'macron below', position: 'below' }
+] as const;
+
+const combiningAccentNames = new Map<number, string>(
+  combiningDiacritics.map((mark) => [mark.codePoint, mark.name])
+);
 
 const languageCharacterSets: Record<(typeof accentLanguages)[number], Set<string>> = {
   French: new Set(Array.from('àâäçéèêëîïôœùûüÿ')),
