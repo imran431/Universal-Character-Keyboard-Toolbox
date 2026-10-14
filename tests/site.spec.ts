@@ -120,6 +120,7 @@ test('homepage exposes the preferred site name only at the root', async ({ page 
   await page.goto('/');
 
   await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute('content', 'Character Toolbox');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', '/favicon.svg');
 
   const homeSchemas = (await page.locator('script[type="application/ld+json"]').allTextContents())
     .map((schema) => JSON.parse(schema));
