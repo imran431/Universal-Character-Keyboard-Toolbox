@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { guides, type Guide } from '../../data/guides';
+
+interface Props {
+  guide: Guide;
+}
+
+export function getStaticPaths() {
+  return guides.map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide }
+  }));
+}
+
+const { guide } = Astro.props;
+const canonical = new URL(`/guides/${guide.slug}/`, Astro.site ?? Astro.url.origin).href;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Guides', item: new URL('/guides/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: guide.headline, item: canonical }
+  ]
+};
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: guide.headline,
+  description: guide.description,
+  datePublished: guide.published,
+  dateModified: guide.modified,
+  mainEntityOfPage: canonical,
+  author: {
+    '@type': 'Organization',
+    name: 'Character Toolbox'
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Character Toolbox'
+  }
+};
+---
+<BaseLayout title={guide.title} description={guide.description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleSchema)}></script>
+
+  <article class="guide-article">
+    <header class="content-header">
+      <div class="container guide-header-inner">
+        <div class="breadcrumbs">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/guides/">Guides</a>
+          <span aria-hidden="true">/</span>
+          {guide.headline}
+        </div>
+        <div class="guide-kicker">{guide.category} · {guide.readingMinutes} min read</div>
+        <h1>{guide.headline}</h1>
+        <p class="lead">{guide.summary}</p>
+        <p class="guide-reviewed">Published {guide.published} · Reviewed {guide.modified}</p>
+      </div>
+    </header>
+
+    <div class="section" style="padding-top: 0">
+      <div class="container guide-layout">
+        <aside class="guide-toc" aria-label="On this page">
+          <strong>On this page</strong>
+          <ol>
+            {guide.sections.map((section, index) => (
+              <li><a href={`#section-${index + 1}`}>{section.heading}</a></li>
+            ))}
+          </ol>
+        </aside>
+
+        <div class="guide-body">
+          {guide.sections.map((section, index) => (
+            <section class="guide-section" id={`section-${index + 1}`}>
+              <h2>{section.heading}</h2>
+              {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+
+              {section.steps && (
+                <ol class="guide-steps">
+                  {section.steps.map((step) => <li>{step}</li>)}
+                </ol>
+              )}
+
+              {section.bullets && (
+                <ul class="guide-bullets">
+                  {section.bullets.map((item) => <li>{item}</li>)}
+                </ul>
+              )}
+
+              {section.note && <p class="guide-note"><strong>Note:</strong> {section.note}</p>}
+            </section>
+          ))}
+
+          <section class="guide-sources" aria-labelledby="guide-sources-heading">
+            <h2 id="guide-sources-heading">Reviewed sources</h2>
+            <p>These links are the primary documentation used to verify the platform and character facts in this guide.</p>
+            <div class="source-links">
+              {guide.sources.map((source) => (
+                <a href={source.url} rel="noopener noreferrer">{source.label}</a>
+              ))}
+            </div>
+          </section>
+
+          <section class="guide-related" aria-labelledby="guide-related-heading">
+            <h2 id="guide-related-heading">Related tools and guides</h2>
+            <div class="related-grid">
+              {guide.related.map((item) => (
+                <a class="related-card guide-related-card" href={item.href}>
+                  <span class="related-glyph" aria-hidden="true">→</span>
+                  <span><strong>{item.label}</strong><small>Open resource</small></span>
+                </a>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
