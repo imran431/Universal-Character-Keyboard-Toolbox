@@ -3,8 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { allCuratedCharacters } from '../../data/characters';
 import { symbolCatalogCategories, symbolCatalogCount } from '../../data/symbol-catalog';
 
-const title = 'Copy & Paste Symbols — 750+ Characters | Character Toolbox';
-const description = 'Copy and paste 750+ useful symbols including arrows, math, currency, Greek letters, fractions, stars, hearts, box drawing, punctuation and geometric shapes.';
+const title = 'Copy & Paste Symbols — 1,300+ Characters | Character Toolbox';
+const description = 'Copy and paste 1,300+ symbols including arrows, dingbats, enclosed numbers, math, currency, Greek letters, fractions, stars, box drawing and shapes.';
 
 const hrefByCharacter = new Map(
   allCuratedCharacters
@@ -144,7 +144,7 @@ function codePointLabel(character: string) {
 
       <div class="content-note catalog-explainer">
         <h2>Catalog vs full Unicode search</h2>
-        <p>This page intentionally groups characters people commonly browse visually: arrows, operators, Greek letters, fractions, shapes, box drawing and similar sets. It is a browsing and copy tool, not a replacement for the complete Unicode database.</p>
+        <p>This page groups characters people commonly browse visually: arrows, operators, Greek letters, fractions, enclosed forms, dingbats, miscellaneous symbols, shapes, box drawing and related sets. It is a browsing and copy tool, not a replacement for the complete Unicode database.</p>
         <p>If you know the official name or exact code point, use the <a href="/unicode/">Unicode Explorer</a>. If you need a keyboard method, use the <a href="/tools/shortcut-finder/">Shortcut Finder</a>. Glyph appearance can vary by font and operating system even when the Unicode character is the same.</p>
       </div>
     </div>
