@@ -1,0 +1,275 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { allCuratedCharacters } from '../../data/characters';
+import { symbolCatalogCategories, symbolCatalogCount } from '../../data/symbol-catalog';
+
+const title = 'Copy & Paste Symbols — 750+ Characters | Character Toolbox';
+const description = 'Copy and paste 750+ useful symbols including arrows, math, currency, Greek letters, fractions, stars, hearts, box drawing, punctuation and geometric shapes.';
+
+const hrefByCharacter = new Map(
+  allCuratedCharacters
+    .filter((item) => item.href)
+    .map((item) => [item.character, item.href] as const)
+);
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: new URL('/tools/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: 'Copy & Paste Symbols', item: new URL('/tools/copy-paste-symbols/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+
+function codePointLabel(character: string) {
+  const value = character.codePointAt(0) ?? 0;
+  return `U+${value.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header catalog-header" id="catalog-top">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/tools/">Tools</a>
+        <span aria-hidden="true">/</span>
+        Copy & Paste Symbols
+      </div>
+      <h1>Copy & Paste Symbols</h1>
+      <p class="lead">Browse {symbolCatalogCount}+ copyable characters by category. Search by symbol, practical name, category or Unicode code point, then copy or save the character without opening another page.</p>
+    </div>
+  </header>
+
+  <section class="section catalog-section" style="padding-top: 0">
+    <div class="container">
+      <div class="catalog-toolbar" data-catalog-toolbar>
+        <label class="explorer-label" for="catalog-search">Search symbols</label>
+        <div class="search-shell tool-search-shell">
+          <div class="search-row">
+            <input
+              id="catalog-search"
+              class="search-input"
+              type="search"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Try arrow, star, Greek, fraction, U+2192, ©…"
+              data-catalog-search
+            />
+            <span class="search-kbd" aria-hidden="true">{symbolCatalogCount}+</span>
+          </div>
+        </div>
+        <p class="search-hint" data-catalog-status aria-live="polite">{symbolCatalogCount} symbol cards across {symbolCatalogCategories.length} categories.</p>
+
+        <nav class="catalog-category-nav" aria-label="Jump to symbol category">
+          {symbolCatalogCategories.map((category) => (
+            <a href={`#catalog-${category.slug}`} data-category-link={category.slug}>{category.label}</a>
+          ))}
+        </nav>
+      </div>
+
+      <div class="catalog-results" data-catalog-results>
+        {symbolCatalogCategories.map((category) => (
+          <section
+            class="catalog-category"
+            id={`catalog-${category.slug}`}
+            data-catalog-category
+            data-category-slug={category.slug}
+            data-category-search={`${category.label} ${category.description} ${category.keywords.join(' ')}`.toLocaleLowerCase()}
+            aria-labelledby={`heading-${category.slug}`}
+          >
+            <div class="catalog-category-heading">
+              <div>
+                <h2 id={`heading-${category.slug}`}>{category.label}</h2>
+                <p>{category.description}</p>
+              </div>
+              <span>{category.symbols.length} symbols</span>
+            </div>
+
+            <div class="catalog-symbol-grid">
+              {category.symbols.map((item) => {
+                const codePoint = codePointLabel(item.character);
+                const href = hrefByCharacter.get(item.character);
+
+                return (
+                  <article
+                    class="catalog-symbol-card"
+                    data-catalog-symbol
+                    data-character={item.character}
+                    data-name={item.name}
+                    data-code-point={codePoint}
+                    data-href={href ?? ''}
+                    data-search={`${item.character} ${item.name} ${item.aliases?.join(' ') ?? ''} ${codePoint} ${category.label} ${category.keywords.join(' ')}`.toLocaleLowerCase()}
+                  >
+                    <button
+                      type="button"
+                      class="catalog-copy-button"
+                      data-catalog-copy={item.character}
+                      aria-label={`Copy ${item.name}`}
+                    >
+                      <span class="catalog-glyph" aria-hidden="true">{item.character}</span>
+                      <span class="catalog-name">{item.name}</span>
+                      <span class="catalog-code">{codePoint}</span>
+                      <span class="catalog-copy-label" data-catalog-copy-label>Copy</span>
+                    </button>
+
+                    <div class="catalog-card-actions">
+                      {href ? <a href={href}>Details</a> : <span aria-hidden="true"></span>}
+                      <button
+                        type="button"
+                        class="catalog-save-button"
+                        data-catalog-save={item.character}
+                        aria-pressed="false"
+                        aria-label={`Add ${item.name} to favorites`}
+                      >☆ Save</button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <div class="search-empty catalog-empty" data-catalog-empty hidden>
+        <strong>No catalog symbol matched that search.</strong>
+        <p>The catalog focuses on practical copy/paste sets. Search the full <a href="/unicode/">Unicode Explorer</a> for official names and the broader Unicode 18.0 repertoire.</p>
+      </div>
+
+      <div class="content-note catalog-explainer">
+        <h2>Catalog vs full Unicode search</h2>
+        <p>This page intentionally groups characters people commonly browse visually: arrows, operators, Greek letters, fractions, shapes, box drawing and similar sets. It is a browsing and copy tool, not a replacement for the complete Unicode database.</p>
+        <p>If you know the official name or exact code point, use the <a href="/unicode/">Unicode Explorer</a>. If you need a keyboard method, use the <a href="/tools/shortcut-finder/">Shortcut Finder</a>. Glyph appearance can vary by font and operating system even when the Unicode character is the same.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import {
+    isFavoriteCharacter,
+    rememberRecentCharacter,
+    toggleFavoriteCharacter
+  } from '../../lib/character-library';
+
+  const search = document.querySelector<HTMLInputElement>('[data-catalog-search]');
+  const categories = Array.from(document.querySelectorAll<HTMLElement>('[data-catalog-category]'));
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-catalog-symbol]'));
+  const status = document.querySelector<HTMLElement>('[data-catalog-status]');
+  const empty = document.querySelector<HTMLElement>('[data-catalog-empty]');
+  const categoryLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-category-link]'));
+
+  function normalize(value: string) {
+    return value.trim().toLocaleLowerCase().replace(/[\s_-]+/g, ' ');
+  }
+
+  function itemFromCard(card: HTMLElement) {
+    return {
+      character: card.dataset.character ?? '',
+      name: card.dataset.name ?? 'Unicode character',
+      codePoint: card.dataset.codePoint ?? '',
+      href: card.dataset.href || undefined
+    };
+  }
+
+  function syncFavoriteButton(card: HTMLElement) {
+    const button = card.querySelector<HTMLButtonElement>('[data-catalog-save]');
+    if (!button) return;
+
+    const item = itemFromCard(card);
+    const favorite = isFavoriteCharacter(item.character);
+
+    button.setAttribute('aria-pressed', String(favorite));
+    button.setAttribute(
+      'aria-label',
+      favorite ? `Remove ${item.name} from favorites` : `Add ${item.name} to favorites`
+    );
+    button.textContent = favorite ? '★ Saved' : '☆ Save';
+  }
+
+  for (const card of cards) syncFavoriteButton(card);
+
+  function applySearch() {
+    const query = normalize(search?.value ?? '');
+    let visibleCards = 0;
+    let visibleCategories = 0;
+
+    for (const category of categories) {
+      const categorySearch = normalize(category.dataset.categorySearch ?? '');
+      let categoryMatches = 0;
+
+      for (const card of Array.from(category.querySelectorAll<HTMLElement>('[data-catalog-symbol]'))) {
+        const haystack = normalize(card.dataset.search ?? '');
+        const matches = query.length === 0 || haystack.includes(query) || categorySearch.includes(query);
+        card.hidden = !matches;
+        if (matches) {
+          categoryMatches += 1;
+          visibleCards += 1;
+        }
+      }
+
+      category.hidden = categoryMatches === 0;
+      if (categoryMatches > 0) visibleCategories += 1;
+    }
+
+    for (const link of categoryLinks) {
+      const target = document.querySelector<HTMLElement>(link.getAttribute('href') ?? '');
+      link.hidden = query.length > 0 && Boolean(target?.hidden);
+    }
+
+    if (empty) empty.hidden = visibleCards !== 0;
+
+    if (status) {
+      status.textContent = visibleCards === 0
+        ? 'No catalog symbols matched that search.'
+        : query.length === 0
+          ? `${visibleCards} symbol cards across ${visibleCategories} categories.`
+          : `${visibleCards} ${visibleCards === 1 ? 'symbol' : 'symbols'} shown across ${visibleCategories} ${visibleCategories === 1 ? 'category' : 'categories'}.`;
+    }
+  }
+
+  search?.addEventListener('input', applySearch, { passive: true });
+
+  document.addEventListener('click', async (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const copy = target.closest<HTMLButtonElement>('[data-catalog-copy]');
+    if (copy) {
+      const card = copy.closest<HTMLElement>('[data-catalog-symbol]');
+      if (!card) return;
+      const item = itemFromCard(card);
+      const label = copy.querySelector<HTMLElement>('[data-catalog-copy-label]');
+      const original = label?.textContent ?? 'Copy';
+
+      try {
+        await navigator.clipboard.writeText(item.character);
+        rememberRecentCharacter(item);
+        if (label) label.textContent = 'Copied';
+        copy.dataset.copied = 'true';
+      } catch {
+        if (label) label.textContent = 'Try again';
+        copy.dataset.copyFailed = 'true';
+      }
+
+      window.setTimeout(() => {
+        if (label) label.textContent = original;
+        copy.dataset.copied = 'false';
+        copy.dataset.copyFailed = 'false';
+      }, 1300);
+      return;
+    }
+
+    const save = target.closest<HTMLButtonElement>('[data-catalog-save]');
+    if (save) {
+      const card = save.closest<HTMLElement>('[data-catalog-symbol]');
+      if (!card) return;
+
+      toggleFavoriteCharacter(itemFromCard(card));
+      syncFavoriteButton(card);
+    }
+  });
+</script>
