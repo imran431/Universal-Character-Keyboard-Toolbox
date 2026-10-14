@@ -10,17 +10,39 @@ const outputPath = path.join(outputDir, 'unicode-core.json');
 const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 
 async function download(url) {
-  const response = await fetch(url, {
-    headers: {
-      'user-agent': 'Universal-Character-Keyboard-Toolbox/0.1 data-sync'
-    }
-  });
+  const maxAttempts = 3;
 
-  if (!response.ok) {
-    throw new Error(`Failed to download ${url}: ${response.status} ${response.statusText}`);
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20_000);
+
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          'user-agent': 'Universal-Character-Keyboard-Toolbox/0.1 data-sync'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
+
+      return await response.text();
+    } catch (error) {
+      if (attempt === maxAttempts) {
+        throw new Error(
+          `Failed to download ${url} after ${maxAttempts} attempts: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, attempt * 1_000));
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
-  return response.text();
+  throw new Error(`Failed to download ${url}`);
 }
 
 function parseUnicodeData(text) {
