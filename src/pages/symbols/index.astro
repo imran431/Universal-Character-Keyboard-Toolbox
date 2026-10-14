@@ -3,15 +3,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import CopyButton from '../../components/CopyButton.astro';
 import { characterCategories, featuredCharacters, charactersForCategory } from '../../data/characters';
 
-const title = 'Symbols — Copy & Unicode Codes | Character Toolbox';
-const description = 'Browse curated math, currency, arrow, punctuation, check mark and legal symbols with one-click copy actions and Unicode code points.';
+const title = 'Special Characters & Symbols — Copy & Paste | Character Toolbox';
+const description = 'Copy and paste useful special characters and Unicode symbols by category, including math, currency, arrows, punctuation, check marks and legal symbols.';
 ---
 <BaseLayout title={title} description={description}>
   <header class="content-header">
     <div class="container">
       <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Symbols</div>
-      <h1>Symbols</h1>
-      <p class="lead">Browse useful symbol families, copy characters immediately, and open reviewed detail pages when verified typing and code information is available.</p>
+      <h1>Special Characters & Symbols</h1>
+      <p class="lead">Browse practical Unicode symbols by purpose, copy them immediately, and open reviewed character guides when verified typing and code information is available.</p>
     </div>
   </header>
 
@@ -44,8 +44,8 @@ const description = 'Browse curated math, currency, arrow, punctuation, check ma
     <div class="container">
       <div class="section-heading">
         <div>
-          <h2 id="popular-symbols">Popular symbols</h2>
-          <p>Frequently useful characters with one-click copy.</p>
+          <h2 id="popular-symbols">Quick copy essentials</h2>
+          <p>Frequently useful special characters with one-click copy.</p>
         </div>
       </div>
 
@@ -60,6 +60,12 @@ const description = 'Browse curated math, currency, arrow, punctuation, check ma
             <CopyButton value={item.character} label={`Copy ${item.name}`} />
           </article>
         ))}
+      </div>
+
+      <div class="content-note symbols-explainer">
+        <h2>What counts as a special character?</h2>
+        <p>Special characters are symbols and marks outside ordinary letters and digits, such as ©, →, ±, €, § and typographic punctuation. This toolbox keeps common characters in practical categories while the <a href="/unicode/">Unicode Explorer</a> handles the much larger Unicode 18.0 repertoire.</p>
+        <p>Need a blank or zero-width character rather than a visible symbol? Use the <a href="/tools/invisible-characters/">Invisible Characters tool</a>. For keyboard methods, use the <a href="/tools/shortcut-finder/">Shortcut Finder</a>.</p>
       </div>
     </div>
   </section>
