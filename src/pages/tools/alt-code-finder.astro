@@ -51,6 +51,9 @@ const breadcrumbSchema = {
           <article
             class="alt-code-card"
             data-alt-code-card
+            data-alt-code-digits={record.digits}
+            data-alt-code-character={record.character}
+            data-alt-code-point={record.codePoint}
             data-search={[
               record.character,
               record.commonName,
