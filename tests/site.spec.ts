@@ -29,6 +29,7 @@ const indexablePaths = [
   '/unicode/',
   '/typing/',
   '/tools/',
+  '/tools/copy-paste-symbols/',
   '/tools/shortcut-finder/',
   '/tools/alt-code-finder/',
   '/tools/accent-keyboard/',
@@ -504,7 +505,10 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
       clientWidth: document.documentElement.clientWidth,
     }));
 
-    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+    expect(
+      dimensions.scrollWidth,
+      `${path} overflowed at 320px: scrollWidth=${dimensions.scrollWidth}, clientWidth=${dimensions.clientWidth}`
+    ).toBeLessThanOrEqual(dimensions.clientWidth + 1);
     await expect(page.locator('nav a[href="/tools/"]')).toBeVisible();
   }
 });
