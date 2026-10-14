@@ -901,7 +901,7 @@ h1 {
 .shortcut-character,
 .alt-code-symbol {
   display: grid;
-  grid-template-columns: 3.2rem minmax(0, 1fr);
+  grid-template-columns: 3.4rem minmax(0, 1fr);
   gap: .75rem;
   align-items: center;
   min-width: 0;
