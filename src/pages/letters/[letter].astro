@@ -1,0 +1,171 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CopyButton from '../../components/CopyButton.astro';
+import { allAccentCharacters } from '../../data/accent-characters';
+
+interface Props {
+  letter: string;
+  characters: typeof allAccentCharacters;
+}
+
+export function getStaticPaths() {
+  return Array.from('abcdefghijklmnopqrstuvwxyz').map((letter) => ({
+    params: { letter: `${letter}-with-accents` },
+    props: {
+      letter,
+      characters: allAccentCharacters.filter((item) => item.base === letter)
+    }
+  }));
+}
+
+const { letter, characters } = Astro.props;
+const displayLetter = letter.toLocaleUpperCase();
+const title = `${displayLetter} With Accents — Copy Letters & Unicode Codes`;
+const description = `Copy ${characters.length} accented and modified ${displayLetter} letters, see Unicode code points, and use reliable Windows, Mac, Word and Google Docs typing methods.`;
+
+const lower = characters.filter((item) => item.case === 'lower');
+const upper = characters.filter((item) => item.case === 'upper');
+const accentTypes = [...new Set(characters.map((item) => item.accent))].sort();
+
+function codePointLabel(character: string) {
+  const codePoint = character.codePointAt(0) ?? 0;
+  return `U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+
+function wordHex(character: string) {
+  return codePointLabel(character).replace('U+', '');
+}
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Letters with accents', item: new URL('/letters/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: `${displayLetter} with accents`, item: new URL(`/letters/${letter}-with-accents/`, Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/letters/">Letters with accents</a>
+        <span aria-hidden="true">/</span>
+        {displayLetter}
+      </div>
+      <h1>{displayLetter} With Accents</h1>
+      <p class="lead">Copy accented and modified {displayLetter} forms, check their Unicode values, or use a reliable insertion method for Windows, Mac, Microsoft Word and Google Docs.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" aria-labelledby="quick-copy">
+    <div class="container">
+      <div class="answer-card accent-answer-card">
+        <div class="answer-glyph" aria-hidden="true">{displayLetter}</div>
+        <div>
+          <div class="reference-kicker">{characters.length} reviewed forms · {accentTypes.length} mark or letter types</div>
+          <h2 id="quick-copy">Quick copy</h2>
+          <p>Choose the exact letter below. Copy and paste works across browsers and apps and avoids keyboard-layout differences.</p>
+          <div class="accent-copy-lines">
+            {lower.length > 0 && (
+              <div>
+                <strong>Lowercase</strong>
+                <p>{lower.map((item) => item.character).join(' ')}</p>
+              </div>
+            )}
+            {upper.length > 0 && (
+              <div>
+                <strong>Uppercase</strong>
+                <p>{upper.map((item) => item.character).join(' ')}</p>
+              </div>
+            )}
+          </div>
+          <div class="answer-actions">
+            <a class="saved-link" href="/tools/accent-keyboard/">Open A-Z accent keyboard</a>
+            <a class="saved-link" href="/unicode/">Search all Unicode</a>
+          </div>
+        </div>
+      </div>
+
+      <section class="content-note" aria-labelledby="variants-heading">
+        <div class="section-heading compact-heading">
+          <div>
+            <h2 id="variants-heading">{displayLetter} variants to copy</h2>
+            <p>Each card shows the practical name, Unicode code point and the Word hex value used with Alt+X.</p>
+          </div>
+        </div>
+
+        <div class="accent-guide-grid">
+          {characters.map((item) => {
+            const codePoint = codePointLabel(item.character);
+            return (
+              <article class="accent-guide-card">
+                <span class="accent-guide-glyph" aria-hidden="true">{item.character}</span>
+                <div class="accent-guide-meta">
+                  <strong>{item.label}</strong>
+                  <code>{codePoint}</code>
+                  <small>Word: {wordHex(item.character)} then Alt + X</small>
+                  {item.languages.length > 0 && <small>{item.languages.join(' · ')}</small>}
+                </div>
+                <CopyButton
+                  value={item.character}
+                  label={`Copy ${item.label}`}
+                  characterName={item.label}
+                  codePoint={codePoint}
+                />
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <div class="info-grid accent-method-grid">
+        <section class="info-card">
+          <h2>Microsoft Word</h2>
+          <p>Type the hexadecimal Unicode value shown on a card without the <strong>U+</strong> prefix, then press <strong>Alt + X</strong>. Microsoft documents this as a Unicode character-code input method in Word.</p>
+          <p><a href="https://support.microsoft.com/en-us/word/insert-ascii-or-unicode-character-codes-in-word" rel="noopener noreferrer">Microsoft: insert Unicode character codes in Word</a></p>
+        </section>
+
+        <section class="info-card">
+          <h2>Windows</h2>
+          <p>For a character without a separately verified numeric Alt code, use Character Map or copy the character directly. A Unicode decimal value is not automatically a Windows Alt code.</p>
+          <p><a href="/tools/alt-code-finder/">Open the reviewed Alt Code Finder</a></p>
+        </section>
+
+        <section class="info-card">
+          <h2>Mac</h2>
+          <p>Open Character Viewer, search for the letter or mark, and insert the result. This avoids assuming an Option-key shortcut that may depend on the active keyboard layout.</p>
+          <p><a href="https://support.apple.com/guide/mac-help/use-emoji-and-symbols-mchlp1560/mac" rel="noopener noreferrer">Apple: use emoji and symbols on Mac</a></p>
+        </section>
+
+        <section class="info-card">
+          <h2>Google Docs & mobile</h2>
+          <p>Google Docs on desktop includes Insert → Special characters. On phones, some common accents are available by touching and holding a letter; uncommon forms can always be copied from this page.</p>
+          <p><a href="/guides/special-characters-google-docs/">Google Docs guide</a> · <a href="/guides/type-accents-on-iphone/">iPhone accent guide</a></p>
+        </section>
+      </div>
+
+      <section class="content-note" aria-labelledby="accent-types-heading">
+        <h2 id="accent-types-heading">Marks and forms available for {displayLetter}</h2>
+        <p>{accentTypes.join(', ')}.</p>
+        <p>These are Unicode text characters, not images. Their exact appearance can change with the font, operating system and application.</p>
+      </section>
+
+      <section class="content-note source-note" aria-labelledby="accent-sources-heading">
+        <h2 id="accent-sources-heading">Reviewed reference methods</h2>
+        <p>Character identity comes from the site’s Unicode 18.0 dataset. Platform instructions use documented insertion methods rather than generated keyboard shortcuts.</p>
+        <div class="source-links">
+          <a href="https://www.unicode.org/Public/18.0.0/ucd/UnicodeData.txt" rel="noopener noreferrer">Unicode 18.0 Character Database</a>
+          <a href="https://support.microsoft.com/en-us/word/insert-ascii-or-unicode-character-codes-in-word" rel="noopener noreferrer">Microsoft Word Unicode input</a>
+          <a href="https://support.apple.com/guide/mac-help/use-emoji-and-symbols-mchlp1560/mac" rel="noopener noreferrer">Apple Character Viewer</a>
+          <a href="https://support.google.com/docs/answer/3371015" rel="noopener noreferrer">Google Docs special characters</a>
+        </div>
+      </section>
+    </div>
+  </section>
+</BaseLayout>
