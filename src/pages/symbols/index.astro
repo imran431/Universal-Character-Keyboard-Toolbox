@@ -5,8 +5,19 @@ import { characterCategories, featuredCharacters, charactersForCategory } from '
 
 const title = 'Special Characters & Symbols — Copy & Paste | Character Toolbox';
 const description = 'Copy and paste useful special characters and Unicode symbols by category, including math, currency, arrows, punctuation, check marks and legal symbols.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Symbols', item: new URL('/symbols/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
 ---
 <BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
   <header class="content-header">
     <div class="container">
       <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Symbols</div>
