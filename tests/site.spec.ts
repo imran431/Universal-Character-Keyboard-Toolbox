@@ -777,6 +777,7 @@ test('copy-paste catalog stays usable at narrow mobile widths', async ({ page })
   }));
 
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+  await expect(page.locator('[data-category-link="popular"]')).toBeVisible();
   await expect(page.locator('[data-category-link="arrows"]')).toBeVisible();
   await expect(page.locator('[data-catalog-symbol]').first()).toBeVisible();
 });
