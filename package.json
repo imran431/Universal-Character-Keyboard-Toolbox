@@ -15,7 +15,8 @@
     "unicode:index": "node scripts/unicode/build-search-index.mjs",
     "unicode:prepare": "npm run unicode:sync && npm run unicode:verify && npm run unicode:index",
     "seo:verify": "node scripts/seo/verify-indexation.mjs",
-    "deploy:verify": "node scripts/deploy/verify-production-config.mjs"
+    "deploy:verify": "node scripts/deploy/verify-production-config.mjs",
+    "unicode:restore": "node scripts/unicode/restore-search-index.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
