@@ -32,7 +32,8 @@ const indexablePaths = [
   '/tools/shortcut-finder/',
   '/tools/alt-code-finder/',
   '/tools/accent-keyboard/',
-  '/tools/unicode-converter/'
+  '/tools/unicode-converter/',
+  '/tools/invisible-characters/'
 ];
 
 for (const path of indexablePaths) {
@@ -91,6 +92,17 @@ test('robots.txt exposes the sitemap and OAI search crawl policy', async ({ requ
 test('404 page stays out of the index', async ({ page }) => {
   await page.goto('/404.html');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex,follow/);
+});
+
+test('homepage quick-search chips teach search without adding URL states', async ({ page }) => {
+  await page.goto('/');
+
+  await page.getByRole('button', { name: '→ Arrow' }).click();
+
+  const search = page.getByRole('searchbox', { name: 'Search characters' });
+  await expect(search).toHaveValue('right arrow');
+  await expect(page.locator('[data-unicode-result-grid]').getByText('Rightwards Arrow', { exact: true })).toBeVisible();
+  await expect(page.locator('[data-popular-section]')).toBeHidden();
 });
 
 test('search understands curated aliases', async ({ page }) => {
@@ -403,6 +415,7 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     '/tools/alt-code-finder/',
     '/tools/accent-keyboard/',
     '/tools/unicode-converter/',
+    '/tools/invisible-characters/',
     '/library/'
   ]) {
     await page.goto(path);
@@ -470,11 +483,26 @@ test('Unicode converter decodes multiple supported notations and rejects surroga
   await expect(page.locator('[data-decode-status]')).toContainText('Ignored invalid token');
 });
 
-test('tools hub links to accent keyboard, Unicode converter and saved characters', async ({ page }) => {
+test('tools hub links to high-value character utilities', async ({ page }) => {
   await page.goto('/tools/');
   await expect(page.locator('a[href="/tools/accent-keyboard/"]')).toBeVisible();
   await expect(page.locator('a[href="/tools/unicode-converter/"]')).toBeVisible();
+  await expect(page.locator('a[href="/tools/invisible-characters/"]')).toBeVisible();
   await expect(page.locator('a[href="/library/"]')).toBeVisible();
+});
+
+test('invisible character tool reveals reviewed hidden spacing', async ({ page }) => {
+  await page.goto('/tools/invisible-characters/');
+
+  await expect(page.locator('[data-invisible-copy]')).toHaveCount(8);
+  await expect(page.getByRole('button', { name: 'Copy No-Break Space' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Copy Zero Width Space' })).toBeVisible();
+
+  const input = page.getByRole('textbox', { name: 'Text to inspect' });
+  await input.fill('A\u00A0B\u200BC');
+
+  await expect(page.locator('[data-invisible-output]')).toContainText('A[NBSP]B[ZWSP]C');
+  await expect(page.locator('[data-invisible-status]')).toContainText('2 recognized invisible characters');
 });
 
 test('saved character library stays out of the search index and remains accessible', async ({ page }) => {
