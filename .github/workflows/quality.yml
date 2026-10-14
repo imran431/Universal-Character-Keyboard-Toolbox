@@ -32,6 +32,9 @@ jobs:
       - name: Verify reviewed SEO indexation
         run: npm run seo:verify
 
+      - name: Verify production deployment config
+        run: npm run deploy:verify
+
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
