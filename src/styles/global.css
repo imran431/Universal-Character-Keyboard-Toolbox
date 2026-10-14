@@ -105,8 +105,8 @@ a { color: inherit; }
 .brand strong { font-size: .98rem; line-height: 1.2; }
 .brand small { color: var(--muted); font-size: .76rem; margin-top: .12rem; }
 
-nav { display: flex; gap: .25rem; }
-nav a {
+.site-header nav { display: flex; gap: .25rem; }
+.site-header nav a {
   text-decoration: none;
   color: var(--muted);
   font-weight: 700;
@@ -114,7 +114,8 @@ nav a {
   padding: .7rem .85rem;
   border-radius: .7rem;
 }
-nav a:hover, nav a:focus-visible { background: var(--surface-soft); color: var(--text); }
+.site-header nav a:hover,
+.site-header nav a:focus-visible { background: var(--surface-soft); color: var(--text); }
 
 .hero {
   padding: clamp(2.75rem, 7vw, 5.5rem) 0 2.4rem;
@@ -378,12 +379,12 @@ h1 {
     gap: 0;
   }
   .brand > span:last-child { display: none; }
-  nav {
+  .site-header nav {
     min-width: 0;
     gap: 0;
     justify-content: flex-end;
   }
-  nav a {
+  .site-header nav a {
     padding: .55rem .5rem;
     font-size: .78rem;
     white-space: nowrap;
@@ -401,7 +402,7 @@ h1 {
   .symbol-card { grid-template-columns: 2.8rem minmax(0, 1fr); }
   .symbol-glyph { width: 2.8rem; min-height: 2.8rem; }
   .symbol-card .copy-button { grid-column: 1 / -1; width: 100%; }
-  nav a:first-child { display: none; }
+  .site-header nav a:first-child { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1999,6 +2000,7 @@ h1 {
 .catalog-category-nav {
   display: flex;
   width: 100%;
+  justify-content: flex-start;
   max-width: 100%;
   min-width: 0;
   flex-wrap: wrap;
