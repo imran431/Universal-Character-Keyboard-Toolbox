@@ -2284,3 +2284,17 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* Keep homepage tools single-column on narrow phones after the later 72rem rule. */
+@media (max-width: 42rem) {
+  .home-tools-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-tool-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+}
