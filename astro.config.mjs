@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-const site = process.env.SITE_URL ?? 'http://localhost:4321';
+const site = process.env.SITE_URL ?? process.env.URL ?? 'http://localhost:4321';
 const seoManifest = JSON.parse(
   readFileSync(new URL('./data/seo/indexable-routes.json', import.meta.url), 'utf8')
 );
@@ -15,7 +15,7 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => {
-        const pathname = new URL(page).pathname;
+        const pathname = new URL(page, site).pathname;
         return indexableRoutes.has(pathname);
       },
     }),
