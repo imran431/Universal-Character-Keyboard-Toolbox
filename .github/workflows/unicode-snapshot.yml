@@ -2,12 +2,6 @@ name: Publish Unicode search snapshot
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "data/sources/unicode-18.0.0.json"
-      - "scripts/unicode/**"
-      - ".github/workflows/unicode-snapshot.yml"
 
 permissions:
   contents: write
@@ -26,7 +20,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --ignore-scripts
 
       - name: Prepare authoritative Unicode snapshot
         run: npm run unicode:prepare
@@ -38,9 +32,19 @@ jobs:
       - name: Create checksum
         run: sha256sum public/data/search/unicode-18.0-search.json > public/data/search/unicode-18.0-search.json.sha256
 
+      - name: Refuse to overwrite an existing pinned snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view unicode-18.0.0 >/dev/null 2>&1; then
+            echo "Release unicode-18.0.0 already exists. Pinned Unicode snapshots are immutable."
+            echo "Create a new versioned manifest and release tag for a replacement snapshot."
+            exit 1
+          fi
+
       - name: Publish release assets
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view unicode-18.0.0 >/dev/null 2>&1 || gh release create unicode-18.0.0 --title "Unicode 18.0.0 search snapshot" --notes "Deterministic browser search snapshot generated from the version-pinned Unicode 18.0.0 source manifest."
-          gh release upload unicode-18.0.0 public/data/search/unicode-18.0-search.json public/data/search/unicode-18.0-search.json.sha256 --clobber
+          gh release create unicode-18.0.0 --title "Unicode 18.0.0 search snapshot" --notes "Deterministic browser search snapshot generated from the version-pinned Unicode 18.0.0 source manifest."
+          gh release upload unicode-18.0.0 public/data/search/unicode-18.0-search.json public/data/search/unicode-18.0-search.json.sha256
