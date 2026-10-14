@@ -5,6 +5,18 @@ import { allAccentCharacters } from '../../data/accent-characters';
 const title = 'Accent Keyboard — Copy Accented Letters & Latin Characters';
 const description = 'Use a free accent keyboard to find, type and copy accented Latin letters including acute, grave, circumflex, tilde, diaeresis, macron and more.';
 
+const builderBases = [...new Set(
+  allAccentCharacters
+    .filter((item) => item.base.length === 1)
+    .map((item) => item.base.toLocaleLowerCase())
+)].sort();
+
+const builderAccents = [...new Set(
+  allAccentCharacters
+    .filter((item) => item.base.length === 1)
+    .map((item) => item.accent)
+)].sort();
+
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -53,6 +65,46 @@ const breadcrumbSchema = {
       </div>
 
       <div class="accent-workspace">
+        <section class="accent-builder-card" aria-labelledby="accent-builder-heading">
+          <div class="accent-builder-heading">
+            <div>
+              <h2 id="accent-builder-heading">Accent letter builder</h2>
+              <p>Choose a base letter and accent type. The builder only offers combinations that exist in the reviewed keyboard data.</p>
+            </div>
+            <span class="method-platform">Builder</span>
+          </div>
+
+          <div class="accent-builder-step">
+            <strong>1. Base letter</strong>
+            <div class="accent-builder-options" role="group" aria-label="Choose base letter">
+              {builderBases.map((base) => (
+                <button type="button" data-builder-base={base} aria-pressed="false">{base.toLocaleUpperCase()}</button>
+              ))}
+            </div>
+          </div>
+
+          <div class="accent-builder-step">
+            <strong>2. Accent type</strong>
+            <div class="accent-builder-options accent-builder-accents" role="group" aria-label="Choose accent type">
+              {builderAccents.map((accent) => (
+                <button type="button" data-builder-accent={accent} aria-pressed="false">{accent}</button>
+              ))}
+            </div>
+          </div>
+
+          <div class="accent-builder-result" data-builder-result>
+            <div>
+              <span class="converter-label">Lowercase</span>
+              <button type="button" class="accent-builder-character" data-builder-lower disabled aria-label="Insert lowercase accented letter">?</button>
+            </div>
+            <div>
+              <span class="converter-label">Uppercase</span>
+              <button type="button" class="accent-builder-character" data-builder-upper disabled aria-label="Insert uppercase accented letter">?</button>
+            </div>
+            <p class="search-hint" data-builder-status aria-live="polite">Choose a base letter and an accent type.</p>
+          </div>
+        </section>
+
         <section class="accent-pad-card" aria-labelledby="writing-pad">
           <div class="accent-pad-heading">
             <div>
@@ -115,6 +167,7 @@ const breadcrumbSchema = {
 </BaseLayout>
 
 <script>
+  import { allAccentCharacters as builderCharacters } from '../../data/accent-characters';
   import { rememberRecentCharacter } from '../../lib/character-library';
 
   const search = document.querySelector<HTMLInputElement>('[data-accent-search]');
@@ -126,8 +179,15 @@ const breadcrumbSchema = {
   const copyPad = document.querySelector<HTMLButtonElement>('[data-copy-pad]');
   const clearPad = document.querySelector<HTMLButtonElement>('[data-clear-pad]');
   const padStatus = document.querySelector<HTMLElement>('[data-pad-status]');
+  const builderBaseButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-builder-base]'));
+  const builderAccentButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-builder-accent]'));
+  const builderLower = document.querySelector<HTMLButtonElement>('[data-builder-lower]');
+  const builderUpper = document.querySelector<HTMLButtonElement>('[data-builder-upper]');
+  const builderStatus = document.querySelector<HTMLElement>('[data-builder-status]');
 
   let selectedCase = 'all';
+  let selectedBase = '';
+  let selectedAccent = '';
 
   function normalize(value: string) {
     return value.trim().toLocaleLowerCase().replace(/[\s_-]+/g, ' ');
@@ -150,6 +210,73 @@ const breadcrumbSchema = {
       : `${visible} ${visible === 1 ? 'character' : 'characters'} shown.`;
   }
 
+  function findBuilderCharacter(letterCase: 'lower' | 'upper') {
+    return builderCharacters.find((item) =>
+      item.case === letterCase &&
+      item.base.toLocaleLowerCase() === selectedBase &&
+      item.accent === selectedAccent
+    );
+  }
+
+  function updateBuilder() {
+    const lower = findBuilderCharacter('lower');
+    const upper = findBuilderCharacter('upper');
+
+    for (const button of builderBaseButtons) {
+      button.setAttribute('aria-pressed', String(button.dataset.builderBase === selectedBase));
+    }
+
+    for (const button of builderAccentButtons) {
+      const accent = button.dataset.builderAccent ?? '';
+      const available = selectedBase
+        ? builderCharacters.some((item) =>
+            item.base.toLocaleLowerCase() === selectedBase && item.accent === accent
+          )
+        : true;
+
+      button.disabled = !available;
+      button.setAttribute('aria-pressed', String(accent === selectedAccent));
+    }
+
+    if (selectedAccent && !builderCharacters.some((item) =>
+      item.base.toLocaleLowerCase() === selectedBase && item.accent === selectedAccent
+    )) {
+      selectedAccent = '';
+    }
+
+    if (builderLower) {
+      builderLower.textContent = lower?.character ?? '?';
+      builderLower.dataset.builderCharacter = lower?.character ?? '';
+      builderLower.disabled = !lower;
+      builderLower.setAttribute(
+        'aria-label',
+        lower ? `Insert ${lower.label}: ${lower.character}` : 'Lowercase combination unavailable'
+      );
+    }
+
+    if (builderUpper) {
+      builderUpper.textContent = upper?.character ?? '?';
+      builderUpper.dataset.builderCharacter = upper?.character ?? '';
+      builderUpper.disabled = !upper;
+      builderUpper.setAttribute(
+        'aria-label',
+        upper ? `Insert ${upper.label}: ${upper.character}` : 'Uppercase combination unavailable'
+      );
+    }
+
+    if (builderStatus) {
+      if (!selectedBase) {
+        builderStatus.textContent = 'Choose a base letter and an accent type.';
+      } else if (!selectedAccent) {
+        builderStatus.textContent = `Choose an accent available for ${selectedBase.toLocaleUpperCase()}.`;
+      } else if (lower || upper) {
+        builderStatus.textContent = `Ready: ${selectedBase.toLocaleUpperCase()} with ${selectedAccent}.`;
+      } else {
+        builderStatus.textContent = 'That combination is not available in the reviewed set.';
+      }
+    }
+  }
+
   function insertAtCursor(value: string) {
     if (!pad) return;
 
@@ -165,6 +292,34 @@ const breadcrumbSchema = {
   }
 
   search?.addEventListener('input', updateFilter, { passive: true });
+
+  for (const button of builderBaseButtons) {
+    button.addEventListener('click', () => {
+      selectedBase = button.dataset.builderBase ?? '';
+      updateBuilder();
+    });
+  }
+
+  for (const button of builderAccentButtons) {
+    button.addEventListener('click', () => {
+      selectedAccent = button.dataset.builderAccent ?? '';
+      updateBuilder();
+    });
+  }
+
+  for (const button of [builderLower, builderUpper]) {
+    button?.addEventListener('click', () => {
+      const character = button.dataset.builderCharacter ?? '';
+      if (!character) return;
+
+      insertAtCursor(character);
+      const item = builderCharacters.find((entry) => entry.character === character);
+      rememberRecentCharacter({
+        character,
+        name: item?.label ?? 'Accented character'
+      });
+    });
+  }
 
   for (const filter of filters) {
     filter.addEventListener('click', () => {
@@ -221,4 +376,6 @@ const breadcrumbSchema = {
     pad.focus();
     if (padStatus) padStatus.textContent = 'Nothing typed yet.';
   });
+
+  updateBuilder();
 </script>
