@@ -5,6 +5,7 @@ import process from 'node:process';
 const root = process.cwd();
 const netlify = await readFile(path.join(root, 'netlify.toml'), 'utf8');
 const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+const astroConfig = await readFile(path.join(root, 'astro.config.mjs'), 'utf8');
 const restoreScript = await readFile(
   path.join(root, 'scripts', 'unicode', 'restore-search-index.mjs'),
   'utf8'
@@ -35,6 +36,14 @@ assert(
 assert(
   restoreScript.includes("createHash('sha256')"),
   'Unicode restore must verify the published SHA-256 checksum.'
+);
+assert(
+  astroConfig.includes('process.env.URL'),
+  'Astro production canonicals must fall back to Netlify URL when SITE_URL is unset.'
+);
+assert(
+  packageJson.scripts?.test?.startsWith('npm run unicode:restore'),
+  'The full test command must restore the pinned Unicode snapshot on clean checkouts.'
 );
 
 const csp = netlify.match(/Content-Security-Policy\s*=\s*"([^"]+)"/)?.[1] ?? '';
