@@ -42,6 +42,10 @@ const indexablePaths = [
   '/guides/special-characters-google-docs/',
   '/guides/type-accents-on-iphone/',
   '/guides/math-symbols-on-keyboard/',
+  '/letters/',
+  '/letters/a-with-accents/',
+  '/letters/q-with-accents/',
+  '/letters/x-with-accents/',
   '/about/',
   '/methodology/'
 ];
@@ -555,6 +559,8 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     '/tools/invisible-characters/',
     '/guides/',
     '/guides/keyboard-shortcuts-for-symbols/',
+    '/letters/',
+    '/letters/a-with-accents/',
     '/library/'
   ]) {
     await page.goto(path);
@@ -582,6 +588,7 @@ test('representative pages remain overflow-free across common phone widths', asy
     '/symbols/degree-sign/',
     '/unicode/',
     '/tools/copy-paste-symbols/',
+    '/letters/a-with-accents/',
     '/guides/keyboard-shortcuts-for-symbols/'
   ];
 
@@ -637,8 +644,22 @@ test('mobile form controls avoid focus zoom sizing', async ({ page }) => {
 });
 
 
-test('accent keyboard inserts and filters characters', async ({ page }) => {
+test('accent keyboard exposes broad A-Z coverage and filters characters', async ({ page }) => {
   await page.goto('/tools/accent-keyboard/');
+
+  expect(await page.locator('[data-accent-key]').count()).toBeGreaterThanOrEqual(500);
+  await expect(page.locator('[data-builder-base="a"]')).toBeVisible();
+  await expect(page.locator('[data-builder-base="q"]')).toBeVisible();
+  await expect(page.locator('[data-builder-base="z"]')).toBeVisible();
+
+  await page.locator('[data-accent-language="Spanish"]').click();
+  await expect(page.locator('[data-accent-key][data-character="ñ"]')).toBeVisible();
+  await expect(page.locator('[data-accent-key][data-character="ą"]')).toBeHidden();
+
+  await page.locator('[data-accent-language="all"]').click();
+  await page.locator('[data-accent-letter="q"]').click();
+  await expect(page.locator('[data-accent-key][data-character="ɋ"]')).toBeVisible();
+  await page.locator('[data-accent-letter="all"]').click();
 
   const search = page.getByRole('searchbox', { name: 'Search accented characters' });
   const pad = page.getByRole('textbox', { name: 'Accent keyboard writing pad' });
@@ -658,6 +679,20 @@ test('accent keyboard inserts and filters characters', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Clear' }).click();
   await expect(pad).toHaveValue('');
+});
+
+test('A-Z accent directory links every base letter and renders code guidance', async ({ page }) => {
+  await page.goto('/letters/');
+
+  for (const letter of ['a', 'b', 'q', 'x', 'z']) {
+    await expect(page.locator(`a[href="/letters/${letter}-with-accents/"]`)).toBeVisible();
+  }
+
+  await page.goto('/letters/q-with-accents/');
+  await expect(page.getByRole('heading', { name: 'Q With Accents' })).toBeVisible();
+  await expect(page.getByText('q with hook tail', { exact: true })).toBeVisible();
+  await expect(page.getByText('U+024B', { exact: true })).toBeVisible();
+  await expect(page.getByText(/024B then Alt \+ X/).first()).toBeVisible();
 });
 
 test('Unicode converter handles BMP and supplementary code points', async ({ page }) => {
@@ -849,13 +884,16 @@ test('copy-paste catalog exposes broad visual symbol coverage', async ({ page })
   await page.goto('/tools/copy-paste-symbols/');
 
   const cards = page.locator('[data-catalog-symbol]');
-  expect(await cards.count()).toBeGreaterThanOrEqual(750);
-  await expect(page.locator('[data-catalog-category]')).toHaveCount(17);
+  expect(await cards.count()).toBeGreaterThanOrEqual(1300);
+  await expect(page.locator('[data-catalog-category]')).toHaveCount(20);
 
   await expect(page.locator('[data-category-slug="arrows"]')).toBeVisible();
   await expect(page.locator('[data-category-slug="box-drawing"]')).toBeVisible();
   await expect(page.locator('[data-category-slug="greek"]')).toBeVisible();
   await expect(page.locator('[data-category-slug="superscripts"]')).toBeVisible();
+  await expect(page.locator('[data-category-slug="enclosed"]')).toBeVisible();
+  await expect(page.locator('[data-category-slug="misc-symbols"]')).toBeVisible();
+  await expect(page.locator('[data-category-slug="dingbats"]')).toBeVisible();
 });
 
 test('copy-paste catalog searches names categories glyphs and code points', async ({ page }) => {
