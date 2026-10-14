@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { guides } from '../../data/guides';
+
+const title = 'Typing & Keyboard Guides | Character Toolbox';
+const description = 'Read practical guides for typing symbols and special characters on Windows, Mac, Microsoft Word, Google Docs and iPhone, with reviewed sources.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Guides', item: new URL('/guides/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Guides</div>
+      <h1>Typing & Keyboard Guides</h1>
+      <p class="lead">Long-form, source-reviewed instructions for typing special characters across operating systems and common apps. Each guide starts with the fastest method and explains reliable fallbacks.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" aria-labelledby="guide-library">
+    <div class="container">
+      <div class="guide-grid" id="guide-library">
+        {guides.map((guide) => (
+          <article class="guide-card">
+            <div class="guide-card-meta">
+              <span>{guide.category}</span>
+              <span>{guide.readingMinutes} min read</span>
+            </div>
+            <h2><a href={`/guides/${guide.slug}/`}>{guide.headline}</a></h2>
+            <p>{guide.summary}</p>
+            <a class="text-link" href={`/guides/${guide.slug}/`}>Read guide →</a>
+          </article>
+        ))}
+      </div>
+
+      <div class="content-note guide-policy-note">
+        <h2>How these guides are built</h2>
+        <p>Character identity and code points come from Unicode. Platform and app instructions are checked against first-party documentation from Microsoft, Apple or Google when available. We do not turn Unicode values into assumed keyboard shortcuts.</p>
+        <p>For one-off tasks, use the <a href="/tools/">interactive tools</a>. For a deeper explanation or troubleshooting, use these guides.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
