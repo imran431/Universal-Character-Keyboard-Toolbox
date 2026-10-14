@@ -1,0 +1,242 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { combiningDiacritics } from '../../data/accent-characters';
+
+const title = 'Combining Diacritics Keyboard — Add Accent Marks';
+const description = 'Type letters and add Unicode combining accent marks above or below them, then normalize text to NFC or NFD and copy the result in your browser.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: new URL('/tools/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: 'Diacritics Keyboard', item: new URL('/tools/diacritics-keyboard/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+
+function codePointLabel(codePoint: number) {
+  return `U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/tools/">Tools</a>
+        <span aria-hidden="true">/</span>
+        Diacritics Keyboard
+      </div>
+      <h1>Combining Diacritics Keyboard</h1>
+      <p class="lead">Type a base letter, place the cursor after it, then add Unicode combining marks above or below. Normalize the result when you want a precomposed form where Unicode provides one.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <div class="diacritics-workspace">
+        <section class="accent-pad-card" aria-labelledby="diacritics-pad-heading">
+          <div class="accent-pad-heading">
+            <div>
+              <h2 id="diacritics-pad-heading">Writing pad</h2>
+              <p>Example: type <strong>a</strong>, then click <strong>acute</strong> to create <strong>á</strong>.</p>
+            </div>
+            <div class="accent-pad-actions">
+              <button type="button" class="copy-button" data-diacritic-copy>Copy text</button>
+              <button type="button" class="source-mini-link accent-clear-button" data-diacritic-clear>Clear</button>
+            </div>
+          </div>
+
+          <textarea
+            class="test-field accent-pad diacritics-pad"
+            aria-label="Combining diacritics writing pad"
+            placeholder="Type letters here, then add marks…"
+            data-diacritic-pad
+          ></textarea>
+
+          <div class="diacritics-normalize-actions" aria-label="Unicode normalization controls">
+            <button type="button" class="source-mini-link" data-normalize="NFC">Normalize NFC</button>
+            <button type="button" class="source-mini-link" data-normalize="NFD">Decompose NFD</button>
+          </div>
+
+          <p class="search-hint" data-diacritic-status aria-live="polite">Type a base letter, then choose a mark.</p>
+          <p class="diacritics-codepoints"><strong>Code points:</strong> <code data-diacritic-codepoints>—</code></p>
+        </section>
+
+        <section class="content-note" aria-labelledby="diacritics-marks-heading">
+          <div class="section-heading compact-heading">
+            <div>
+              <h2 id="diacritics-marks-heading">Combining accent marks</h2>
+              <p>The dotted circle is a visual helper only; clicking a key inserts the combining mark itself.</p>
+            </div>
+          </div>
+
+          <div class="diacritics-grid">
+            {combiningDiacritics.map((mark) => (
+              <button
+                type="button"
+                class="diacritic-key"
+                data-diacritic-mark={mark.character}
+                data-diacritic-name={mark.name}
+                data-diacritic-code-point={codePointLabel(mark.codePoint)}
+                aria-label={`Add ${mark.name}, ${codePointLabel(mark.codePoint)}`}
+              >
+                <span class="diacritic-preview" aria-hidden="true">{`◌${mark.character}`}</span>
+                <span>
+                  <strong>{mark.name}</strong>
+                  <small>{codePointLabel(mark.codePoint)} · {mark.position}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <div class="info-grid tool-info-grid">
+        <section class="info-card">
+          <h2>Combining mark vs precomposed letter</h2>
+          <p><strong>á</strong> can be represented as one precomposed character or as <strong>a</strong> followed by a combining acute mark. They can look the same while having different code-point sequences.</p>
+        </section>
+        <section class="info-card">
+          <h2>When to normalize</h2>
+          <p>NFC composes compatible sequences when possible. NFD decomposes characters into base letters plus combining marks. Normalization can help when comparing or processing Unicode text.</p>
+        </section>
+        <section class="info-card">
+          <h2>Need ready-made letters?</h2>
+          <p>Use the <a href="/tools/accent-keyboard/">Accent Keyboard</a> for hundreds of precomposed Latin letters, or browse the <a href="/letters/">A-Z accent guides</a>.</p>
+        </section>
+        <section class="info-card">
+          <h2>Rendering varies</h2>
+          <p>Fonts and shaping engines can position the same combining mark differently. Stacked marks may also need a font with strong Unicode combining-mark support.</p>
+        </section>
+      </div>
+
+      <div class="content-note source-note">
+        <h2>Unicode reference</h2>
+        <p>The combining marks in this tool use Unicode code points from the Combining Diacritical Marks block. Character rendering depends on the active font and text engine.</p>
+        <div class="source-links">
+          <a href="https://www.unicode.org/Public/18.0.0/ucd/UnicodeData.txt" rel="noopener noreferrer">Unicode 18.0 Character Database</a>
+          <a href="/tools/unicode-converter/">Unicode Converter</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { rememberRecentCharacter } from '../../lib/character-library';
+
+  const pad = document.querySelector<HTMLTextAreaElement>('[data-diacritic-pad]');
+  const markButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-diacritic-mark]'));
+  const normalizeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-normalize]'));
+  const copyButton = document.querySelector<HTMLButtonElement>('[data-diacritic-copy]');
+  const clearButton = document.querySelector<HTMLButtonElement>('[data-diacritic-clear]');
+  const status = document.querySelector<HTMLElement>('[data-diacritic-status]');
+  const codePoints = document.querySelector<HTMLElement>('[data-diacritic-codepoints]');
+
+  function codePointLabel(codePoint: number) {
+    return `U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}`;
+  }
+
+  function updateInspection(message?: string) {
+    if (!pad) return;
+    const points = Array.from(pad.value).map((character) => codePointLabel(character.codePointAt(0) ?? 0));
+    if (codePoints) codePoints.textContent = points.length ? points.join(' ') : '—';
+    if (status) {
+      status.textContent = message ?? (pad.value ? `${points.length} Unicode code point${points.length === 1 ? '' : 's'} in the writing pad.` : 'Type a base letter, then choose a mark.');
+    }
+  }
+
+  async function writeClipboard(value: string) {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(value);
+        return true;
+      } catch {
+        // Fall through for local previews and restricted contexts.
+      }
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.inset = '0 auto auto -9999px';
+    textarea.style.opacity = '0';
+    document.body.append(textarea);
+    textarea.select();
+
+    let copied = false;
+    try {
+      copied = document.execCommand('copy');
+    } finally {
+      textarea.remove();
+    }
+
+    return copied;
+  }
+
+  function insertAtCursor(value: string) {
+    if (!pad) return;
+    const start = pad.selectionStart ?? pad.value.length;
+    const end = pad.selectionEnd ?? start;
+    pad.setRangeText(value, start, end, 'end');
+    pad.focus();
+  }
+
+  for (const button of markButtons) {
+    button.addEventListener('click', () => {
+      const mark = button.dataset.diacriticMark ?? '';
+      const name = button.dataset.diacriticName ?? 'combining mark';
+      if (!mark) return;
+
+      insertAtCursor(mark);
+      rememberRecentCharacter({
+        character: mark,
+        name: `Combining ${name}`,
+        codePoint: button.dataset.diacriticCodePoint ?? ''
+      });
+      updateInspection(`Added combining ${name}.`);
+    });
+  }
+
+  for (const button of normalizeButtons) {
+    button.addEventListener('click', () => {
+      if (!pad) return;
+      const form = button.dataset.normalize === 'NFD' ? 'NFD' : 'NFC';
+      pad.value = pad.value.normalize(form);
+      pad.focus();
+      updateInspection(`Normalized text to ${form}.`);
+    });
+  }
+
+  pad?.addEventListener('input', () => updateInspection());
+
+  copyButton?.addEventListener('click', async () => {
+    if (!pad || !copyButton) return;
+    const original = copyButton.textContent ?? 'Copy text';
+    const copied = await writeClipboard(pad.value);
+    copyButton.textContent = copied ? 'Copied' : 'Try again';
+    copyButton.dataset.copied = String(copied);
+    copyButton.dataset.copyFailed = String(!copied);
+
+    window.setTimeout(() => {
+      copyButton.textContent = original;
+      copyButton.dataset.copied = 'false';
+      copyButton.dataset.copyFailed = 'false';
+    }, 1400);
+  });
+
+  clearButton?.addEventListener('click', () => {
+    if (!pad) return;
+    pad.value = '';
+    pad.focus();
+    updateInspection('Writing pad cleared.');
+  });
+
+  updateInspection();
+</script>
