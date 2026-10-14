@@ -219,6 +219,12 @@ const breadcrumbSchema = {
   }
 
   function updateBuilder() {
+    if (selectedAccent && !builderCharacters.some((item) =>
+      item.base.toLocaleLowerCase() === selectedBase && item.accent === selectedAccent
+    )) {
+      selectedAccent = '';
+    }
+
     const lower = findBuilderCharacter('lower');
     const upper = findBuilderCharacter('upper');
 
@@ -236,12 +242,6 @@ const breadcrumbSchema = {
 
       button.disabled = !available;
       button.setAttribute('aria-pressed', String(accent === selectedAccent));
-    }
-
-    if (selectedAccent && !builderCharacters.some((item) =>
-      item.base.toLocaleLowerCase() === selectedBase && item.accent === selectedAccent
-    )) {
-      selectedAccent = '';
     }
 
     if (builderLower) {
