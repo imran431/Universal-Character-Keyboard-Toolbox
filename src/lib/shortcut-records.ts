@@ -1,5 +1,6 @@
 import { flagshipCharacterDetails, type TypingEnvironment } from '../data/character-details';
 import { allCuratedCharacters } from '../data/characters';
+import { reviewedWindowsAltCodes } from '../data/windows-alt-codes';
 
 export interface ShortcutRecord {
   slug: string;
@@ -30,10 +31,11 @@ export interface AltCodeRecord {
   sourceLabel?: string;
   sourceUrl?: string;
   verifiedAt: string;
-  href: string;
+  href?: string;
 }
 
 const summaryBySlug = new Map(allCuratedCharacters.map((item) => [item.id, item]));
+const summaryByCharacter = new Map(allCuratedCharacters.map((item) => [item.character, item]));
 
 function environmentLabel(environment: TypingEnvironment) {
   if (environment === 'windows') return 'Windows';
@@ -62,7 +64,7 @@ export const shortcutRecords: ShortcutRecord[] = flagshipCharacterDetails.flatMa
   }));
 });
 
-export const altCodeRecords: AltCodeRecord[] = shortcutRecords.flatMap((record) => {
+const derivedAltCodes: AltCodeRecord[] = shortcutRecords.flatMap((record) => {
   if (record.environment !== 'windows') return [];
 
   const match = record.instruction.match(/Hold Alt and type ([0-9]+) on the numeric keypad\./i);
@@ -83,3 +85,29 @@ export const altCodeRecords: AltCodeRecord[] = shortcutRecords.flatMap((record) 
     href: record.href
   }];
 });
+
+const altCodeByCharacter = new Map<string, AltCodeRecord>(
+  derivedAltCodes.map((record) => [record.character, record])
+);
+
+for (const record of reviewedWindowsAltCodes) {
+  const summary = summaryByCharacter.get(record.character);
+
+  altCodeByCharacter.set(record.character, {
+    slug: summary?.id ?? `alt-${record.codePoint.toLowerCase().replace('+', '-')}`,
+    character: record.character,
+    commonName: summary?.name ?? record.name,
+    codePoint: record.codePoint,
+    aliases: [...new Set([...(summary?.aliases ?? []), ...record.aliases])],
+    digits: record.digits,
+    instruction: `Hold Alt and type ${record.digits} on the numeric keypad.`,
+    note: 'Microsoft documents this four-digit Windows Alt code; use the numeric keypad rather than the top number row.',
+    sourceLabel: record.sourceLabel,
+    sourceUrl: record.sourceUrl,
+    verifiedAt: record.verifiedAt,
+    href: summary?.href
+  });
+}
+
+export const altCodeRecords: AltCodeRecord[] = [...altCodeByCharacter.values()]
+  .sort((a, b) => a.commonName.localeCompare(b.commonName));
