@@ -175,6 +175,37 @@ function codePointLabel(character: string) {
     };
   }
 
+  async function writeClipboard(value: string) {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(value);
+        return true;
+      } catch {
+        // Fall through to the legacy copy path for restricted browser contexts.
+      }
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.inset = '0 auto auto -9999px';
+    textarea.style.opacity = '0';
+    textarea.style.pointerEvents = 'none';
+    document.body.append(textarea);
+    textarea.select();
+    textarea.setSelectionRange(0, textarea.value.length);
+
+    let copied = false;
+    try {
+      copied = document.execCommand('copy');
+    } finally {
+      textarea.remove();
+    }
+
+    return copied;
+  }
+
   function syncFavoriteButton(card: HTMLElement) {
     const button = card.querySelector<HTMLButtonElement>('[data-catalog-save]');
     if (!button) return;
@@ -245,14 +276,17 @@ function codePointLabel(character: string) {
       const label = copy.querySelector<HTMLElement>('[data-catalog-copy-label]');
       const original = label?.textContent ?? 'Copy';
 
-      try {
-        await navigator.clipboard.writeText(item.character);
+      const copied = await writeClipboard(item.character);
+
+      if (copied) {
         rememberRecentCharacter(item);
         if (label) label.textContent = 'Copied';
         copy.dataset.copied = 'true';
-      } catch {
+        copy.dataset.copyFailed = 'false';
+      } else {
         if (label) label.textContent = 'Try again';
         copy.dataset.copyFailed = 'true';
+        copy.dataset.copied = 'false';
       }
 
       window.setTimeout(() => {
