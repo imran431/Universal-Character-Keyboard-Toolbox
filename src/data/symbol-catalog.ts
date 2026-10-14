@@ -247,6 +247,27 @@ export const symbolCatalogCategories: CatalogCategory[] = [
     ])
   },
   {
+    slug: 'enclosed',
+    label: 'Enclosed numbers & letters',
+    description: 'Circled numbers, parenthesized numbers and enclosed alphanumeric forms for lists, labels and compact markers.',
+    keywords: ['circled number', 'enclosed number', 'enclosed letter', 'parenthesized', 'marker'],
+    symbols: range(0x2460, 0x24ff, 'Enclosed Alphanumeric')
+  },
+  {
+    slug: 'misc-symbols',
+    label: 'Miscellaneous symbols',
+    description: 'A broad Unicode symbol block containing weather, warning, zodiac, chess, pointing-hand and other widely recognized marks.',
+    keywords: ['miscellaneous', 'symbol', 'weather', 'warning', 'zodiac', 'chess', 'hand'],
+    symbols: range(0x2600, 0x26ff, 'Miscellaneous Symbol')
+  },
+  {
+    slug: 'dingbats',
+    label: 'Dingbats',
+    description: 'Decorative marks, check marks, crosses, stars, punctuation ornaments and other Dingbats characters.',
+    keywords: ['dingbat', 'ornament', 'decorative', 'check mark', 'cross', 'star'],
+    symbols: range(0x2700, 0x27bf, 'Dingbat')
+  },
+  {
     slug: 'geometric',
     label: 'Geometric shapes',
     description: 'Squares, circles, triangles, diamonds and related geometric Unicode symbols.',
