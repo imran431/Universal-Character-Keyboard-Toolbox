@@ -55,6 +55,14 @@ On Netlify, Astro automatically falls back to Netlify's production `URL` environ
 
 The project is static and Netlify-ready. `netlify.toml` restores the checksum-verified, version-pinned Unicode search snapshot from GitHub Releases, builds the static site, publishes `dist`, and applies baseline security/cache headers. Ordinary deploys do not download from Unicode.org.
 
+After Netlify gives the site a public HTTPS URL, verify the real deployment:
+
+```bash
+npm run deploy:verify:live -- https://your-site.netlify.app
+```
+
+The live verifier checks production canonicals, robots and sitemap URLs, index/noindex boundaries, security headers, search-asset cache policy, Unicode 18.0 data availability, and 404 behavior.
+
 ## Architecture guardrails
 
 - Static HTML first.
