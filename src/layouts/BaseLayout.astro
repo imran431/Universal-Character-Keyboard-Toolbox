@@ -15,13 +15,16 @@ const {
   robots = 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+const siteOrigin = Astro.site ?? Astro.url.origin;
+const canonicalURL = new URL(Astro.url.pathname, siteOrigin);
+const isHomepage = Astro.url.pathname === '/';
 
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Universal Character & Keyboard Toolbox',
-  url: new URL('/', Astro.site ?? Astro.url.origin).href,
+  name: 'Character Toolbox',
+  alternateName: 'Universal Character & Keyboard Toolbox',
+  url: new URL('/', siteOrigin).href,
   description: 'Find, copy, type, and understand Unicode characters, symbols, accents, and keyboard shortcuts.',
 };
 ---
@@ -37,13 +40,16 @@ const websiteSchema = {
     <meta name="robots" content={robots} />
     <link rel="canonical" href={canonicalURL} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Character Toolbox" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)}></script>
+    <meta name="application-name" content="Character Toolbox" />
+    {isHomepage && <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)}></script>}
     <slot name="head" />
   </head>
   <body>
