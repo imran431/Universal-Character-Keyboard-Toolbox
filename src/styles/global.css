@@ -2055,6 +2055,8 @@ h1 {
 
 .catalog-category {
   scroll-margin-top: 6rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 28rem;
   width: 100%;
   max-width: 100%;
   min-width: 0;
