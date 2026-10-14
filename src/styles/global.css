@@ -2483,3 +2483,64 @@ h1 {
     transform: none;
   }
 }
+
+
+.accent-filter-groups {
+  display: grid;
+  gap: .85rem;
+  margin-top: .9rem;
+}
+
+.accent-filter-label {
+  display: block;
+  margin-bottom: .4rem;
+  color: var(--muted);
+  font-size: .75rem;
+  font-weight: 800;
+}
+
+.accent-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.accent-filter-row button {
+  min-height: 2.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .45rem .68rem;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: .76rem;
+  font-weight: 800;
+}
+
+.accent-filter-row button:hover,
+.accent-filter-row button:focus-visible,
+.accent-filter-row button[aria-pressed='true'] {
+  border-color: #aebfff;
+  background: #eef3ff;
+  color: var(--brand-strong);
+}
+
+@media (max-width: 42rem) {
+  .accent-filter-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    padding-bottom: .2rem;
+    scrollbar-width: thin;
+  }
+
+  .accent-filter-row button {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+  }
+
+  .accent-letter-filter button {
+    min-width: 2.75rem;
+    padding-inline: .5rem;
+  }
+}
