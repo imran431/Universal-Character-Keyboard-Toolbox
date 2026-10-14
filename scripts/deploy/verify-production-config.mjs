@@ -10,6 +10,10 @@ const restoreScript = await readFile(
   path.join(root, 'scripts', 'unicode', 'restore-search-index.mjs'),
   'utf8'
 );
+const liveVerifyScript = await readFile(
+  path.join(root, 'scripts', 'deploy', 'verify-live-site.mjs'),
+  'utf8'
+);
 const failures = [];
 
 function assert(condition, message) {
@@ -44,6 +48,15 @@ assert(
 assert(
   packageJson.scripts?.test?.startsWith('npm run unicode:restore'),
   'The full test command must restore the pinned Unicode snapshot on clean checkouts.'
+);
+assert(
+  packageJson.scripts?.['deploy:verify:live'] === 'node scripts/deploy/verify-live-site.mjs',
+  'package.json must expose the live deployment verification command.'
+);
+assert(
+  liveVerifyScript.includes('/sitemap-index.xml') &&
+    liveVerifyScript.includes('/data/search/unicode-18.0-search.json'),
+  'Live deployment verification must cover sitemap and Unicode search data.'
 );
 
 const csp = netlify.match(/Content-Security-Policy\s*=\s*"([^"]+)"/)?.[1] ?? '';
