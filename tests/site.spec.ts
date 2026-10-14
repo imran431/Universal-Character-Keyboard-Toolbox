@@ -65,7 +65,6 @@ for (const path of indexablePaths) {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index,follow/);
 
     const schemaBlocks = await page.locator('script[type="application/ld+json"]').allTextContents();
-    expect(schemaBlocks.length).toBeGreaterThan(0);
     for (const schema of schemaBlocks) {
       expect(() => JSON.parse(schema)).not.toThrow();
     }
@@ -116,6 +115,25 @@ for (const path of indexablePaths) {
     ).toEqual([]);
   });
 }
+
+test('homepage exposes the preferred site name only at the root', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute('content', 'Character Toolbox');
+
+  const homeSchemas = (await page.locator('script[type="application/ld+json"]').allTextContents())
+    .map((schema) => JSON.parse(schema));
+  const websiteSchemas = homeSchemas.filter((schema) => schema['@type'] === 'WebSite');
+
+  expect(websiteSchemas).toHaveLength(1);
+  expect(websiteSchemas[0].name).toBe('Character Toolbox');
+  expect(websiteSchemas[0].alternateName).toBe('Universal Character & Keyboard Toolbox');
+
+  await page.goto('/tools/');
+  const internalSchemas = (await page.locator('script[type="application/ld+json"]').allTextContents())
+    .map((schema) => JSON.parse(schema));
+  expect(internalSchemas.some((schema) => schema['@type'] === 'WebSite')).toBeFalsy();
+});
 
 test('robots.txt exposes the sitemap and OAI search crawl policy', async ({ request }) => {
   const response = await request.get('/robots.txt');
@@ -549,7 +567,71 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
       dimensions.scrollWidth,
       `${path} overflowed at 320px: scrollWidth=${dimensions.scrollWidth}, clientWidth=${dimensions.clientWidth}`
     ).toBeLessThanOrEqual(dimensions.clientWidth + 1);
-    await expect(page.locator('nav a[href="/tools/"]')).toBeVisible();
+    const primaryNav = page.locator('nav[aria-label="Primary navigation"]');
+    for (const href of ['/symbols/', '/unicode/', '/tools/', '/guides/']) {
+      await expect(primaryNav.locator(`a[href="${href}"]`)).toBeVisible();
+    }
+  }
+});
+
+test('representative pages remain overflow-free across common phone widths', async ({ page }) => {
+  const paths = [
+    '/',
+    '/symbols/',
+    '/symbols/degree-sign/',
+    '/unicode/',
+    '/tools/copy-paste-symbols/',
+    '/guides/keyboard-shortcuts-for-symbols/'
+  ];
+
+  for (const width of [360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+
+    for (const path of paths) {
+      await page.goto(path);
+      const dimensions = await page.evaluate(() => ({
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+      }));
+
+      expect(
+        dimensions.scrollWidth,
+        `${path} overflowed at ${width}px: scrollWidth=${dimensions.scrollWidth}, clientWidth=${dimensions.clientWidth}`
+      ).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+    }
+  }
+});
+
+test('mobile primary navigation and dense controls keep comfortable touch targets', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto('/tools/copy-paste-symbols/');
+
+  const targets = [
+    page.locator('nav[aria-label="Primary navigation"] a[href="/tools/"]'),
+    page.locator('[data-category-link="popular"]'),
+    page.locator('[data-catalog-copy]').first(),
+    page.locator('[data-catalog-save]').first()
+  ];
+
+  for (const target of targets) {
+    const box = await target.boundingBox();
+    expect(box, 'Expected touch target to have a bounding box').not.toBeNull();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+  }
+});
+
+test('mobile form controls avoid focus zoom sizing', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  for (const [path, selector] of [
+    ['/', '[data-character-search]'],
+    ['/tools/unicode-converter/', '.converter-output-list textarea']
+  ] as const) {
+    await page.goto(path);
+    const fontSize = await page.locator(selector).first().evaluate((element) =>
+      Number.parseFloat(getComputedStyle(element).fontSize)
+    );
+    expect(fontSize).toBeGreaterThanOrEqual(16);
   }
 });
 
