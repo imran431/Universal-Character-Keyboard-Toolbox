@@ -14,6 +14,10 @@ const liveVerifyScript = await readFile(
   path.join(root, 'scripts', 'deploy', 'verify-live-site.mjs'),
   'utf8'
 );
+const unicodeSnapshotWorkflow = await readFile(
+  path.join(root, '.github', 'workflows', 'unicode-snapshot.yml'),
+  'utf8'
+);
 const failures = [];
 
 function assert(condition, message) {
@@ -58,6 +62,22 @@ assert(
     liveVerifyScript.includes('/data/search/unicode-18.0-search.json'),
   'Live deployment verification must cover sitemap and Unicode search data.'
 );
+assert(
+  unicodeSnapshotWorkflow.includes('workflow_dispatch:'),
+  'Pinned Unicode snapshot publication must remain an explicit manual workflow.'
+);
+assert(
+  !/\n\s*push:\s*\n/.test(unicodeSnapshotWorkflow),
+  'Pinned Unicode snapshot publication must not run automatically on repository pushes.'
+);
+assert(
+  !unicodeSnapshotWorkflow.includes('--clobber'),
+  'Pinned Unicode release assets must never be overwritten with --clobber.'
+);
+assert(
+  unicodeSnapshotWorkflow.includes('Refuse to overwrite an existing pinned snapshot'),
+  'Unicode snapshot publication must fail closed when the pinned release already exists.'
+);
 
 const csp = netlify.match(/Content-Security-Policy\s*=\s*"([^"]+)"/)?.[1] ?? '';
 assert(csp.includes("worker-src 'self'"), "Netlify CSP must explicitly allow same-origin Web Workers.");
@@ -81,5 +101,5 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exitCode = 1;
 } else {
-  console.log('Production configuration verified: deploys use the pinned Unicode snapshot, worker CSP, and safe cache policies.');
+  console.log('Production configuration verified: deploys use the pinned immutable Unicode snapshot, worker CSP, and safe cache policies.');
 }
