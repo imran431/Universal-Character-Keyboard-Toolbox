@@ -33,6 +33,7 @@ const indexablePaths = [
   '/tools/shortcut-finder/',
   '/tools/alt-code-finder/',
   '/tools/accent-keyboard/',
+  '/tools/diacritics-keyboard/',
   '/tools/unicode-converter/',
   '/tools/invisible-characters/',
   '/guides/',
@@ -555,6 +556,7 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     '/tools/shortcut-finder/',
     '/tools/alt-code-finder/',
     '/tools/accent-keyboard/',
+    '/tools/diacritics-keyboard/',
     '/tools/unicode-converter/',
     '/tools/invisible-characters/',
     '/guides/',
@@ -695,6 +697,23 @@ test('A-Z accent directory links every base letter and renders code guidance', a
   await expect(page.getByText(/024B then Alt \+ X/).first()).toBeVisible();
 });
 
+test('combining diacritics keyboard inserts marks and normalizes text', async ({ page }) => {
+  await page.goto('/tools/diacritics-keyboard/');
+
+  const pad = page.getByRole('textbox', { name: 'Combining diacritics writing pad' });
+  await pad.fill('a');
+  await page.getByRole('button', { name: 'Add acute, U+0301' }).click();
+  await expect(pad).toHaveValue('a\u0301');
+  await expect(page.locator('[data-diacritic-codepoints]')).toHaveText('U+0061 U+0301');
+
+  await page.getByRole('button', { name: 'Normalize NFC' }).click();
+  await expect(pad).toHaveValue('á');
+  await expect(page.locator('[data-diacritic-codepoints]')).toHaveText('U+00E1');
+
+  await page.getByRole('button', { name: 'Decompose NFD' }).click();
+  await expect(pad).toHaveValue('a\u0301');
+});
+
 test('Unicode converter handles BMP and supplementary code points', async ({ page }) => {
   await page.goto('/tools/unicode-converter/');
 
@@ -728,6 +747,7 @@ test('tools hub links to high-value character utilities', async ({ page }) => {
   await page.goto('/tools/');
   await expect(page.locator('a[href="/tools/copy-paste-symbols/"]')).toBeVisible();
   await expect(page.locator('a[href="/tools/accent-keyboard/"]')).toBeVisible();
+  await expect(page.locator('a[href="/tools/diacritics-keyboard/"]')).toBeVisible();
   await expect(page.locator('a[href="/tools/unicode-converter/"]')).toBeVisible();
   await expect(page.locator('a[href="/tools/invisible-characters/"]')).toBeVisible();
   await expect(page.locator('a[href="/library/"]')).toBeVisible();
