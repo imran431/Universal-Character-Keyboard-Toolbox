@@ -43,6 +43,16 @@ const indexablePaths = [
   '/guides/special-characters-google-docs/',
   '/guides/type-accents-on-iphone/',
   '/guides/math-symbols-on-keyboard/',
+  '/guides/type-hashtag-number-sign/',
+  '/guides/type-at-symbol/',
+  '/guides/slash-backslash-pipe-symbols/',
+  '/guides/quotation-marks-apostrophes/',
+  '/guides/brackets-braces-parentheses/',
+  '/guides/bullet-point-symbols/',
+  '/guides/check-mark-cross-symbols/',
+  '/guides/arrow-symbols-keyboard/',
+  '/guides/alt-code-not-working/',
+  '/guides/missing-symbol-square-box/',
   '/letters/',
   '/letters/a-with-accents/',
   '/letters/q-with-accents/',
@@ -561,6 +571,7 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     '/tools/invisible-characters/',
     '/guides/',
     '/guides/keyboard-shortcuts-for-symbols/',
+    '/guides/alt-code-not-working/',
     '/letters/',
     '/letters/a-with-accents/',
     '/library/'
@@ -591,7 +602,8 @@ test('representative pages remain overflow-free across common phone widths', asy
     '/unicode/',
     '/tools/copy-paste-symbols/',
     '/letters/a-with-accents/',
-    '/guides/keyboard-shortcuts-for-symbols/'
+    '/guides/keyboard-shortcuts-for-symbols/',
+    '/guides/type-hashtag-number-sign/'
   ];
 
   for (const width of [360, 390, 430]) {
@@ -846,7 +858,12 @@ test('long-form guides expose Article schema and reviewed sources', async ({ pag
     '/guides/type-special-characters-mac/',
     '/guides/special-characters-google-docs/',
     '/guides/type-accents-on-iphone/',
-    '/guides/math-symbols-on-keyboard/'
+    '/guides/math-symbols-on-keyboard/',
+    '/guides/type-hashtag-number-sign/',
+    '/guides/quotation-marks-apostrophes/',
+    '/guides/arrow-symbols-keyboard/',
+    '/guides/alt-code-not-working/',
+    '/guides/missing-symbol-square-box/'
   ]) {
     await page.goto(path);
 
@@ -863,10 +880,13 @@ test('long-form guides expose Article schema and reviewed sources', async ({ pag
 test('guides hub links every reviewed guide with descriptive anchors', async ({ page }) => {
   await page.goto('/guides/');
 
-  await expect(page.locator('.guide-card')).toHaveCount(6);
+  await expect(page.locator('.guide-card')).toHaveCount(16);
   await expect(page.getByRole('link', { name: /Keyboard Shortcuts for Symbols/ }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: /Special Characters on Windows/ }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: /Special Characters in Google Docs/ }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /Hashtag or Number Sign/ }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /Alt Code Not Working/ }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /Square Box or Missing Glyph/ }).first()).toBeVisible();
 });
 
 test('accent builder offers valid reviewed combinations and inserts them', async ({ page }) => {
