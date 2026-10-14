@@ -27,7 +27,7 @@ html {
 
 body {
   margin: 0;
-  min-width: 20rem;
+  min-width: 0;
   min-height: 100vh;
   background: linear-gradient(180deg, #fff 0, var(--bg) 28rem);
 }
@@ -38,7 +38,20 @@ a { color: inherit; }
 
 .container {
   width: min(calc(100% - 2rem), var(--container));
+  min-width: 0;
   margin-inline: auto;
+}
+
+main {
+  min-width: 0;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
 }
 
 .sr-only {
@@ -2305,5 +2318,168 @@ h1 {
     width: 100%;
     max-width: 100%;
     min-width: 0;
+  }
+}
+
+
+/* Mobile-first resilience and touch ergonomics. */
+@media (max-width: 42rem) {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: 4.75rem;
+  }
+
+  .container {
+    width: min(calc(100% - 1rem), var(--container));
+  }
+
+  .site-header {
+    overflow: hidden;
+  }
+
+  .header-inner {
+    min-width: 0;
+  }
+
+  .brand {
+    flex: 0 0 auto;
+  }
+
+  .brand-mark {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .site-header nav {
+    flex: 1 1 auto;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: auto;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+  }
+
+  .site-header nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-header nav a,
+  .site-header nav a:first-child {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: .55rem .48rem;
+    font-size: .76rem;
+    white-space: nowrap;
+  }
+
+  .hero {
+    padding: 2.35rem 0 1.9rem;
+  }
+
+  h1 {
+    font-size: clamp(2.1rem, 10vw, 3rem);
+    line-height: 1.04;
+  }
+
+  .content-header {
+    padding: 2rem 0 1.1rem;
+  }
+
+  .content-header h1 {
+    font-size: clamp(2rem, 9vw, 3rem);
+    line-height: 1.06;
+  }
+
+  .section {
+    padding: 1.75rem 0 3rem;
+  }
+
+  .search-shell,
+  .tool-panel,
+  .explorer-panel,
+  .answer-card,
+  .guide-section,
+  .guide-sources,
+  .guide-related,
+  .content-note {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .quick-searches button,
+  .category-pill-row a,
+  .catalog-category-nav a,
+  .footer-links a,
+  .source-links a,
+  .source-mini-link,
+  .accent-builder-options button,
+  .inline-favorite-button,
+  .catalog-card-actions > a,
+  .catalog-save-button {
+    min-height: 2.75rem;
+  }
+
+  .footer-links a {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .catalog-card-actions {
+    min-height: 2.75rem;
+  }
+
+  .answer-actions > * {
+    min-height: 2.75rem;
+  }
+
+  input,
+  textarea,
+  select,
+  .converter-output-list textarea {
+    font-size: 1rem;
+  }
+
+  .code-table {
+    table-layout: fixed;
+  }
+
+  .code-table th,
+  .code-table td {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 22rem) {
+  .container {
+    width: min(calc(100% - .75rem), var(--container));
+  }
+
+  .site-header nav a,
+  .site-header nav a:first-child {
+    padding-inline: .4rem;
+    font-size: .72rem;
+  }
+
+  .symbol-card,
+  .comparison-card,
+  .related-card,
+  .home-tool-card {
+    gap: .65rem;
+  }
+}
+
+@media (hover: none) {
+  .symbol-card:hover,
+  .home-tool-card:hover,
+  .guide-card:hover,
+  .catalog-symbol-card:hover {
+    transform: none;
   }
 }
