@@ -77,6 +77,17 @@ for (const path of indexablePaths) {
   });
 }
 
+test('robots.txt exposes the sitemap and OAI search crawl policy', async ({ request }) => {
+  const response = await request.get('/robots.txt');
+  expect(response.ok()).toBeTruthy();
+
+  const robots = await response.text();
+  expect(robots).toContain('User-agent: *');
+  expect(robots).toContain('Allow: /');
+  expect(robots).toContain('User-agent: OAI-SearchBot');
+  expect(robots).toContain('Sitemap: http://localhost:4321/sitemap-index.xml');
+});
+
 test('404 page stays out of the index', async ({ page }) => {
   await page.goto('/404.html');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex,follow/);
