@@ -2763,3 +2763,66 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+
+.accent-reference-section {
+  margin-top: 1rem;
+}
+
+.accent-reference-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .7rem;
+}
+
+.accent-reference-card {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: .7rem;
+  align-items: start;
+  min-width: 0;
+  padding: .8rem;
+  border: 1px solid var(--line);
+  border-radius: .8rem;
+  background: var(--surface-soft);
+}
+
+.accent-reference-mark {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  min-height: 3rem;
+  border-radius: .7rem;
+  background: var(--surface);
+  font-size: 1.7rem;
+}
+
+.accent-reference-card strong,
+.accent-reference-card span {
+  display: block;
+}
+
+.accent-reference-card span {
+  margin-top: .18rem;
+  font-family: "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols 2", system-ui, sans-serif;
+  color: var(--brand-strong);
+}
+
+.accent-reference-card p {
+  margin: .35rem 0 0;
+  color: var(--muted);
+  font-size: .8rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 62rem) {
+  .accent-reference-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 42rem) {
+  .accent-reference-grid {
+    grid-template-columns: 1fr;
+  }
+}
