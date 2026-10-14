@@ -480,6 +480,17 @@ test('tool pages remain responsive after filtering', async ({ page }) => {
 });
 
 
+test('homepage tool grid stays single-column at 320px', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto('/');
+
+  const grid = page.locator('.home-tools-grid');
+  await expect(grid).toBeVisible();
+
+  const columns = await grid.evaluate((element) => getComputedStyle(element).gridTemplateColumns);
+  expect(columns.trim().split(/\s+/)).toHaveLength(1);
+});
+
 test('critical pages fit a 320px viewport with primary navigation intact', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
 
