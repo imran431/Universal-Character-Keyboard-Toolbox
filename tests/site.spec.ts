@@ -33,7 +33,14 @@ const indexablePaths = [
   '/tools/alt-code-finder/',
   '/tools/accent-keyboard/',
   '/tools/unicode-converter/',
-  '/tools/invisible-characters/'
+  '/tools/invisible-characters/',
+  '/guides/',
+  '/guides/keyboard-shortcuts-for-symbols/',
+  '/guides/type-special-characters-windows/',
+  '/guides/type-special-characters-mac/',
+  '/guides/special-characters-google-docs/',
+  '/guides/type-accents-on-iphone/',
+  '/guides/math-symbols-on-keyboard/'
 ];
 
 for (const path of indexablePaths) {
@@ -471,6 +478,8 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     '/tools/accent-keyboard/',
     '/tools/unicode-converter/',
     '/tools/invisible-characters/',
+    '/guides/',
+    '/guides/keyboard-shortcuts-for-symbols/',
     '/library/'
   ]) {
     await page.goto(path);
@@ -629,4 +638,65 @@ test('Unicode Explorer results can be saved without a detail page', async ({ pag
   const favorites = page.locator('[data-favorites-grid]');
   await expect(favorites.getByText('SNOWMAN', { exact: true })).toBeVisible();
   await expect(favorites.getByText('U+2603', { exact: true })).toBeVisible();
+});
+
+
+test('long-form guides expose Article schema and reviewed sources', async ({ page }) => {
+  for (const path of [
+    '/guides/keyboard-shortcuts-for-symbols/',
+    '/guides/type-special-characters-windows/',
+    '/guides/type-special-characters-mac/',
+    '/guides/special-characters-google-docs/',
+    '/guides/type-accents-on-iphone/',
+    '/guides/math-symbols-on-keyboard/'
+  ]) {
+    await page.goto(path);
+
+    await expect(page.locator('.guide-section').first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Reviewed sources' })).toBeVisible();
+    await expect(page.locator('.guide-sources a').first()).toHaveAttribute('href', /^https:\/\//);
+
+    const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const parsed = schemas.map((schema) => JSON.parse(schema));
+    expect(parsed.some((schema) => schema['@type'] === 'Article')).toBeTruthy();
+  }
+});
+
+test('guides hub links every reviewed guide with descriptive anchors', async ({ page }) => {
+  await page.goto('/guides/');
+
+  await expect(page.locator('.guide-card')).toHaveCount(6);
+  await expect(page.getByRole('link', { name: /Keyboard Shortcuts for Symbols/ }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /Special Characters on Windows/ }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /Special Characters in Google Docs/ }).first()).toBeVisible();
+});
+
+test('accent builder offers valid reviewed combinations and inserts them', async ({ page }) => {
+  await page.goto('/tools/accent-keyboard/');
+
+  const pad = page.getByRole('textbox', { name: 'Accent keyboard writing pad' });
+  await page.locator('[data-builder-base="a"]').click();
+  await page.locator('[data-builder-accent="acute"]').click();
+
+  const lower = page.locator('[data-builder-lower]');
+  const upper = page.locator('[data-builder-upper]');
+
+  await expect(lower).toHaveText('á');
+  await expect(upper).toHaveText('Á');
+  await lower.click();
+  await upper.click();
+  await expect(pad).toHaveValue('áÁ');
+});
+
+test('Alt Code Finder includes Microsoft documented punctuation codes', async ({ page }) => {
+  await page.goto('/tools/alt-code-finder/');
+  const search = page.getByRole('searchbox', { name: 'Symbol, name, Unicode code point or Alt-code digits' });
+
+  await search.fill('dagger');
+  await expect(page.locator('[data-alt-code-card]:visible')).toHaveCount(2);
+  await expect(page.locator('[data-alt-code-card]:visible').first()).toContainText('Alt + 0134');
+
+  await search.fill('section');
+  await expect(page.locator('[data-alt-code-card]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-alt-code-card]:visible')).toContainText('Alt + 0167');
 });
