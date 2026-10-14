@@ -448,6 +448,551 @@ export const guides: Guide[] = [
       { label: 'Unicode Explorer', href: '/unicode/' },
       { label: 'Shortcut Finder', href: '/tools/shortcut-finder/' }
     ]
+  },
+  {
+    slug: 'type-hashtag-number-sign',
+    title: 'How to Type the Hashtag or Number Sign (#)',
+    description: 'Copy the # hashtag or number sign and learn reliable ways to insert it on Windows, Mac, Microsoft Word and Google Docs without assuming one keyboard layout.',
+    headline: 'How to Type the Hashtag or Number Sign (#)',
+    summary: 'The character # is U+0023 NUMBER SIGN. People also call it the hash sign, hashtag symbol or pound key depending on context. Keyboard placement changes with layout, so this guide separates the character itself from layout-specific shortcuts.',
+    category: 'Symbols',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 6,
+    sections: [
+      {
+        heading: 'Copy the hashtag symbol',
+        paragraphs: [
+          'The character is #. Unicode names it NUMBER SIGN at U+0023. In social posts it is commonly called a hashtag when it prefixes a tag, while computing users often call the same character a hash sign.',
+          'If you only need it once, copy and paste is the most layout-independent method because the # key position can differ between keyboard languages and regional layouts.'
+        ],
+        bullets: [
+          '# — U+0023 NUMBER SIGN',
+          '#1 — number or ranking label',
+          '#topic — hashtag-style tag',
+          '#FFFFFF — hexadecimal color notation'
+        ]
+      },
+      {
+        heading: 'Use the key shown by your active keyboard layout',
+        paragraphs: [
+          'On physical keyboards, use the key combination printed for # on the active layout. Do not assume a shortcut from a different country or language layout will produce the same character.',
+          'If the printed key and the result disagree, check the operating-system keyboard language before trying random modifier combinations.'
+        ]
+      },
+      {
+        heading: 'Windows, Mac and Word fallbacks',
+        paragraphs: [
+          'On Windows, Microsoft documents the Symbols area in the Windows key + period panel for browsing punctuation and symbols. On Mac, Apple Character Viewer can search and insert symbols without relying on a layout-specific key position.',
+          'In Microsoft Word on Windows, type 0023 and press Alt + X to convert the Unicode hexadecimal value to #.'
+        ]
+      },
+      {
+        heading: 'Google Docs and Slides',
+        paragraphs: [
+          'Google Docs and Slides on desktop include Insert > Special characters. Google also allows searching by Unicode value, so U+0023 can help identify the number sign when the keyboard layout is unfamiliar.',
+          'Google Sheets does not provide the same Special characters dialog; copy and paste is the straightforward fallback there.'
+        ]
+      },
+      {
+        heading: 'Hashtag, number sign and sharp sign are not the same thing',
+        paragraphs: [
+          'Hashtag and number sign refer to the same # character in different contexts. The musical sharp sign ♯ is a different Unicode character, U+266F MUSIC SHARP SIGN, even though the shapes can look similar in some fonts.'
+        ]
+      }
+    ],
+    sources: [microsoftWindows, microsoftWordUnicode, appleMacSymbols, googleDocsSpecial, unicodeUcd],
+    related: [
+      { label: 'Copy & paste symbols', href: '/tools/copy-paste-symbols/' },
+      { label: 'Unicode Explorer', href: '/unicode/' },
+      { label: 'Shortcut Finder', href: '/tools/shortcut-finder/' }
+    ]
+  },
+  {
+    slug: 'type-at-symbol',
+    title: 'How to Type the At Sign (@) on Any Keyboard',
+    description: 'Copy the @ at sign and learn dependable Windows, Mac, Word and Google Docs methods when the key position changes with your keyboard layout.',
+    headline: 'How to Type the At Sign (@)',
+    summary: 'The at sign @ is U+0040 COMMERCIAL AT. Its physical key position varies across keyboard layouts, so the safest instructions start with your active layout and provide Unicode-based fallbacks when that layout is unfamiliar.',
+    category: 'Symbols',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 5,
+    sections: [
+      {
+        heading: 'Copy the at sign',
+        paragraphs: [
+          'The character is @. Unicode identifies it as COMMERCIAL AT, U+0040. It is widely used in email addresses, account handles and technical identifiers.',
+          'Copying @ is useful when a device has switched keyboard languages or when the expected key produces a different symbol.'
+        ],
+        bullets: [
+          '@ — U+0040 COMMERCIAL AT',
+          'name@example.com — email address',
+          '@username — account or mention syntax'
+        ]
+      },
+      {
+        heading: 'Why the key can move',
+        paragraphs: [
+          'The key combination for @ is determined by the active keyboard layout, not by Unicode. US, UK and other language layouts can place @ on different keys or modifier layers.',
+          'Use the symbol printed for the active layout, or open the operating-system character picker instead of guessing combinations from another layout.'
+        ]
+      },
+      {
+        heading: 'Reliable platform methods',
+        paragraphs: [
+          'Windows includes a Symbols panel inside the Windows key + period picker. macOS provides Character Viewer through Fn/Globe + E or Edit > Emoji & Symbols.',
+          'In Microsoft Word on Windows, 0040 followed by Alt + X converts the Unicode hexadecimal value to @.'
+        ]
+      },
+      {
+        heading: 'Google Docs and web forms',
+        paragraphs: [
+          'Google Docs and Slides can insert special characters from the Insert menu and can search by Unicode value. For normal web forms, direct typing or copy/paste is usually faster.',
+          'If @ appears where another symbol is expected, confirm the keyboard language shown by the operating system before changing application settings.'
+        ]
+      }
+    ],
+    sources: [microsoftWindows, microsoftWordUnicode, appleMacSymbols, googleDocsSpecial, unicodeUcd],
+    related: [
+      { label: 'Unicode Explorer', href: '/unicode/' },
+      { label: 'Copy & paste symbols', href: '/tools/copy-paste-symbols/' },
+      { label: 'Typing methods hub', href: '/typing/' }
+    ]
+  },
+  {
+    slug: 'slash-backslash-pipe-symbols',
+    title: 'Slash, Backslash & Pipe Symbols — Copy and Type',
+    description: 'Learn the difference between / slash, \\ backslash and | vertical line, copy each character, and use reliable Unicode insertion methods when keys vary by layout.',
+    headline: 'Slash, Backslash and Pipe Symbols',
+    summary: 'Slash /, backslash \\ and vertical line | are three different ASCII and Unicode characters. They are easy to confuse because keyboard placement varies, especially across regional layouts.',
+    category: 'Symbols',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 6,
+    sections: [
+      {
+        heading: 'The three characters',
+        paragraphs: [
+          'Use / for the solidus or forward slash, \\ for reverse solidus or backslash, and | for vertical line. They have different Unicode code points and different technical uses.'
+        ],
+        bullets: [
+          '/ — U+002F SOLIDUS',
+          '\\ — U+005C REVERSE SOLIDUS',
+          '| — U+007C VERTICAL LINE'
+        ]
+      },
+      {
+        heading: 'Common uses',
+        paragraphs: [
+          'Forward slash commonly separates alternatives, dates and URL path components. Backslash is important in Windows paths and many programming escape sequences. Vertical line is often called pipe in command lines and programming contexts.',
+          'When meaning matters, do not substitute similar-looking mathematical slashes or vertical bars from other Unicode ranges.'
+        ]
+      },
+      {
+        heading: 'When the keyboard key is hard to find',
+        paragraphs: [
+          'Physical placement differs across keyboard layouts. If the expected key does not produce the right character, first verify the active layout instead of testing undocumented modifier combinations.',
+          'Windows Symbols and Mac Character Viewer provide layout-independent fallbacks for uncommon punctuation.'
+        ]
+      },
+      {
+        heading: 'Microsoft Word Unicode input',
+        paragraphs: [
+          'In Word on Windows, type the hexadecimal code and press Alt + X: 002F for /, 005C for \\, and 007C for |. This is a Unicode input method and should not be confused with numeric-keypad Alt codes.'
+        ]
+      },
+      {
+        heading: 'Google Docs',
+        paragraphs: [
+          'Google Docs and Slides can search the Special characters dialog by Unicode value. That is useful when a keyboard layout hides one of these characters or produces a different symbol.'
+        ]
+      }
+    ],
+    sources: [microsoftWindows, microsoftWordUnicode, appleMacSymbols, googleDocsSpecial, unicodeUcd],
+    related: [
+      { label: 'Unicode Converter', href: '/tools/unicode-converter/' },
+      { label: 'Copy & paste symbols', href: '/tools/copy-paste-symbols/' },
+      { label: 'Unicode Explorer', href: '/unicode/' }
+    ]
+  },
+  {
+    slug: 'quotation-marks-apostrophes',
+    title: 'Quotation Marks & Apostrophes — Straight vs Curly',
+    description: 'Copy straight and curly quotation marks, apostrophes and primes, compare their Unicode values, and choose the right character for writing or code.',
+    headline: 'Quotation Marks and Apostrophes',
+    summary: 'Straight quotes, curly quotes, apostrophes and prime marks can look similar but represent different characters. This guide helps you choose and type the correct Unicode mark.',
+    category: 'Symbols',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 7,
+    sections: [
+      {
+        heading: 'Common quote characters to copy',
+        paragraphs: [
+          'Typography often uses directional quotation marks, while source code and plain-text formats usually rely on straight ASCII quotes. Prime marks are separate characters used for measurements and notation.'
+        ],
+        bullets: [
+          '" — U+0022 QUOTATION MARK',
+          "' — U+0027 APOSTROPHE",
+          '“ — U+201C LEFT DOUBLE QUOTATION MARK',
+          '” — U+201D RIGHT DOUBLE QUOTATION MARK',
+          '‘ — U+2018 LEFT SINGLE QUOTATION MARK',
+          '’ — U+2019 RIGHT SINGLE QUOTATION MARK',
+          '′ — U+2032 PRIME',
+          '″ — U+2033 DOUBLE PRIME'
+        ]
+      },
+      {
+        heading: 'Apostrophe vs right single quotation mark',
+        paragraphs: [
+          'Many publishing systems display U+2019 RIGHT SINGLE QUOTATION MARK as a typographic apostrophe. U+0027 APOSTROPHE remains common in code, identifiers and plain text.',
+          'Choose based on the target format rather than appearance alone. Replacing straight quotes inside code can break syntax.'
+        ]
+      },
+      {
+        heading: 'Prime marks are not quotation marks',
+        paragraphs: [
+          'Prime and double-prime characters are commonly used for feet, inches, minutes and seconds in technical notation. They are distinct from curly closing quotes even when a font makes them look similar.'
+        ]
+      },
+      {
+        heading: 'Reliable insertion methods',
+        paragraphs: [
+          'Use Windows Symbols or Mac Character Viewer to search by name when you need a typographic quote. In Microsoft Word, Unicode hex plus Alt + X can insert the exact character; for example 201C for “ and 201D for ”.',
+          'Google Docs Special characters can also search by Unicode value or by browsing punctuation categories.'
+        ]
+      }
+    ],
+    sources: [microsoftWindows, microsoftWordUnicode, appleMacSymbols, googleDocsSpecial, unicodeUcd],
+    related: [
+      { label: 'Punctuation symbols', href: '/symbols/punctuation/' },
+      { label: 'Copy & paste symbols', href: '/tools/copy-paste-symbols/' },
+      { label: 'Unicode Explorer', href: '/unicode/' }
+    ]
+  },
+  {
+    slug: 'brackets-braces-parentheses',
+    title: 'Brackets, Braces & Parentheses — Copy and Type',
+    description: 'Copy parentheses, square brackets, curly braces and angle brackets, compare similar Unicode forms, and use dependable insertion methods across platforms.',
+    headline: 'Brackets, Braces and Parentheses',
+    summary: 'Parentheses (), square brackets [], braces {} and angle brackets are separate characters with different roles in prose, mathematics and programming. Unicode also contains many decorative and mathematical variants.',
+    category: 'Symbols',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 6,
+    sections: [
+      {
+        heading: 'Core bracket characters',
+        paragraphs: [
+          'The basic ASCII bracket set is widely supported and usually the correct choice for code, formulas and plain text.'
+        ],
+        bullets: [
+          '( ) — U+0028 and U+0029 PARENTHESES',
+          '[ ] — U+005B and U+005D SQUARE BRACKETS',
+          '{ } — U+007B and U+007D CURLY BRACKETS',
+          '< > — U+003C LESS-THAN SIGN and U+003E GREATER-THAN SIGN'
+        ]
+      },
+      {
+        heading: 'Angle brackets are easy to confuse',
+        paragraphs: [
+          'The keyboard characters < and > are mathematical comparison signs, not the same as Unicode angle-bracket characters such as ⟨ and ⟩. Use the form required by the document or technical notation.',
+          'Decorative CJK brackets and mathematical delimiters should not be substituted into source code unless the language explicitly supports them.'
+        ]
+      },
+      {
+        heading: 'When a brace is missing from your layout',
+        paragraphs: [
+          'Keyboard placement changes by layout. Windows Symbols and Mac Character Viewer can help when a delimiter is difficult to locate. For code-heavy work, switching to the intended programming keyboard layout may be more efficient than repeated copying.'
+        ]
+      },
+      {
+        heading: 'Word and Google Docs',
+        paragraphs: [
+          'Microsoft Word accepts Unicode hexadecimal values followed by Alt + X. Google Docs and Slides can search Special characters by Unicode value, which is especially useful for non-ASCII mathematical brackets.'
+        ]
+      }
+    ],
+    sources: [microsoftWindows, microsoftWordUnicode, appleMacSymbols, googleDocsSpecial, unicodeUcd],
+    related: [
+      { label: 'Brackets & delimiters catalog', href: '/tools/copy-paste-symbols/#catalog-brackets' },
+      { label: 'Unicode Explorer', href: '/unicode/' },
+      { label: 'Unicode Converter', href: '/tools/unicode-converter/' }
+    ]
+  },
+  {
+    slug: 'bullet-point-symbols',
+    title: 'Bullet Point Symbols — Copy, Type & Choose the Right Dot',
+    description: 'Copy bullet point symbols such as •, ‣ and ⁃, compare them with middle dots and circles, and use verified Windows, Word, Mac and Docs insertion methods.',
+    headline: 'Bullet Point Symbols',
+    summary: 'Unicode includes several bullet-like characters. The standard bullet • is U+2022, but triangular bullets, hyphen bullets, middle dots and circle symbols have different meanings and code points.',
+    category: 'Symbols',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 6,
+    sections: [
+      {
+        heading: 'Common bullets to copy',
+        paragraphs: [
+          'Choose a character based on the intended list style and text semantics rather than selecting the first round dot that looks close.'
+        ],
+        bullets: [
+          '• — U+2022 BULLET',
+          '‣ — U+2023 TRIANGULAR BULLET',
+          '⁃ — U+2043 HYPHEN BULLET',
+          '· — U+00B7 MIDDLE DOT',
+          '● — U+25CF BLACK CIRCLE',
+          '○ — U+25CB WHITE CIRCLE'
+        ]
+      },
+      {
+        heading: 'Windows Alt code for the standard bullet',
+        paragraphs: [
+          'Microsoft documents Alt + 0149 for the standard bullet • using the numeric keypad. The top number row is not the same input method.',
+          'If a laptop lacks a numeric keypad, use the Windows Symbols panel, Character Map, copy/paste or Word Unicode input instead.'
+        ]
+      },
+      {
+        heading: 'Microsoft Word and Mac',
+        paragraphs: [
+          'In Word, type 2022 and press Alt + X for •. On Mac, open Character Viewer and search for bullet or browse punctuation and symbol categories.'
+        ]
+      },
+      {
+        heading: 'Google Docs and list formatting',
+        paragraphs: [
+          'Google Docs has both list-formatting controls and the Special characters dialog. Use list formatting when you want structured document bullets; insert the Unicode bullet character directly when it belongs inside running text or a plain-text export.'
+        ]
+      }
+    ],
+    sources: [microsoftWindows, microsoftWordUnicode, appleMacSymbols, googleDocsSpecial, unicodeUcd],
+    related: [
+      { label: 'Bullet character page', href: '/symbols/bullet/' },
+      { label: 'Punctuation symbols', href: '/symbols/punctuation/' },
+      { label: 'Alt Code Finder', href: '/tools/alt-code-finder/' }
+    ]
+  },
+  {
+    slug: 'check-mark-cross-symbols',
+    title: 'Check Mark & Cross Symbols — Copy, Type and Compare',
+    description: 'Copy check marks, ballot boxes and cross symbols, compare similar Unicode characters, and use reliable Windows, Mac, Word and Google Docs insertion methods.',
+    headline: 'Check Mark and Cross Symbols',
+    summary: 'A check mark, heavy check mark, ballot box and emoji check are different Unicode characters. Choosing the exact character matters when you need predictable text rendering or data exchange.',
+    category: 'Symbols',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 6,
+    sections: [
+      {
+        heading: 'Common status symbols',
+        paragraphs: [
+          'These characters are useful for task lists, approvals and comparisons, but they are not interchangeable in every font or application.'
+        ],
+        bullets: [
+          '✓ — U+2713 CHECK MARK',
+          '✔ — U+2714 HEAVY CHECK MARK',
+          '☑ — U+2611 BALLOT BOX WITH CHECK',
+          '☐ — U+2610 BALLOT BOX',
+          '☒ — U+2612 BALLOT BOX WITH X',
+          '✗ — U+2717 BALLOT X',
+          '✘ — U+2718 HEAVY BALLOT X',
+          '✅ — U+2705 WHITE HEAVY CHECK MARK'
+        ]
+      },
+      {
+        heading: 'Text symbol vs emoji presentation',
+        paragraphs: [
+          'Some check-related characters may render as colorful emoji on one platform and monochrome text on another. If consistent typography matters, test the exact character in the target font and application.'
+        ]
+      },
+      {
+        heading: 'Word, Windows and Mac methods',
+        paragraphs: [
+          'For ✓ in Word, type 2713 and press Alt + X. Windows Character Map or the Symbols panel can be used when no reviewed numeric Alt code is available. On Mac, search Character Viewer for check mark or ballot.'
+        ]
+      },
+      {
+        heading: 'Google Docs',
+        paragraphs: [
+          'Google Docs and Slides can browse or search special characters, including by Unicode value. That is safer than substituting a square-root symbol or letter v for a check mark.'
+        ]
+      }
+    ],
+    sources: [microsoftWindows, microsoftWordUnicode, appleMacSymbols, googleDocsSpecial, unicodeUcd],
+    related: [
+      { label: 'Check mark character page', href: '/symbols/check-mark/' },
+      { label: 'Check marks catalog', href: '/tools/copy-paste-symbols/#catalog-checkmarks' },
+      { label: 'Unicode Explorer', href: '/unicode/' }
+    ]
+  },
+  {
+    slug: 'arrow-symbols-keyboard',
+    title: 'Arrow Symbols on Keyboard — Copy, Unicode & Typing',
+    description: 'Copy arrow symbols from basic directions to double arrows, learn their Unicode values, and use reliable Windows, Mac, Word and Google Docs insertion methods.',
+    headline: 'Arrow Symbols on Keyboard',
+    summary: 'Unicode contains many arrow characters beyond ← ↑ → ↓. This guide starts with the common directional arrows, then explains how to insert less familiar arrows without relying on guessed shortcuts.',
+    category: 'Symbols',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 7,
+    sections: [
+      {
+        heading: 'Common arrows to copy',
+        paragraphs: [
+          'Basic directional arrows are distinct Unicode text characters and are suitable for navigation labels, diagrams, instructions and plain-text notation.'
+        ],
+        bullets: [
+          '← — U+2190 LEFTWARDS ARROW',
+          '↑ — U+2191 UPWARDS ARROW',
+          '→ — U+2192 RIGHTWARDS ARROW',
+          '↓ — U+2193 DOWNWARDS ARROW',
+          '↔ — U+2194 LEFT RIGHT ARROW',
+          '↕ — U+2195 UP DOWN ARROW',
+          '⇒ — U+21D2 RIGHTWARDS DOUBLE ARROW',
+          '⇔ — U+21D4 LEFT RIGHT DOUBLE ARROW'
+        ]
+      },
+      {
+        heading: 'Microsoft Word Unicode input',
+        paragraphs: [
+          'In Word on Windows, type the hexadecimal value and press Alt + X. For example, 2192 followed by Alt + X produces →, while 21D2 followed by Alt + X produces ⇒.',
+          'This method is separate from Windows numeric-keypad Alt codes.'
+        ]
+      },
+      {
+        heading: 'Windows and Mac character pickers',
+        paragraphs: [
+          'Windows includes arrow and symbol categories in the Symbols area of the emoji panel. macOS Character Viewer can search for terms such as right arrow, left arrow or double arrow.'
+        ]
+      },
+      {
+        heading: 'Google Docs and Slides',
+        paragraphs: [
+          'Google specifically lists arrows among the kinds of special characters available in Docs and Slides. You can browse categories, enter a Unicode value or draw a shape to search for a matching character.'
+        ]
+      },
+      {
+        heading: 'Arrow character vs icon',
+        paragraphs: [
+          'Use a Unicode arrow when the arrow belongs in text and should copy with the text. Use an SVG or interface icon when the shape is purely visual, needs custom sizing or must match a product icon system.'
+        ]
+      }
+    ],
+    sources: [microsoftWindows, microsoftWordUnicode, appleMacSymbols, googleDocsSpecial, unicodeUcd],
+    related: [
+      { label: 'Arrow symbols', href: '/symbols/arrows/' },
+      { label: 'Right arrow character page', href: '/symbols/right-arrow/' },
+      { label: 'Arrow catalog', href: '/tools/copy-paste-symbols/#catalog-arrows' }
+    ]
+  },
+  {
+    slug: 'alt-code-not-working',
+    title: 'Alt Code Not Working? Windows Troubleshooting Guide',
+    description: 'Fix common Windows Alt-code problems such as missing numeric keypad input, Num Lock issues and unsupported codes, with safer Character Map and Word alternatives.',
+    headline: 'Alt Code Not Working on Windows?',
+    summary: 'The classic Windows Alt-code method has specific requirements. Many failures happen because the number row is used instead of the numeric keypad, or because a number found online is actually a Unicode value rather than a documented Alt code.',
+    category: 'Windows',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 7,
+    sections: [
+      {
+        heading: 'Check the numeric keypad first',
+        paragraphs: [
+          'Microsoft states that the documented four-digit Alt-code method uses the numeric keypad and does not work with the row of numbers above the letters.',
+          'If your laptop has no numeric keypad, use another insertion method rather than assuming the same digits will work from the top row.'
+        ],
+        bullets: [
+          'Confirm Num Lock if your hardware requires it.',
+          'Hold Alt while entering the documented digits on the numeric keypad.',
+          'Include a leading zero when the documented code includes one.',
+          'Release Alt after entering the full code.'
+        ]
+      },
+      {
+        heading: 'Do not confuse Unicode decimal values with Alt codes',
+        paragraphs: [
+          'Unicode assigns every character a code point, but that number is not automatically a Windows Alt code. Copying a Unicode decimal value from a character table and typing it after Alt can produce the wrong result or nothing at all.',
+          'Use the Alt Code Finder on this site only for codes that have been separately reviewed against platform documentation.'
+        ]
+      },
+      {
+        heading: 'Use Windows Symbols or Character Map instead',
+        paragraphs: [
+          'Microsoft documents the Windows key + period panel for browsing punctuation, accented characters and other symbols. Character Map is another practical fallback when a code is unavailable or the keyboard lacks a numeric keypad.'
+        ]
+      },
+      {
+        heading: 'Use Word Alt+X when you know the Unicode hex value',
+        paragraphs: [
+          'Microsoft Word on Windows supports hexadecimal Unicode followed by Alt + X. This is often more useful for uncommon symbols because you can use the actual Unicode code point rather than searching for an Alt code.'
+        ]
+      },
+      {
+        heading: 'If the character still looks wrong',
+        paragraphs: [
+          'The input method may be correct while the font lacks the glyph or draws it differently. Try a font with broader Unicode coverage and compare the code point rather than judging only by shape.'
+        ]
+      }
+    ],
+    sources: [microsoftWindows, microsoftWordUnicode, unicodeUcd],
+    related: [
+      { label: 'Alt Code Finder', href: '/tools/alt-code-finder/' },
+      { label: 'Shortcut Finder', href: '/tools/shortcut-finder/' },
+      { label: 'Windows special-character guide', href: '/guides/type-special-characters-windows/' }
+    ]
+  },
+  {
+    slug: 'missing-symbol-square-box',
+    title: 'Why a Symbol Shows as a Square Box or Missing Glyph',
+    description: 'Understand why Unicode characters sometimes appear as empty boxes, tofu or replacement glyphs, and how fonts, apps and fallback rendering affect the result.',
+    headline: 'Why Does a Symbol Show as a Square Box?',
+    summary: 'A square box usually means the text contains a character but the current font or rendering environment cannot draw an appropriate glyph. Changing the character is not always the right fix.',
+    category: 'Symbols',
+    published: '2026-10-15',
+    modified: '2026-10-15',
+    readingMinutes: 6,
+    sections: [
+      {
+        heading: 'The character and the glyph are different things',
+        paragraphs: [
+          'Unicode identifies abstract characters with code points. Fonts provide visual glyphs for some subset of those characters. A valid code point can therefore exist in the text even when the active font cannot display it.',
+          'The placeholder may appear as an empty rectangle, a box with a question mark, a hexadecimal code or another missing-glyph design depending on the platform.'
+        ]
+      },
+      {
+        heading: 'Try a font with broader Unicode coverage',
+        paragraphs: [
+          'Switching fonts is the first troubleshooting step when the code point is correct. System fonts and specialist Unicode fonts cover different ranges, and no single font is required to draw every Unicode character.',
+          'If the symbol works in one app but not another, the apps may be choosing different fallback fonts.'
+        ]
+      },
+      {
+        heading: 'Check the exact code point',
+        paragraphs: [
+          'Visually similar characters can belong to completely different scripts or symbol blocks. Use the Unicode Explorer or Converter to confirm the U+ value rather than replacing the character based only on appearance.'
+        ]
+      },
+      {
+        heading: 'Emoji and text presentation can differ',
+        paragraphs: [
+          'Some characters can render as monochrome text in one environment and colorful emoji in another. This is different from a truly missing glyph, but it can still make the same Unicode character look unexpectedly different.'
+        ]
+      },
+      {
+        heading: 'When copy and paste is still correct',
+        paragraphs: [
+          'If the receiving system stores the code point correctly, a missing glyph on one device does not necessarily mean the text is corrupted. Test the character in another font or application before substituting a different symbol.'
+        ]
+      }
+    ],
+    sources: [unicodeUcd, appleMacSymbols, microsoftWindows],
+    related: [
+      { label: 'Unicode Explorer', href: '/unicode/' },
+      { label: 'Unicode Converter', href: '/tools/unicode-converter/' },
+      { label: 'Copy & paste symbols', href: '/tools/copy-paste-symbols/' }
+    ]
   }
 ];
 
