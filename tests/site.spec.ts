@@ -443,12 +443,18 @@ test('Alt Code Finder exposes only reviewed numeric keypad codes', async ({ page
   const search = page.getByRole('searchbox', { name: 'Symbol, name, Unicode code point or Alt-code digits' });
 
   await search.fill('degree');
+  const degree = page.locator('[data-alt-code-card][data-alt-code-digits="0176"]');
+  await expect(degree).toBeVisible();
+  await expect(degree).toHaveAttribute('data-alt-code-character', '°');
+  await expect(degree).toHaveAttribute('data-alt-code-point', 'U+00B0');
   await expect(page.locator('[data-alt-code-card]:visible')).toHaveCount(1);
-  await expect(page.locator('[data-alt-code-card]:visible')).toContainText('Alt + 0176');
 
   await search.fill('0153');
+  const trademark = page.locator('[data-alt-code-card][data-alt-code-digits="0153"]');
+  await expect(trademark).toBeVisible();
+  await expect(trademark).toHaveAttribute('data-alt-code-character', '™');
+  await expect(trademark).toContainText('Alt + 0153');
   await expect(page.locator('[data-alt-code-card]:visible')).toHaveCount(1);
-  await expect(page.locator('[data-alt-code-card]:visible')).toContainText('Trademark Symbol');
 
   await search.fill('infinity');
   await expect(page.locator('[data-alt-code-card]:visible')).toHaveCount(0);
