@@ -63,7 +63,11 @@ const breadcrumbSchema = {
             <div class="alt-code-symbol">
               <span class="shortcut-glyph" aria-hidden="true">{record.character}</span>
               <div>
-                <a class="symbol-link" href={record.href}><strong>{record.commonName}</strong></a>
+                {record.href ? (
+                  <a class="symbol-link" href={record.href}><strong>{record.commonName}</strong></a>
+                ) : (
+                  <strong>{record.commonName}</strong>
+                )}
                 <span>{record.codePoint}</span>
               </div>
             </div>
