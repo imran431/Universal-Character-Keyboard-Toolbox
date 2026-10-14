@@ -111,10 +111,13 @@ function codePointLabel(character: string) {
                       aria-label={`Copy ${item.name}`}
                     >
                       <span class="catalog-glyph" aria-hidden="true">{item.character}</span>
-                      <span class="catalog-name">{item.name}</span>
-                      <span class="catalog-code">{codePoint}</span>
                       <span class="catalog-copy-label" data-catalog-copy-label>Copy</span>
                     </button>
+
+                    <div class="catalog-symbol-meta">
+                      <span class="catalog-name">{item.name}</span>
+                      <span class="catalog-code">{codePoint}</span>
+                    </div>
 
                     <div class="catalog-card-actions">
                       {href ? <a href={href}>Details</a> : <span aria-hidden="true"></span>}
@@ -123,7 +126,7 @@ function codePointLabel(character: string) {
                         class="catalog-save-button"
                         data-catalog-save={item.character}
                         aria-pressed="false"
-                        aria-label={`Add ${item.name} to favorites`}
+                        aria-label={`Save ${item.name} to favorites`}
                       >☆ Save</button>
                     </div>
                   </article>
@@ -216,7 +219,9 @@ function codePointLabel(character: string) {
     button.setAttribute('aria-pressed', String(favorite));
     button.setAttribute(
       'aria-label',
-      favorite ? `Remove ${item.name} from favorites` : `Add ${item.name} to favorites`
+      favorite
+        ? `Saved ${item.name}; remove from favorites`
+        : `Save ${item.name} to favorites`
     );
     button.textContent = favorite ? '★ Saved' : '☆ Save';
   }
