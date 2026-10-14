@@ -17,6 +17,21 @@ const builderAccents = [...new Set(
     .map((item) => item.accent)
 )].sort();
 
+const accentReference = [
+  { name: 'Acute', mark: '◌́', examples: 'á é í ó ú', note: 'A rising mark used in many Latin-script languages.' },
+  { name: 'Grave', mark: '◌̀', examples: 'à è ì ò ù', note: 'A falling mark common in languages including French and Italian.' },
+  { name: 'Circumflex', mark: '◌̂', examples: 'â ê î ô û', note: 'A roof-shaped mark used in several European and transliteration systems.' },
+  { name: 'Tilde', mark: '◌̃', examples: 'ã ñ õ', note: 'A wavy mark used prominently in Spanish and Portuguese.' },
+  { name: 'Diaeresis', mark: '◌̈', examples: 'ä ë ï ö ü', note: 'Two dots used as diaeresis or umlaut depending on language and context.' },
+  { name: 'Cedilla', mark: '◌̧', examples: 'ç ş ţ', note: 'A hook-like mark placed below certain consonants.' },
+  { name: 'Caron', mark: '◌̌', examples: 'č ě ň ř š ž', note: 'A small wedge used in several Central and Eastern European languages.' },
+  { name: 'Macron', mark: '◌̄', examples: 'ā ē ī ō ū', note: 'A horizontal line commonly used for vowel length and transliteration.' },
+  { name: 'Breve', mark: '◌̆', examples: 'ă ĕ ĭ ŏ ŭ', note: 'A curved mark used in multiple orthographies and phonetic systems.' },
+  { name: 'Ogonek', mark: '◌̨', examples: 'ą ę į ų', note: 'A small tail below a letter, used notably in Polish and other orthographies.' },
+  { name: 'Dot below', mark: '◌̣', examples: 'ạ ẹ ị ọ ụ', note: 'A below-letter dot common in Vietnamese and many transliteration systems.' },
+  { name: 'Ring above', mark: '◌̊', examples: 'å ů', note: 'A small ring used in Scandinavian languages and selected Central European forms.' }
+];
+
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -183,6 +198,27 @@ const breadcrumbSchema = {
         </section>
       </div>
 
+      <section class="content-note accent-reference-section" aria-labelledby="accent-reference-heading">
+        <div class="section-heading compact-heading">
+          <div>
+            <h2 id="accent-reference-heading">Accent mark reference</h2>
+            <p>Use these common mark families to recognize the form you need before filtering the keyboard.</p>
+          </div>
+        </div>
+        <div class="accent-reference-grid">
+          {accentReference.map((item) => (
+            <article class="accent-reference-card">
+              <span class="accent-reference-mark" aria-hidden="true">{item.mark}</span>
+              <div>
+                <strong>{item.name}</strong>
+                <span>{item.examples}</span>
+                <p>{item.note}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <div class="info-grid tool-info-grid">
         <section class="info-card">
           <h2>What this keyboard covers</h2>
@@ -193,6 +229,16 @@ const breadcrumbSchema = {
           <p>Browse the <a href="/letters/">A-Z accent guides</a> for letter-specific copy and typing references, or use the <a href="/unicode/">Unicode Explorer</a> to search the larger Unicode 18.0 database by name, character or code point.</p>
         </section>
       </div>
+
+      <section class="content-note" aria-labelledby="accent-faq-heading">
+        <h2 id="accent-faq-heading">Frequently asked accent questions</h2>
+        <h3>What is the safest way to enter an accented letter?</h3>
+        <p>Copying the exact Unicode character is the most consistent cross-platform method. For frequent typing, a language keyboard or a documented platform shortcut may be faster.</p>
+        <h3>Why does an accent shortcut work on one keyboard but not another?</h3>
+        <p>Keyboard shortcuts can depend on the active operating system, app and keyboard layout. This tool avoids guessing layout-specific shortcuts and keeps the characters themselves available for direct copy.</p>
+        <h3>What if I need to stack marks or add an accent that has no precomposed letter?</h3>
+        <p>Use the <a href="/tools/diacritics-keyboard/">Combining Diacritics Keyboard</a>. It inserts Unicode combining marks and can normalize the result to NFC or NFD.</p>
+      </section>
     </div>
   </section>
 </BaseLayout>
