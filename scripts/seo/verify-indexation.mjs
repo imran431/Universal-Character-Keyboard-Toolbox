@@ -55,7 +55,10 @@ for (const route of routes) {
   assert(/\bindex\b/i.test(robots) && /\bfollow\b/i.test(robots), `Indexable route lacks index,follow robots metadata: ${route}`);
 
   const title = html.match(/<title>([^<]+)<\/title>/i)?.[1]?.trim() ?? '';
-  const description = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i)?.[1]?.trim() ?? '';
+  const description =
+    html.match(/<meta\s+name=["']description["']\s+content="([^"]*)"/i)?.[1]?.trim() ??
+    html.match(/<meta\s+name=["']description["']\s+content='([^']*)'/i)?.[1]?.trim() ??
+    '';
   assert(title.length >= 15 && title.length <= 65, `Title length must be 15-65 characters on ${route}; found ${title.length}`);
   assert(description.length >= 50 && description.length <= 180, `Meta description length must be 50-180 characters on ${route}; found ${description.length}`);
 
@@ -73,7 +76,10 @@ for (const route of routes) {
 
   const canonicals = html.match(/<link\s+rel=["']canonical["'][^>]*>/gi) ?? [];
   assert(canonicals.length === 1, `Expected exactly one canonical link on ${route}; found ${canonicals.length}`);
-  const canonicalHref = canonicals[0]?.match(/href=["']([^"']+)["']/i)?.[1] ?? '';
+  const canonicalHref =
+    canonicals[0]?.match(/href="([^"]+)"/i)?.[1] ??
+    canonicals[0]?.match(/href='([^']+)'/i)?.[1] ??
+    '';
   if (canonicalHref) {
     const canonical = new URL(canonicalHref);
     assert(canonical.pathname === route, `Canonical pathname mismatch on ${route}: ${canonical.pathname}`);
