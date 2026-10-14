@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Data & Editorial Methodology | Character Toolbox';
+const description = 'See how Character Toolbox verifies Unicode identity, keyboard methods, Alt codes, guide sources, indexable pages and browser-first character tools.';
+---
+<BaseLayout title={title} description={description}>
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Methodology</div>
+      <h1>Data & Editorial Methodology</h1>
+      <p class="lead">This page explains how character facts, typing instructions and long-form guides are selected, verified and kept separate from assumptions.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container prose-page">
+      <section>
+        <h2>1. Unicode identity</h2>
+        <p>Official character names, code points, general categories and related Unicode reference data come from the version-pinned Unicode Character Database. The current baseline is Unicode 18.0.0.</p>
+      </section>
+
+      <section>
+        <h2>2. Platform typing methods</h2>
+        <p>Windows, macOS, Microsoft Word, Google Docs and mobile instructions are added separately from Unicode identity. First-party Microsoft, Apple and Google documentation is preferred. Layout-dependent shortcuts are not presented as universal.</p>
+      </section>
+
+      <section>
+        <h2>3. Alt-code policy</h2>
+        <p>Windows Alt codes are only listed when a reviewed source documents the mapping. Unicode decimal values are never automatically converted into claimed Alt codes.</p>
+      </section>
+
+      <section>
+        <h2>4. Search and generated data</h2>
+        <p>The broad Unicode search database is generated from authoritative versioned files at build time, while SEO landing pages are curated separately. This lets the site search a large repertoire without publishing thousands of thin indexable pages.</p>
+      </section>
+
+      <section>
+        <h2>5. Guide content</h2>
+        <p>Guides are written to solve a user task rather than to reach a target word count. Source links are visible on the page, overlapping articles are avoided where possible, and important troubleshooting limitations are included near the relevant method.</p>
+      </section>
+
+      <section>
+        <h2>6. Corrections and updates</h2>
+        <p>When a source changes or a method proves unreliable, the preferred fix is to correct or remove the claim rather than preserve a larger shortcut count. Review dates on typed-method data and guides make those changes auditable in the project.</p>
+      </section>
+
+      <div class="source-links">
+        <a href="https://www.unicode.org/Public/18.0.0/ucd/" rel="noopener noreferrer">Unicode 18.0 UCD</a>
+        <a href="https://support.microsoft.com/" rel="noopener noreferrer">Microsoft Support</a>
+        <a href="https://support.apple.com/" rel="noopener noreferrer">Apple Support</a>
+        <a href="https://support.google.com/docs/" rel="noopener noreferrer">Google Docs Help</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
