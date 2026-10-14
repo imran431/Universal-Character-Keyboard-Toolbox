@@ -84,7 +84,20 @@ for (const path of indexablePaths) {
     await page.goto(path);
     const results = await new AxeBuilder({ page }).analyze();
     const serious = results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''));
-    expect(serious).toEqual([]);
+    const seriousSummary = serious.map((violation) => ({
+      id: violation.id,
+      impact: violation.impact,
+      help: violation.help,
+      nodes: violation.nodes.map((node) => ({
+        target: node.target,
+        html: node.html,
+        failureSummary: node.failureSummary
+      }))
+    }));
+    expect(
+      serious,
+      `${path} serious accessibility violations:\n${JSON.stringify(seriousSummary, null, 2)}`
+    ).toEqual([]);
   });
 }
 
