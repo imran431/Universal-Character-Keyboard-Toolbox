@@ -94,6 +94,15 @@ test('404 page stays out of the index', async ({ page }) => {
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex,follow/);
 });
 
+test('homepage keeps the popular character grid balanced and useful', async ({ page }) => {
+  await page.goto('/');
+
+  const cards = page.locator('[data-popular-section] .symbol-card');
+  await expect(cards).toHaveCount(18);
+  await expect(page.getByText('Rightwards Arrow', { exact: true })).toBeVisible();
+  await expect(page.getByText('Pound Sign', { exact: true })).toBeVisible();
+});
+
 test('homepage quick-search chips teach search without adding URL states', async ({ page }) => {
   await page.goto('/');
 
@@ -241,6 +250,23 @@ test('flagship character pages expose reviewed sources', async ({ page }) => {
     await page.goto(path);
     await expect(page.getByRole('heading', { name: 'Reviewed sources' })).toBeVisible();
     await expect(page.locator('.source-links a').first()).toHaveAttribute('href', /^https:\/\//);
+  }
+});
+
+test('curated category pages expose newly added practical symbols', async ({ page }) => {
+  const cases = [
+    ['/symbols/math/', 'N-Ary Summation', 'U+2211'],
+    ['/symbols/math/', 'Integral', 'U+222B'],
+    ['/symbols/currency/', 'Bitcoin Sign', 'U+20BF'],
+    ['/symbols/currency/', 'Turkish Lira Sign', 'U+20BA'],
+    ['/symbols/punctuation/', 'Per Mille Sign', 'U+2030'],
+    ['/symbols/punctuation/', 'Prime', 'U+2032']
+  ] as const;
+
+  for (const [path, name, codePoint] of cases) {
+    await page.goto(path);
+    await expect(page.getByText(name, { exact: true })).toBeVisible();
+    await expect(page.getByText(codePoint, { exact: false })).toBeVisible();
   }
 });
 
