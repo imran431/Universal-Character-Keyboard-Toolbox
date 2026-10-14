@@ -9,12 +9,13 @@
     "check": "astro check",
     "preview": "astro preview",
     "test:e2e": "playwright test",
-    "test": "npm run build && npm run seo:verify && npm run test:e2e",
+    "test": "npm run build && npm run seo:verify && npm run deploy:verify && npm run test:e2e",
     "unicode:sync": "node scripts/unicode/sync-unicode.mjs",
     "unicode:verify": "node scripts/unicode/verify-unicode.mjs",
     "unicode:index": "node scripts/unicode/build-search-index.mjs",
     "unicode:prepare": "npm run unicode:sync && npm run unicode:verify && npm run unicode:index",
-    "seo:verify": "node scripts/seo/verify-indexation.mjs"
+    "seo:verify": "node scripts/seo/verify-indexation.mjs",
+    "deploy:verify": "node scripts/deploy/verify-production-config.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
