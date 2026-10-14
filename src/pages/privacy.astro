@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Privacy | Character Toolbox';
+const description = 'Privacy information for Character Toolbox, including local browser storage used for favorites, recent characters and interface preferences.';
+---
+<BaseLayout
+  title={title}
+  description={description}
+  robots="noindex,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"
+>
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Privacy</div>
+      <h1>Privacy</h1>
+      <p class="lead">Character Toolbox is designed to perform its core character tasks without requiring an account.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container prose-page">
+      <section>
+        <h2>Local browser data</h2>
+        <p>Favorites, recently used characters and some interface preferences can be stored in your browser using local or session storage. This information stays associated with that browser unless you clear its site data.</p>
+      </section>
+
+      <section>
+        <h2>Text entered into tools</h2>
+        <p>Browser-based tools such as the Unicode Converter, Accent Keyboard and Invisible Characters inspector are designed to process text on the page. The current site does not require that text to be sent to an application backend.</p>
+      </section>
+
+      <section>
+        <h2>Hosting and future analytics</h2>
+        <p>The public site is intended for static hosting. Hosting providers can maintain normal server and security logs. If analytics, advertising or additional third-party services are introduced later, this page should be updated before those services are enabled.</p>
+      </section>
+
+      <section>
+        <h2>Changes</h2>
+        <p>This notice can change as the product changes. The goal is to keep the explanation aligned with the actual data flows used by the live site.</p>
+      </section>
+    </div>
+  </section>
+</BaseLayout>
