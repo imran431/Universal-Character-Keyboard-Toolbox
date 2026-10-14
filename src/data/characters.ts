@@ -82,6 +82,11 @@ export const allCuratedCharacters: CharacterSummary[] = [
   { id: 'greater-than-or-equal', character: '≥', name: 'Greater-Than Or Equal To', codePoint: 'U+2265', aliases: ['greater than or equal', 'greater equal'], category: 'Math & science', categorySlug: 'math' },
   { id: 'pi', character: 'π', name: 'Greek Small Letter Pi', codePoint: 'U+03C0', aliases: ['pi', 'greek pi'], category: 'Math & science', categorySlug: 'math' },
   { id: 'micro-sign', character: 'µ', name: 'Micro Sign', codePoint: 'U+00B5', aliases: ['micro', 'micron'], category: 'Math & science', categorySlug: 'math' },
+  { id: 'partial-differential', character: '∂', name: 'Partial Differential', codePoint: 'U+2202', aliases: ['partial differential', 'partial derivative'], category: 'Math & science', categorySlug: 'math' },
+  { id: 'n-ary-summation', character: '∑', name: 'N-Ary Summation', codePoint: 'U+2211', aliases: ['summation', 'sum', 'sigma sum'], category: 'Math & science', categorySlug: 'math' },
+  { id: 'proportional-to', character: '∝', name: 'Proportional To', codePoint: 'U+221D', aliases: ['proportional', 'proportional to'], category: 'Math & science', categorySlug: 'math' },
+  { id: 'integral', character: '∫', name: 'Integral', codePoint: 'U+222B', aliases: ['integral', 'integration'], category: 'Math & science', categorySlug: 'math' },
+  { id: 'identical-to', character: '≡', name: 'Identical To', codePoint: 'U+2261', aliases: ['identical to', 'equivalent to', 'triple equals'], category: 'Math & science', categorySlug: 'math' },
 
   { id: 'dollar-sign', character: '$', name: 'Dollar Sign', codePoint: 'U+0024', aliases: ['dollar', 'usd'], category: 'Currency', categorySlug: 'currency' },
   { id: 'cent-sign', character: '¢', name: 'Cent Sign', codePoint: 'U+00A2', aliases: ['cent'], category: 'Currency', categorySlug: 'currency' },
@@ -91,6 +96,9 @@ export const allCuratedCharacters: CharacterSummary[] = [
   { id: 'won-sign', character: '₩', name: 'Won Sign', codePoint: 'U+20A9', aliases: ['won', 'krw'], category: 'Currency', categorySlug: 'currency' },
   { id: 'indian-rupee-sign', character: '₹', name: 'Indian Rupee Sign', codePoint: 'U+20B9', aliases: ['rupee', 'indian rupee', 'inr'], category: 'Currency', categorySlug: 'currency', href: '/symbols/indian-rupee-sign/' },
   { id: 'ruble-sign', character: '₽', name: 'Ruble Sign', codePoint: 'U+20BD', aliases: ['ruble', 'rouble', 'rub'], category: 'Currency', categorySlug: 'currency' },
+  { id: 'currency-sign', character: '¤', name: 'Currency Sign', codePoint: 'U+00A4', aliases: ['currency sign', 'generic currency'], category: 'Currency', categorySlug: 'currency' },
+  { id: 'turkish-lira-sign', character: '₺', name: 'Turkish Lira Sign', codePoint: 'U+20BA', aliases: ['turkish lira', 'lira', 'try'], category: 'Currency', categorySlug: 'currency' },
+  { id: 'bitcoin-sign', character: '₿', name: 'Bitcoin Sign', codePoint: 'U+20BF', aliases: ['bitcoin', 'btc'], category: 'Currency', categorySlug: 'currency' },
 
   { id: 'bullet', character: '•', name: 'Bullet', codePoint: 'U+2022', aliases: ['bullet', 'dot'], category: 'Punctuation', categorySlug: 'punctuation', href: '/symbols/bullet/' },
   { id: 'middle-dot', character: '·', name: 'Middle Dot', codePoint: 'U+00B7', aliases: ['middle dot', 'interpunct'], category: 'Punctuation', categorySlug: 'punctuation' },
@@ -102,6 +110,11 @@ export const allCuratedCharacters: CharacterSummary[] = [
   { id: 'right-single-quote', character: '’', name: 'Right Single Quotation Mark', codePoint: 'U+2019', aliases: ['right single quote', 'apostrophe curly'], category: 'Punctuation', categorySlug: 'punctuation' },
   { id: 'left-double-quote', character: '“', name: 'Left Double Quotation Mark', codePoint: 'U+201C', aliases: ['left double quote', 'opening double quote'], category: 'Punctuation', categorySlug: 'punctuation' },
   { id: 'right-double-quote', character: '”', name: 'Right Double Quotation Mark', codePoint: 'U+201D', aliases: ['right double quote', 'closing double quote'], category: 'Punctuation', categorySlug: 'punctuation' },
+  { id: 'dagger', character: '†', name: 'Dagger', codePoint: 'U+2020', aliases: ['dagger', 'obelisk', 'footnote dagger'], category: 'Punctuation', categorySlug: 'punctuation' },
+  { id: 'double-dagger', character: '‡', name: 'Double Dagger', codePoint: 'U+2021', aliases: ['double dagger', 'double obelisk', 'footnote double dagger'], category: 'Punctuation', categorySlug: 'punctuation' },
+  { id: 'per-mille-sign', character: '‰', name: 'Per Mille Sign', codePoint: 'U+2030', aliases: ['per mille', 'per thousand'], category: 'Punctuation', categorySlug: 'punctuation' },
+  { id: 'prime', character: '′', name: 'Prime', codePoint: 'U+2032', aliases: ['prime', 'feet mark', 'minutes prime'], category: 'Punctuation', categorySlug: 'punctuation' },
+  { id: 'double-prime', character: '″', name: 'Double Prime', codePoint: 'U+2033', aliases: ['double prime', 'inches mark', 'seconds prime'], category: 'Punctuation', categorySlug: 'punctuation' },
 
   { id: 'left-arrow', character: '←', name: 'Leftwards Arrow', codePoint: 'U+2190', aliases: ['left arrow', 'arrow left'], category: 'Arrows', categorySlug: 'arrows' },
   { id: 'up-arrow', character: '↑', name: 'Upwards Arrow', codePoint: 'U+2191', aliases: ['up arrow', 'arrow up'], category: 'Arrows', categorySlug: 'arrows' },
@@ -150,7 +163,9 @@ const popularIds = [
   'division',
   'infinity',
   'pi',
-  'euro-sign'
+  'euro-sign',
+  'right-arrow',
+  'pound-sign'
 ];
 
 export const featuredCharacters = popularIds
