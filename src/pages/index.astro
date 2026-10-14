@@ -3,8 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CopyButton from '../components/CopyButton.astro';
 import { featuredCharacters } from '../data/characters';
 
-const title = 'Unicode Symbols & Keyboard Shortcuts | Character Toolbox';
-const description = 'Find and copy symbols, Unicode characters, accents and keyboard characters. Search by name, character or code point and get the result instantly.';
+const title = 'Special Characters & Unicode Symbols | Character Toolbox';
+const description = 'Find, copy and type special characters, Unicode symbols, accents and keyboard symbols. Search by name, character, alias or code point instantly.';
 ---
 <BaseLayout title={title} description={description}>
   <section class="hero" aria-labelledby="page-title">
@@ -30,6 +30,16 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
         </div>
       </div>
       <p class="search-hint" data-search-status aria-live="polite">Search by name, alias, character, code point, or HTML numeric entity.</p>
+
+      <div class="quick-searches" aria-label="Try a popular character search">
+        <span>Try:</span>
+        <button type="button" data-search-example="degree">° Degree</button>
+        <button type="button" data-search-example="check mark">✓ Check mark</button>
+        <button type="button" data-search-example="right arrow">→ Arrow</button>
+        <button type="button" data-search-example="em dash">— Em dash</button>
+        <button type="button" data-search-example="euro">€ Euro</button>
+        <button type="button" data-search-example="snowman">☃ Snowman</button>
+      </div>
     </div>
   </section>
 
@@ -53,8 +63,17 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
           <h2 id="popular-heading">Popular characters</h2>
           <p>Copy common symbols without opening another page.</p>
         </div>
-        <a class="cta-link" href="/symbols/">Browse symbols</a>
+        <a class="cta-link" href="/symbols/">Browse symbols →</a>
       </div>
+
+      <nav class="category-pill-row" aria-label="Browse popular symbol categories">
+        <a href="/symbols/math/">Math & science</a>
+        <a href="/symbols/arrows/">Arrows</a>
+        <a href="/symbols/currency/">Currency</a>
+        <a href="/symbols/punctuation/">Punctuation</a>
+        <a href="/symbols/status/">Check marks</a>
+        <a href="/symbols/legal/">Legal & business</a>
+      </nav>
 
       <div class="symbol-grid">
         {featuredCharacters.map((item) => (
@@ -79,11 +98,42 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
         ))}
       </div>
 
-      <div class="feature-strip" aria-label="Product principles">
-        <div class="feature-item"><strong>Immediate utility</strong><p>The character and copy action come before long explanations.</p></div>
-        <div class="feature-item"><strong>Fast by default</strong><p>Core pages are static HTML. The larger Unicode index loads only after you search.</p></div>
-        <div class="feature-item"><strong>Built for accuracy</strong><p>Unicode identity comes from official data; typing methods use a separate verified layer.</p></div>
-      </div>
+      <section class="home-tools" aria-labelledby="home-tools-heading">
+        <div class="section-heading compact-heading">
+          <div>
+            <h2 id="home-tools-heading">Useful character tools</h2>
+            <p>Use the fastest path for the job instead of digging through a giant character table.</p>
+          </div>
+          <a class="text-link" href="/tools/">View all tools</a>
+        </div>
+
+        <div class="home-tools-grid">
+          <a class="home-tool-card" href="/tools/shortcut-finder/">
+            <span class="home-tool-icon" aria-hidden="true">⌨</span>
+            <span><strong>Shortcut Finder</strong><small>Windows, Mac & Word methods</small></span>
+          </a>
+          <a class="home-tool-card" href="/tools/accent-keyboard/">
+            <span class="home-tool-icon" aria-hidden="true">á</span>
+            <span><strong>Accent Keyboard</strong><small>Type and copy accented letters</small></span>
+          </a>
+          <a class="home-tool-card" href="/tools/unicode-converter/">
+            <span class="home-tool-icon" aria-hidden="true">U+</span>
+            <span><strong>Unicode Converter</strong><small>Text, HTML, JS & code points</small></span>
+          </a>
+          <a class="home-tool-card" href="/tools/alt-code-finder/">
+            <span class="home-tool-icon" aria-hidden="true">Alt</span>
+            <span><strong>Alt Code Finder</strong><small>Reviewed Windows Alt codes</small></span>
+          </a>
+          <a class="home-tool-card" href="/tools/invisible-characters/">
+            <span class="home-tool-icon" aria-hidden="true">␠</span>
+            <span><strong>Invisible Characters</strong><small>Blank, thin & zero-width spaces</small></span>
+          </a>
+          <a class="home-tool-card" href="/library/">
+            <span class="home-tool-icon" aria-hidden="true">★</span>
+            <span><strong>Saved Characters</strong><small>Favorites and recent symbols</small></span>
+          </a>
+        </div>
+      </section>
     </div>
   </section>
 </BaseLayout>
@@ -120,6 +170,7 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
   const resultGrid = document.querySelector<HTMLElement>('[data-unicode-result-grid]');
   const resultSummary = document.querySelector<HTMLElement>('[data-result-summary]');
   const popularSection = document.querySelector<HTMLElement>('[data-popular-section]');
+  const searchExamples = document.querySelectorAll<HTMLButtonElement>('[data-search-example]');
 
   const curatedHrefByCodePoint = new Map<number, string>();
   for (const item of allCuratedCharacters) {
@@ -335,6 +386,15 @@ const description = 'Find and copy symbols, Unicode characters, accents and keyb
     window.clearTimeout(debounceTimer);
     debounceTimer = window.setTimeout(runSearch, 100);
   });
+
+  for (const example of searchExamples) {
+    example.addEventListener('click', () => {
+      if (!input) return;
+      input.value = example.dataset.searchExample ?? '';
+      input.focus();
+      runSearch();
+    });
+  }
 
   resultGrid?.addEventListener('click', async (event) => {
     const target = event.target;
