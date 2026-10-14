@@ -17,6 +17,17 @@ function assert(condition, message) {
   if (!condition) failures.push(message);
 }
 
+function decodeHtmlEntities(value) {
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#(\d+);/g, (_, codePoint) => String.fromCodePoint(Number(codePoint)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, codePoint) => String.fromCodePoint(Number.parseInt(codePoint, 16)));
+}
+
 function routeToHtml(route) {
   if (route === '/') return path.join(distDir, 'index.html');
   return path.join(distDir, route.replace(/^\//, ''), 'index.html');
@@ -54,11 +65,12 @@ for (const route of routes) {
   const robots = html.match(/<meta\s+name=["']robots["']\s+content=["']([^"']+)["']/i)?.[1] ?? '';
   assert(/\bindex\b/i.test(robots) && /\bfollow\b/i.test(robots), `Indexable route lacks index,follow robots metadata: ${route}`);
 
-  const title = html.match(/<title>([^<]+)<\/title>/i)?.[1]?.trim() ?? '';
-  const description =
-    html.match(/<meta\s+name=["']description["']\s+content="([^"]*)"/i)?.[1]?.trim() ??
-    html.match(/<meta\s+name=["']description["']\s+content='([^']*)'/i)?.[1]?.trim() ??
+  const title = decodeHtmlEntities(html.match(/<title>([^<]+)<\/title>/i)?.[1] ?? '').trim();
+  const rawDescription =
+    html.match(/<meta\s+name=["']description["']\s+content="([^"]*)"/i)?.[1] ??
+    html.match(/<meta\s+name=["']description["']\s+content='([^']*)'/i)?.[1] ??
     '';
+  const description = decodeHtmlEntities(rawDescription).trim();
   assert(title.length >= 15 && title.length <= 65, `Title length must be 15-65 characters on ${route}; found ${title.length}`);
   assert(description.length >= 50 && description.length <= 180, `Meta description length must be 50-180 characters on ${route}; found ${description.length}`);
 
