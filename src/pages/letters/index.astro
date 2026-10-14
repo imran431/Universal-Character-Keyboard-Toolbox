@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { allAccentCharacters } from '../../data/accent-characters';
+
+const title = 'Letters With Accents A-Z — Copy & Typing Guides';
+const description = 'Browse accented letters from A to Z, copy Unicode variants, see code points, and use reliable Windows, Mac, Word and Google Docs insertion methods.';
+
+const alphabet = Array.from('abcdefghijklmnopqrstuvwxyz');
+
+const letterGroups = alphabet.map((letter) => {
+  const characters = allAccentCharacters.filter((item) => item.base === letter);
+  return {
+    letter,
+    characters,
+    sample: characters.slice(0, 8).map((item) => item.character).join(' ')
+  };
+});
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Letters with accents', item: new URL('/letters/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Letters with accents</div>
+      <h1>Letters With Accents A-Z</h1>
+      <p class="lead">Choose a base letter to copy its accented and modified Latin forms, inspect Unicode code points, and see reliable typing methods without assuming that every Unicode value is a Windows Alt code.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" aria-labelledby="accent-letter-directory">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <h2 id="accent-letter-directory">Browse by base letter</h2>
+          <p>Each guide is generated from the same reviewed Latin-character dataset used by the Accent Keyboard.</p>
+        </div>
+        <a class="cta-link" href="/tools/accent-keyboard/">Open Accent Keyboard</a>
+      </div>
+
+      <div class="category-grid accent-letter-directory">
+        {letterGroups.map(({ letter, characters, sample }) => (
+          <a class="category-card" href={`/letters/${letter}-with-accents/`}>
+            <strong>{letter.toLocaleUpperCase()} with accents</strong>
+            <span class="accent-letter-sample" aria-hidden="true">{sample || letter}</span>
+            <span>{characters.length} precomposed or modified Latin forms in the current dataset.</span>
+            <small>Copy letters & view typing methods</small>
+          </a>
+        ))}
+      </div>
+
+      <div class="content-note">
+        <h2>Why these pages do not guess Alt codes</h2>
+        <p>Unicode code points identify characters, but they are not automatically Windows Alt codes. These pages always show the Unicode value and the documented Microsoft Word hex + Alt+X method. Windows Alt codes are only published elsewhere on this site when they are separately verified.</p>
+        <p>For broad filtering by language, case, letter or accent type, use the <a href="/tools/accent-keyboard/">Accent Keyboard & Letter Builder</a>.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
