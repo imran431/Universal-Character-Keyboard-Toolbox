@@ -518,7 +518,7 @@ test('accent keyboard inserts and filters characters', async ({ page }) => {
   await search.fill('cedilla');
   await expect(page.locator('[data-accent-key]:visible').first()).toBeVisible();
 
-  await page.getByRole('button', { name: 'Uppercase' }).click();
+  await page.locator('[data-accent-case="upper"]').click();
   await expect(page.locator('[data-accent-key][data-character="Ç"]')).toBeVisible();
   await expect(page.locator('[data-accent-key][data-character="ç"]')).toBeHidden();
 
