@@ -92,20 +92,25 @@ const altCodeByCharacter = new Map<string, AltCodeRecord>(
 
 for (const record of reviewedWindowsAltCodes) {
   const summary = summaryByCharacter.get(record.character);
+  const existing = altCodeByCharacter.get(record.character);
 
   altCodeByCharacter.set(record.character, {
-    slug: summary?.id ?? `alt-${record.codePoint.toLowerCase().replace('+', '-')}`,
+    slug: existing?.slug ?? summary?.id ?? `alt-${record.codePoint.toLowerCase().replace('+', '-')}`,
     character: record.character,
-    commonName: summary?.name ?? record.name,
+    commonName: existing?.commonName ?? summary?.name ?? record.name,
     codePoint: record.codePoint,
-    aliases: [...new Set([...(summary?.aliases ?? []), ...record.aliases])],
+    aliases: [...new Set([
+      ...(existing?.aliases ?? []),
+      ...(summary?.aliases ?? []),
+      ...record.aliases
+    ])],
     digits: record.digits,
     instruction: `Hold Alt and type ${record.digits} on the numeric keypad.`,
     note: 'Microsoft documents this four-digit Windows Alt code; use the numeric keypad rather than the top number row.',
     sourceLabel: record.sourceLabel,
     sourceUrl: record.sourceUrl,
     verifiedAt: record.verifiedAt,
-    href: summary?.href
+    href: existing?.href ?? summary?.href
   });
 }
 
