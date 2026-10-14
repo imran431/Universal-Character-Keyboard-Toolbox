@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'About Character Toolbox';
+const description = 'Learn how Character Toolbox helps people find, copy and type Unicode characters with browser-first tools, reviewed platform guidance and version-pinned data.';
+---
+<BaseLayout title={title} description={description}>
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> About</div>
+      <h1>About Character Toolbox</h1>
+      <p class="lead">Character Toolbox is built around a simple job: find the character you need, copy it quickly, and show a trustworthy typing method when one has been verified.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container prose-page">
+      <section>
+        <h2>What the site is for</h2>
+        <p>Special characters are easy to recognize but often difficult to type. The site combines Unicode search, curated symbol collections, copy tools, accent tools, code conversion, reviewed shortcuts and long-form typing guides in one focused toolbox.</p>
+      </section>
+
+      <section>
+        <h2>Accuracy before shortcut count</h2>
+        <p>A Unicode code point does not automatically define a Windows Alt code or a keyboard shortcut. Character identity is treated separately from platform input methods. We prefer a smaller verified shortcut set over a larger list of guessed mappings.</p>
+      </section>
+
+      <section>
+        <h2>Browser-first and account-free</h2>
+        <p>Core utilities run in the browser. Favorites and recent characters are stored locally on the device when browser storage is available. An account is not required to search, copy, convert or build accented text.</p>
+      </section>
+
+      <section>
+        <h2>Data and review approach</h2>
+        <p>Unicode reference data is version-pinned. Platform instructions are sourced from first-party documentation when available. See the <a href="/methodology/">data and editorial methodology</a> for the current source hierarchy and review rules.</p>
+      </section>
+    </div>
+  </section>
+</BaseLayout>
