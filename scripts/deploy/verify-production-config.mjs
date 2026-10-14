@@ -4,11 +4,38 @@ import process from 'node:process';
 
 const root = process.cwd();
 const netlify = await readFile(path.join(root, 'netlify.toml'), 'utf8');
+const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+const restoreScript = await readFile(
+  path.join(root, 'scripts', 'unicode', 'restore-search-index.mjs'),
+  'utf8'
+);
 const failures = [];
 
 function assert(condition, message) {
   if (!condition) failures.push(message);
 }
+
+const buildCommand = netlify.match(/command\s*=\s*"([^"]+)"/)?.[1] ?? '';
+assert(
+  buildCommand.includes('npm run unicode:restore'),
+  'Netlify builds must restore the versioned Unicode snapshot.'
+);
+assert(
+  !buildCommand.includes('unicode:prepare') && !buildCommand.includes('unicode:sync'),
+  'Ordinary Netlify builds must not depend on live Unicode.org downloads.'
+);
+assert(
+  packageJson.scripts?.['unicode:restore'] === 'node scripts/unicode/restore-search-index.mjs',
+  'package.json must expose the pinned Unicode snapshot restore command.'
+);
+assert(
+  restoreScript.includes('/releases/download/'),
+  'Unicode restore must use the versioned GitHub release snapshot.'
+);
+assert(
+  restoreScript.includes("createHash('sha256')"),
+  'Unicode restore must verify the published SHA-256 checksum.'
+);
 
 const csp = netlify.match(/Content-Security-Policy\s*=\s*"([^"]+)"/)?.[1] ?? '';
 assert(csp.includes("worker-src 'self'"), "Netlify CSP must explicitly allow same-origin Web Workers.");
@@ -32,5 +59,5 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exitCode = 1;
 } else {
-  console.log('Production configuration verified: worker CSP and cache policies are safe.');
+  console.log('Production configuration verified: deploys use the pinned Unicode snapshot, worker CSP, and safe cache policies.');
 }
