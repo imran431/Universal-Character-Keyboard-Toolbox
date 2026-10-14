@@ -1,0 +1,187 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { invisibleCharacters } from '../../data/invisible-characters';
+
+const title = 'Invisible Characters — Copy Blank & Zero-Width Spaces';
+const description = 'Copy no-break, thin, hair, en, em and zero-width spaces. Reveal hidden spacing characters in pasted text with Unicode code points and clear explanations.';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: new URL('/tools/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: 'Invisible Characters', item: new URL('/tools/invisible-characters/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/tools/">Tools</a>
+        <span aria-hidden="true">/</span>
+        Invisible Characters
+      </div>
+      <h1>Invisible Characters</h1>
+      <p class="lead">Copy useful blank, spacing and zero-width Unicode characters, or paste text below to reveal hidden spacing that is hard to see on screen.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0" aria-labelledby="copy-invisible">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <h2 id="copy-invisible">Copy invisible and spacing characters</h2>
+          <p>The visible labels identify what you are copying; the clipboard receives the actual Unicode character.</p>
+        </div>
+      </div>
+
+      <div class="invisible-grid">
+        {invisibleCharacters.map((item) => (
+          <article class="invisible-card">
+            <div class="invisible-token" aria-hidden="true">[{item.shortLabel}]</div>
+            <div class="invisible-info">
+              <strong>{item.label}</strong>
+              <code>{item.codePoint}</code>
+              <p>{item.description}</p>
+              <div class="invisible-preview" aria-label={`${item.label} width preview`}>
+                <span>A</span><span data-space-preview>{item.character}</span><span>B</span>
+              </div>
+            </div>
+            <button
+              class="copy-button"
+              type="button"
+              data-invisible-copy={item.character}
+              data-invisible-name={item.label}
+              aria-label={`Copy ${item.label}`}
+            >
+              Copy
+            </button>
+          </article>
+        ))}
+      </div>
+
+      <section class="invisible-inspector" aria-labelledby="reveal-hidden">
+        <div>
+          <h2 id="reveal-hidden">Reveal hidden spacing in text</h2>
+          <p>Paste text into the box. Recognized invisible characters are replaced with readable labels in the preview below; your original text is not uploaded anywhere.</p>
+        </div>
+
+        <label class="converter-label" for="invisible-input">Text to inspect</label>
+        <textarea
+          id="invisible-input"
+          class="test-field invisible-input"
+          data-invisible-input
+          placeholder="Paste text that may contain hidden spaces…"
+        ></textarea>
+
+        <div class="invisible-output-wrap">
+          <span class="converter-label">Revealed preview</span>
+          <pre class="invisible-output" data-invisible-output aria-live="polite">Nothing to inspect yet.</pre>
+        </div>
+        <p class="search-hint" data-invisible-status>0 recognized invisible characters.</p>
+      </section>
+
+      <div class="info-grid tool-info-grid">
+        <section class="info-card">
+          <h2>No-break vs zero-width</h2>
+          <p>A no-break space has visible width but normally prevents a line break. A zero width space has no intrinsic width and can mark a break opportunity. Word joiner is zero-width but works in the opposite direction for line breaking.</p>
+        </section>
+        <section class="info-card">
+          <h2>Use invisible text carefully</h2>
+          <p>These characters can affect wrapping, text matching, validation and copy/paste behavior. Use them for legitimate typography, testing and text-processing work, and verify the final result in the app where it will be used.</p>
+        </section>
+      </div>
+
+      <section class="content-note source-note" aria-labelledby="invisible-sources">
+        <h2 id="invisible-sources">Reviewed Unicode sources</h2>
+        <p>The character names and behavior notes on this page are based on Unicode 18.0 documentation.</p>
+        <div class="source-links">
+          <a href="https://www.unicode.org/Public/18.0.0/charts/nameslist/0080/" rel="noopener noreferrer">Unicode 18.0 — Latin-1 Supplement (NBSP)</a>
+          <a href="https://www.unicode.org/Public/18.0.0/charts/nameslist/2000/" rel="noopener noreferrer">Unicode 18.0 — General Punctuation</a>
+          <a href="https://www.unicode.org/versions/Unicode18.0.0/core-spec/chapter-23/" rel="noopener noreferrer">Unicode 18.0 — Special Areas and Format Characters</a>
+        </div>
+      </section>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const copyButtons = document.querySelectorAll<HTMLButtonElement>('[data-invisible-copy]');
+  const input = document.querySelector<HTMLTextAreaElement>('[data-invisible-input]');
+  const output = document.querySelector<HTMLElement>('[data-invisible-output]');
+  const status = document.querySelector<HTMLElement>('[data-invisible-status]');
+
+  const labels = new Map<string, string>([
+    ['\u00A0', '[NBSP]'],
+    ['\u2002', '[EN SPACE]'],
+    ['\u2003', '[EM SPACE]'],
+    ['\u2009', '[THIN]'],
+    ['\u200A', '[HAIR]'],
+    ['\u200B', '[ZWSP]'],
+    ['\u202F', '[NNBSP]'],
+    ['\u2060', '[WJ]'],
+    ['\t', '[TAB]'],
+    ['\n', '[LF]']
+  ]);
+
+  for (const button of copyButtons) {
+    button.addEventListener('click', async () => {
+      const value = button.dataset.invisibleCopy ?? '';
+      const original = button.textContent ?? 'Copy';
+
+      try {
+        await navigator.clipboard.writeText(value);
+        button.textContent = 'Copied';
+        button.dataset.copied = 'true';
+      } catch {
+        button.textContent = 'Try again';
+        button.dataset.copyFailed = 'true';
+      }
+
+      window.setTimeout(() => {
+        button.textContent = original;
+        button.dataset.copied = 'false';
+        button.dataset.copyFailed = 'false';
+      }, 1400);
+    });
+  }
+
+  function revealInvisibleText() {
+    if (!input || !output || !status) return;
+
+    if (!input.value) {
+      output.textContent = 'Nothing to inspect yet.';
+      status.textContent = '0 recognized invisible characters.';
+      return;
+    }
+
+    let recognized = 0;
+    let revealed = '';
+
+    for (const character of input.value) {
+      const label = labels.get(character);
+
+      if (label) {
+        recognized += 1;
+        revealed += label;
+      } else if (character === ' ') {
+        revealed += '·';
+      } else if (character === '\r') {
+        // Ignore CR so Windows CRLF appears as one [LF] marker.
+      } else {
+        revealed += character;
+      }
+    }
+
+    output.textContent = revealed;
+    status.textContent = `${recognized} recognized invisible ${recognized === 1 ? 'character' : 'characters'}.`;
+  }
+
+  input?.addEventListener('input', revealInvisibleText, { passive: true });
+</script>
