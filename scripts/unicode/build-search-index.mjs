@@ -70,7 +70,7 @@ const templates = artifact.derivedNameRanges.map(({ start, end, template }) => [
 const payload = {
   schemaVersion: 1,
   unicodeVersion: artifact.unicodeVersion,
-  generatedAt: artifact.generatedAt,
+  releaseDate: artifact.releaseDate,
   source: 'Unicode Character Database 18.0.0',
   records,
   templates
