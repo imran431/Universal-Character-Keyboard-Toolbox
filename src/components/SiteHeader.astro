@@ -1,17 +1,119 @@
+---
+const pathname = Astro.url.pathname;
+const isSymbols = pathname.startsWith('/symbols');
+const isUnicode = pathname.startsWith('/unicode');
+const isTools = pathname.startsWith('/tools');
+const isGuides = pathname.startsWith('/guides');
+---
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="Universal Character and Keyboard Toolbox home">
-      <span class="brand-mark" aria-hidden="true">⌘</span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="currentColor"/>
+        </svg>
+      </span>
       <span>
         <strong>Character Toolbox</strong>
         <small>Find · Copy · Type</small>
       </span>
     </a>
-    <nav aria-label="Primary navigation">
-      <a href="/symbols/">Symbols</a>
-      <a href="/unicode/">Unicode</a>
-      <a href="/tools/">Tools</a>
-      <a href="/guides/">Guides</a>
-    </nav>
+
+    <div class="header-actions">
+      <button type="button" class="search-trigger-btn" data-search-trigger aria-label="Search characters (Press Ctrl+K or /)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span class="search-trigger-text">Search</span>
+        <kbd class="search-trigger-kbd"><span class="kbd-mod">⌘</span>K</kbd>
+      </button>
+
+      <nav aria-label="Primary navigation">
+        <a href="/symbols/" class={isSymbols ? 'is-active' : ''}>Symbols</a>
+        <a href="/unicode/" class={isUnicode ? 'is-active' : ''}>Unicode</a>
+        <a href="/tools/" class={isTools ? 'is-active' : ''}>Tools</a>
+        <a href="/guides/" class={isGuides ? 'is-active' : ''}>Guides</a>
+      </nav>
+
+      <button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+
+      <button type="button" class="signin-btn" aria-label="Sign In">Sign In</button>
+    </div>
   </div>
 </header>
+
+<script>
+  // Theme toggle logic
+  const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+
+  function updateTheme(newTheme: 'dark' | 'light') {
+    document.documentElement.setAttribute('data-theme', newTheme);
+    try {
+      localStorage.setItem('theme', newTheme);
+    } catch {
+      // storage unavailable
+    }
+  }
+
+  themeToggle?.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const isDark = currentTheme === 'dark' || (!currentTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    updateTheme(isDark ? 'light' : 'dark');
+  });
+
+  // Global search shortcut (Ctrl+K, ⌘K, or /)
+  const searchTrigger = document.querySelector<HTMLButtonElement>('[data-search-trigger]');
+
+  function focusSearch() {
+    const searchInput = document.querySelector<HTMLInputElement>(
+      '[data-character-search], [data-catalog-search], [data-accent-search], #character-search, input[type="search"]'
+    );
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      window.location.href = '/#search';
+    }
+  }
+
+  searchTrigger?.addEventListener('click', focusSearch);
+
+  // Keyboard shortcut listener
+  document.addEventListener('keydown', (e) => {
+    // If user is currently typing in an input or textarea, don't hijack unless it's Ctrl+K
+    const isEditing = ['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName);
+
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      focusSearch();
+    } else if (e.key === '/' && !isEditing) {
+      e.preventDefault();
+      focusSearch();
+    }
+  });
+
+  // Modern OS key label
+  if (/Mac|iP[ad|hone]/i.test(navigator.userAgent || '')) {
+    const mod = document.querySelector('.kbd-mod');
+    if (mod) mod.textContent = '⌘';
+  } else {
+    const mod = document.querySelector('.kbd-mod');
+    if (mod) mod.textContent = 'Ctrl+';
+  }
+</script>

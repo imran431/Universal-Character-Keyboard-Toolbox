@@ -1,0 +1,82 @@
+---
+---
+<div id="copied-toast" class="copied-toast" role="status" aria-live="polite" aria-atomic="true" hidden>
+  <div class="toast-inner">
+    <span class="toast-badge" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </span>
+    <span class="toast-glyph" data-toast-glyph aria-hidden="true"></span>
+    <div class="toast-content">
+      <span class="toast-title" data-toast-title>Copied to clipboard</span>
+      <span class="toast-meta" data-toast-meta></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  interface CopyDetail {
+    character: string;
+    name?: string;
+    codePoint?: string;
+  }
+
+  const toast = document.getElementById('copied-toast');
+  const glyph = toast?.querySelector<HTMLElement>('[data-toast-glyph]');
+  const title = toast?.querySelector<HTMLElement>('[data-toast-title]');
+  const meta = toast?.querySelector<HTMLElement>('[data-toast-meta]');
+
+  let hideTimer = 0;
+
+  function showToast(detail: CopyDetail) {
+    if (!toast || !glyph || !title || !meta) return;
+
+    window.clearTimeout(hideTimer);
+
+    glyph.textContent = detail.character;
+    title.textContent = detail.name ? `Copied "${detail.character}"` : 'Copied to clipboard';
+    
+    const metaParts = [];
+    if (detail.name) metaParts.push(detail.name);
+    if (detail.codePoint) metaParts.push(detail.codePoint);
+    meta.textContent = metaParts.join(' · ');
+    meta.hidden = metaParts.length === 0;
+
+    toast.hidden = false;
+    // Trigger reflow for animation
+    void toast.offsetHeight;
+    toast.classList.add('is-visible');
+
+    hideTimer = window.setTimeout(() => {
+      toast.classList.remove('is-visible');
+      window.setTimeout(() => {
+        if (!toast.classList.contains('is-visible')) {
+          toast.hidden = true;
+        }
+      }, 250);
+    }, 2400);
+  }
+
+  window.addEventListener('character-copied', ((e: CustomEvent<CopyDetail>) => {
+    if (e.detail) showToast(e.detail);
+  }) as EventListener);
+
+  // Global delegate: capture all standard [data-copy-value] clicks across the site
+  document.addEventListener('click', (e) => {
+    const target = (e.target as HTMLElement)?.closest<HTMLElement>('[data-copy-value], [data-catalog-copy], [data-character]');
+    if (!target) return;
+
+    const char = target.getAttribute('data-copy-value') || target.getAttribute('data-character');
+    if (!char) return;
+
+    const name = target.getAttribute('data-character-name') || target.getAttribute('aria-label')?.replace(/^Copy\s+/i, '') || '';
+    const codePoint = target.getAttribute('data-code-point') || '';
+
+    showToast({
+      character: char,
+      name: name && !name.startsWith('Insert') ? name : '',
+      codePoint
+    });
+  });
+</script>

@@ -1,0 +1,118 @@
+---
+---
+<aside id="collection-tray" class="collection-tray is-collapsed" aria-label="Character collection tray">
+  <div class="tray-pill-toggle" data-tray-toggle role="button" tabindex="0" aria-expanded="false" aria-controls="tray-body">
+    <span class="tray-icon" aria-hidden="true">+</span>
+    <span class="tray-label"><strong>Collection Tray</strong> <span class="tray-badge" data-tray-count>0</span></span>
+    <span class="tray-chevron" aria-hidden="true">▼</span>
+  </div>
+
+  <div id="tray-body" class="tray-body">
+    <div class="tray-header">
+      <div class="tray-title-group">
+        <strong>Collected Characters</strong>
+        <span class="tray-hint">Click characters or type here to collect</span>
+      </div>
+      <div class="tray-actions">
+        <button type="button" class="source-mini-link" data-tray-backspace aria-label="Backspace last character">⌫</button>
+        <button type="button" class="source-mini-link accent-clear-button" data-tray-clear aria-label="Reset tray">Reset</button>
+        <button type="button" class="copy-button tray-copy-all" data-tray-copy>Copy all</button>
+      </div>
+    </div>
+    <div class="tray-input-shell">
+      <textarea
+        class="tray-textarea"
+        rows="2"
+        placeholder="Collected symbols will appear here… (type or click characters)"
+        data-tray-input
+        aria-label="Collected characters pad"
+      ></textarea>
+    </div>
+  </div>
+</aside>
+
+<script>
+  const tray = document.getElementById('collection-tray');
+  const toggle = tray?.querySelector<HTMLElement>('[data-tray-toggle]');
+  const textarea = tray?.querySelector<HTMLTextAreaElement>('[data-tray-input]');
+  const countBadge = tray?.querySelector<HTMLElement>('[data-tray-count]');
+  const copyBtn = tray?.querySelector<HTMLButtonElement>('[data-tray-copy]');
+  const clearBtn = tray?.querySelector<HTMLButtonElement>('[data-tray-clear]');
+  const backspaceBtn = tray?.querySelector<HTMLButtonElement>('[data-tray-backspace]');
+
+  function updateCount() {
+    if (!textarea || !countBadge) return;
+    const len = Array.from(textarea.value).length;
+    countBadge.textContent = String(len);
+  }
+
+  function appendToTray(char: string) {
+    if (!textarea) return;
+    textarea.value += char;
+    updateCount();
+    // Auto expand tray on first character added
+    if (tray && tray.classList.contains('is-collapsed')) {
+      tray.classList.remove('is-collapsed');
+      toggle?.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  toggle?.addEventListener('click', () => {
+    if (!tray) return;
+    const isCollapsed = tray.classList.toggle('is-collapsed');
+    toggle.setAttribute('aria-expanded', String(!isCollapsed));
+  });
+
+  toggle?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggle.click();
+    }
+  });
+
+  textarea?.addEventListener('input', updateCount);
+
+  clearBtn?.addEventListener('click', () => {
+    if (!textarea) return;
+    textarea.value = '';
+    updateCount();
+    textarea.focus();
+  });
+
+  backspaceBtn?.addEventListener('click', () => {
+    if (!textarea) return;
+    const chars = Array.from(textarea.value);
+    chars.pop();
+    textarea.value = chars.join('');
+    updateCount();
+  });
+
+  copyBtn?.addEventListener('click', async () => {
+    if (!textarea || !textarea.value) return;
+    try {
+      await navigator.clipboard.writeText(textarea.value);
+      copyBtn.textContent = 'Copied!';
+      window.dispatchEvent(
+        new CustomEvent('character-copied', {
+          detail: { character: textarea.value.slice(0, 8), name: 'Collected text', codePoint: '' }
+        })
+      );
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy all';
+      }, 1400);
+    } catch {
+      copyBtn.textContent = 'Failed';
+    }
+  });
+
+  // Shift-click on any character across the site adds it directly to the tray
+  document.addEventListener('click', (e) => {
+    if (!e.shiftKey) return;
+    const target = (e.target as HTMLElement)?.closest<HTMLElement>('[data-copy-value], [data-character]');
+    const char = target?.getAttribute('data-copy-value') || target?.getAttribute('data-character');
+    if (char) {
+      e.preventDefault();
+      appendToTray(char);
+    }
+  });
+</script>

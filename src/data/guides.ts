@@ -947,7 +947,7 @@ export const guides: Guide[] = [
     slug: 'missing-symbol-square-box',
     title: 'Why a Symbol Shows as a Square Box or Missing Glyph',
     description: 'Understand why Unicode characters sometimes appear as empty boxes, tofu or replacement glyphs, and how fonts, apps and fallback rendering affect the result.',
-    headline: 'Why Does a Symbol Show as a Square Box?',
+    headline: 'Why Does a Symbol Show as a Square Box or Missing Glyph?',
     summary: 'A square box usually means the text contains a character but the current font or rendering environment cannot draw an appropriate glyph. Changing the character is not always the right fix.',
     category: 'Symbols',
     published: '2026-10-15',

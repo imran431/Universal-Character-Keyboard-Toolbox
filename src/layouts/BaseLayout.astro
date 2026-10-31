@@ -1,6 +1,8 @@
 ---
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import CopiedToast from '../components/CopiedToast.astro';
+import CollectionTray from '../components/CollectionTray.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -33,8 +35,20 @@ const websiteSchema = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light" />
-    <meta name="theme-color" content="#f8fafc" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0B0F17" />
+    <script is:inline>
+      try {
+        const stored = localStorage.getItem('theme');
+        if (stored === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      } catch {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -60,5 +74,7 @@ const websiteSchema = {
       <slot />
     </main>
     <SiteFooter />
+    <CopiedToast />
+    <CollectionTray />
   </body>
 </html>

@@ -61,14 +61,26 @@ const {
           });
         }
 
-        if (visibleLabel) visibleLabel.textContent = 'Copied';
+        if (visibleLabel) visibleLabel.textContent = '✓ Copied!';
         if (status) status.textContent = 'Copied to clipboard';
         button.dataset.copied = 'true';
+        button.closest('.symbol-card')?.setAttribute('data-card-copied', 'true');
+
+        window.dispatchEvent(
+          new CustomEvent('character-copied', {
+            detail: {
+              character: value,
+              name: button.dataset.characterName || button.getAttribute('aria-label')?.replace(/^Copy\s+/i, '') || 'Unicode character',
+              codePoint: button.dataset.codePoint || ''
+            }
+          })
+        );
 
         window.setTimeout(() => {
           if (visibleLabel) visibleLabel.textContent = original;
           if (status) status.textContent = '';
           button.dataset.copied = 'false';
+          button.closest('.symbol-card')?.removeAttribute('data-card-copied');
         }, 1400);
       } catch {
         if (visibleLabel) visibleLabel.textContent = 'Try again';

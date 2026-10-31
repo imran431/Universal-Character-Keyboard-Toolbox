@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fontStyles } from '../../lib/font-styler';
+
+const title = 'Fancy Font Generator — Unicode Text Styles';
+const description = 'Generate fancy Unicode text, cursive script, bold, gothic, and aesthetic fonts for social media and profiles. Free, instant, and private.';
+
+const initialText = 'Make your text stand out';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 2, name: 'Tools', item: new URL('/tools/', Astro.site ?? Astro.url.origin).href },
+    { '@type': 'ListItem', position: 3, name: 'Font Generator', item: new URL('/tools/font-generator/', Astro.site ?? Astro.url.origin).href }
+  ]
+};
+---
+<BaseLayout title={title} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbSchema)}></script>
+
+  <header class="content-header">
+    <div class="container">
+      <div class="breadcrumbs">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/tools/">Tools</a>
+        <span aria-hidden="true">/</span>
+        Font Generator
+      </div>
+      <h1>Fancy Font Generator & Text Styler</h1>
+      <p class="lead">Transform plain text into stylish Unicode characters, cursive calligraphy, bold gothic, and aesthetic symbols. Everything generates locally in your browser with instant one-click copying.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <div class="tool-panel">
+        <label class="explorer-label" for="font-input">Your text to transform</label>
+        <div class="search-shell tool-search-shell font-input-shell">
+          <textarea
+            id="font-input"
+            class="search-input font-textarea"
+            rows="3"
+            placeholder="Type or paste your text here…"
+            data-font-input
+          >{initialText}</textarea>
+        </div>
+
+        <div class="font-quick-actions">
+          <div class="quick-searches" aria-label="Sample text presets">
+            <span class="quick-try-label">Presets:</span>
+            <button type="button" class="chip chip-slate" data-preset="Hello World">Hello World</button>
+            <button type="button" class="chip chip-purple" data-preset="Aesthetic Vibes">Aesthetic Vibes</button>
+            <button type="button" class="chip chip-cyan" data-preset="Exclusive Drop">Exclusive Drop</button>
+            <button type="button" class="chip chip-indigo" data-preset="100% Pure Magic">100% Magic</button>
+          </div>
+          <button type="button" class="source-mini-link accent-clear-button" data-clear-font>Clear input</button>
+        </div>
+      </div>
+
+      <div class="font-styles-container">
+        <div class="section-heading compact-heading">
+          <div>
+            <h2>Generated font styles</h2>
+            <p data-styles-count>{fontStyles.length} styles ready to copy.</p>
+          </div>
+        </div>
+
+        <div class="font-styles-grid" data-font-grid>
+          {fontStyles.map((style) => {
+            const transformed = style.transform(initialText);
+            return (
+              <article class="font-card" data-style-card data-style-id={style.id}>
+                <div class="font-card-header">
+                  <div>
+                    <strong class="font-card-title">{style.name}</strong>
+                    <span class="font-card-badge">{style.category}</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="copy-button"
+                    data-copy-font
+                    data-value={transformed}
+                    aria-label={`Copy ${style.name} text`}
+                  >
+                    Copy
+                  </button>
+                </div>
+                <div class="font-card-preview" data-preview>
+                  {transformed}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+
+      <div class="info-grid tool-info-grid">
+        <section class="info-card">
+          <h2>How Unicode font styles work</h2>
+          <p>These are not font files (.ttf/.woff), but real Unicode characters primarily from the Mathematical Alphanumeric Symbols block. Because they are standard characters, you can paste them into Instagram bios, Twitter/X, Discord, TikTok, WhatsApp, and Word documents.</p>
+        </section>
+        <section class="info-card">
+          <h2>Accessibility and best practices</h2>
+          <p>Screen readers read standard letters easily, but mathematical symbols may be pronounced with their mathematical names (e.g. &quot;mathematical bold capital A&quot;). Use stylized text primarily for titles, headers, names, or decorative accents rather than large blocks of critical text.</p>
+        </section>
+      </div>
+
+      <section class="content-note" aria-labelledby="font-faq-heading">
+        <h2 id="font-faq-heading">Frequently asked questions</h2>
+        <h3>Are these characters free to use anywhere?</h3>
+        <p>Yes. They are standard Unicode characters recognized across modern browsers, operating systems, and mobile devices.</p>
+        <h3>Why do some characters not change?</h3>
+        <p>Unicode mathematical blocks define symbols for Latin letters (A-Z, a-z) and numerals (0-9). Punctuation marks and non-Latin scripts remain unchanged to ensure legibility.</p>
+      </section>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { fontStyles } from '../../lib/font-styler';
+
+  const input = document.querySelector<HTMLTextAreaElement>('[data-font-input]');
+  const clearBtn = document.querySelector<HTMLButtonElement>('[data-clear-font]');
+  const presets = document.querySelectorAll<HTMLButtonElement>('[data-preset]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-style-card]');
+
+  function updateStyles() {
+    const text = input?.value || 'Type something here…';
+    for (const card of cards) {
+      const id = card.dataset.styleId;
+      const style = fontStyles.find((s) => s.id === id);
+      if (!style) continue;
+
+      const transformed = style.transform(text);
+      const preview = card.querySelector<HTMLElement>('[data-preview]');
+      const copyBtn = card.querySelector<HTMLButtonElement>('[data-copy-font]');
+
+      if (preview) preview.textContent = transformed;
+      if (copyBtn) copyBtn.dataset.value = transformed;
+    }
+  }
+
+  input?.addEventListener('input', updateStyles);
+
+  clearBtn?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      input.focus();
+      updateStyles();
+    }
+  });
+
+  for (const preset of presets) {
+    preset.addEventListener('click', () => {
+      if (input && preset.dataset.preset) {
+        input.value = preset.dataset.preset;
+        updateStyles();
+      }
+    });
+  }
+
+  async function copyText(value: string): Promise<boolean> {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(value);
+        return true;
+      } catch {
+        // Fall through to execCommand
+      }
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.inset = '0 auto auto -9999px';
+    textarea.style.opacity = '0';
+    textarea.style.pointerEvents = 'none';
+    document.body.append(textarea);
+    textarea.select();
+    textarea.setSelectionRange(0, textarea.value.length);
+
+    let copied = false;
+    try {
+      copied = document.execCommand('copy');
+    } finally {
+      textarea.remove();
+    }
+    return copied;
+  }
+
+  // Handle copy buttons on cards
+  const copyButtons = document.querySelectorAll<HTMLButtonElement>('[data-copy-font]');
+  for (const btn of copyButtons) {
+    btn.addEventListener('click', async () => {
+      const value = btn.dataset.value ?? '';
+      const copied = await copyText(value);
+      if (copied) {
+        btn.textContent = 'Copied';
+        btn.setAttribute('data-copied', 'true');
+
+        window.dispatchEvent(
+          new CustomEvent('character-copied', {
+            detail: { character: value.slice(0, 12), name: 'Styled text', codePoint: '' }
+          })
+        );
+
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.removeAttribute('data-copied');
+        }, 1400);
+      } else {
+        btn.textContent = 'Failed';
+      }
+    });
+  }
+</script>

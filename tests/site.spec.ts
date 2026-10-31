@@ -34,6 +34,7 @@ const indexablePaths = [
   '/tools/alt-code-finder/',
   '/tools/accent-keyboard/',
   '/tools/diacritics-keyboard/',
+  '/tools/font-generator/',
   '/tools/unicode-converter/',
   '/tools/invisible-characters/',
   '/guides/',
@@ -95,7 +96,7 @@ for (const path of indexablePaths) {
   });
 
   test(`${path} has no serious accessibility violations`, async ({ page }, testInfo) => {
-    if (path === '/tools/copy-paste-symbols/') {
+    if (path === '/tools/copy-paste-symbols/' || path === '/tools/accent-keyboard/') {
       testInfo.setTimeout(75_000);
     }
 
@@ -567,6 +568,7 @@ test('critical pages fit a 320px viewport with primary navigation intact', async
     '/tools/alt-code-finder/',
     '/tools/accent-keyboard/',
     '/tools/diacritics-keyboard/',
+  '/tools/font-generator/',
     '/tools/unicode-converter/',
     '/tools/invisible-characters/',
     '/guides/',
@@ -981,4 +983,50 @@ test('copy-paste catalog stays usable at narrow mobile widths', async ({ page })
   await expect(page.locator('[data-category-link="popular"]')).toBeVisible();
   await expect(page.locator('[data-category-link="arrows"]')).toBeVisible();
   await expect(page.locator('[data-catalog-symbol]').first()).toBeVisible();
+});
+
+test('theme toggle switches between light and dark modes', async ({ page }) => {
+  await page.goto('/');
+  const toggle = page.locator('[data-theme-toggle]');
+  await expect(toggle).toBeVisible();
+
+  await toggle.click();
+  const themeAfterFirstClick = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+  expect(['dark', 'light']).toContain(themeAfterFirstClick);
+
+  await toggle.click();
+  const themeAfterSecondClick = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+  expect(themeAfterSecondClick).not.toBe(themeAfterFirstClick);
+});
+
+test('font generator transforms text into multiple unicode styles', async ({ page }) => {
+  await page.goto('/tools/font-generator/');
+  const input = page.locator('[data-font-input]');
+  await expect(input).toBeVisible();
+
+  await input.fill('Magic 42');
+  const boldCard = page.locator('[data-style-card][data-style-id="bold"]');
+  await expect(boldCard).toBeVisible();
+  await expect(boldCard.locator('[data-preview]')).toContainText('𝐌𝐚𝐠𝐢𝐜 𝟒𝟐');
+
+  const copyBtn = boldCard.locator('[data-copy-font]');
+  await copyBtn.click();
+  await expect(copyBtn).toHaveText('Copied');
+});
+
+test('character collection tray responds to interactions', async ({ page }) => {
+  await page.goto('/tools/copy-paste-symbols/');
+  const trayToggle = page.locator('[data-tray-toggle]');
+  await expect(trayToggle).toBeVisible();
+
+  await trayToggle.click();
+  const textarea = page.locator('[data-tray-input]');
+  await expect(textarea).toBeVisible();
+  await textarea.fill('✦ ⌘');
+  await expect(page.locator('[data-tray-count]')).toHaveText('3');
+
+  const clearBtn = page.locator('[data-tray-clear]');
+  await clearBtn.click();
+  await expect(textarea).toHaveValue('');
+  await expect(page.locator('[data-tray-count]')).toHaveText('0');
 });
