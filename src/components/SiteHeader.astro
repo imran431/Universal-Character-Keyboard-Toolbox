@@ -73,8 +73,8 @@ const isGuides = pathname.startsWith('/guides');
 
   themeToggle?.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
-    const isDark = currentTheme === 'dark' || (!currentTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    updateTheme(isDark ? 'light' : 'dark');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    updateTheme(newTheme);
   });
 
   // Global search shortcut (Ctrl+K, ⌘K, or /)
