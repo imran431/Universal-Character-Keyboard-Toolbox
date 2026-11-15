@@ -1,6 +1,8 @@
 # Universal Character & Keyboard Toolbox
 
-A static-first Astro project for finding, copying, typing, and understanding Unicode characters and keyboard symbols.
+> 🌐 **Live Website:** [https://symboltoolbox.com/](https://symboltoolbox.com/)
+
+A fast, modern, and ad-free web utility for finding, copying, typing, and understanding Unicode characters, special symbols, Alt codes, and keyboard shortcuts.
 
 ## Local development
 
